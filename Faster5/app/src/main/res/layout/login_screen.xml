@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/BackGround"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.gcs.faster5.MainActivity">
+
+    <ImageView
+        android:id="@+id/LoGo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/FACEBOOK"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/logo" />
+
+    <ImageButton
+        android:id="@+id/FACEBOOK"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="#00000000"
+        android:src="@drawable/fbbutton" />
+
+    <ImageButton
+        android:id="@+id/GOOGLE"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/FACEBOOK"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="26dp"
+        android:background="#00000000"
+        android:src="@drawable/gbutton" />
+
+
+</RelativeLayout>
