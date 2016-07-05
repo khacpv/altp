@@ -10,6 +10,7 @@ import android.widget.RelativeLayout;
 
 /**
  * Created by Kien on 07/05/2016.
+ * test
  */
 public class MainScreen extends AppCompatActivity {
     RelativeLayout hinhNen;
@@ -32,7 +33,6 @@ public class MainScreen extends AppCompatActivity {
         myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(myIntent);
         finish();
-
         return;
     }
 }
