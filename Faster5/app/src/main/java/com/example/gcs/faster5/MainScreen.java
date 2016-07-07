@@ -6,7 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
 
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+
+import com.bumptech.glide.Glide;
 
 /**
  * Created by Kien on 07/05/2016.
@@ -14,7 +17,7 @@ import android.widget.RelativeLayout;
  */
 public class MainScreen extends AppCompatActivity {
     RelativeLayout hinhNen;
-
+    ImageView avatarfb;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +29,9 @@ public class MainScreen extends AppCompatActivity {
         hinhNen = (RelativeLayout) findViewById(R.id.BackGround);
         hinhNen.setBackgroundResource(R.drawable.bgmain);
 
+        avatarfb = (ImageView) findViewById(R.id.avatarUser1);
+        String data = getIntent().getExtras().getString("IDFB");
+        Glide.with(getApplicationContext()).load("https://graph.facebook.com/" + data + "/picture?width=100&height=100").into(avatarfb);
     }
 
     public void onBackPressed() {

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.TextView;
 
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
@@ -17,12 +16,9 @@ import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
-import com.facebook.Profile;
-import com.facebook.ProfileTracker;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-
 
 
 /**
@@ -32,7 +28,6 @@ public class LoginScreen extends AppCompatActivity {
 
     private LoginButton loginButton;
     private CallbackManager callbackManager;
-    public String idUserFB, nameUserFB;
     private AccessToken accessToken;
     private AccessTokenTracker accessTokenTracker;
     public Intent startActivity;
@@ -46,47 +41,47 @@ public class LoginScreen extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
 
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        callbackManager = CallbackManager.Factory.create();
+        FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
+            @Override
+            public void onInitialized() {
+                //AccessToken is for us to check whether we have previously logged in into
+                //this app, and this information is save in shared preferences and sets it during SDK initialization
+                accessToken = AccessToken.getCurrentAccessToken();
+                if (accessToken == null) {
+                } else {
+                    Intent main = new Intent(LoginScreen.this, InfoScreen.class);
+                    startActivity(main);
 
+                }
+            }
+        });
         setContentView(R.layout.login_screen);
 
+        //register a callback to respond to a login result,
+        callbackManager = CallbackManager.Factory.create();
+
+        //register access token to check whether user logged in before
+        accessTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken oldToken, AccessToken newToken) {
+                accessToken = newToken;
+            }
+        };
+
         startActivity = new Intent(LoginScreen.this, InfoScreen.class);
-        disconnectFromFacebook();
+        //disconnectFromFacebook();
         loginButton = (LoginButton) findViewById(R.id.fblogin_button);
         loginButton.setReadPermissions("public_profile");
+        // Callback registration
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-                    private ProfileTracker mProfileTracker;
 
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         loginButton.setVisibility(View.INVISIBLE);
-                        AccessToken accessToken = loginResult.getAccessToken();
-                        idUserFB = accessToken.getUserId();
-                        if (Profile.getCurrentProfile() == null) {
-                            mProfileTracker = new ProfileTracker() {
-                                @Override
-                                protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
-                                    mProfileTracker.stopTracking();
-                                    Profile.setCurrentProfile(currentProfile);
-                                    Profile profile = Profile.getCurrentProfile();
-                                    nameUserFB = profile.getFirstName();
-                                }
-                            };
-                            mProfileTracker.startTracking();
-                        } else {
-                            Profile profile = Profile.getCurrentProfile();
-                            nameUserFB = profile.getFirstName();
-                        }
-                        startActivity.putExtra("ID", idUserFB);
-                        startActivity.putExtra("NAME", nameUserFB);
-                        if (nameUserFB != null) {
-                            startActivity(startActivity);
-                            finish();
-                        }
-
+                        accessToken = loginResult.getAccessToken();
+                        startActivity(startActivity);
+                        finish();
                     }
-
                     @Override
                     public void onCancel() {
                     }
@@ -95,30 +90,10 @@ public class LoginScreen extends AppCompatActivity {
                     public void onError(FacebookException exception) {
                     }
                 }
-
         );
+        accessTokenTracker.startTracking();
 
     }
-
-
-//        accessTokenTracker = new AccessTokenTracker() {
-//            @Override
-//            protected void onCurrentAccessTokenChanged(
-//                    AccessToken oldAccessToken,
-//                    AccessToken currentAccessToken) {
-//                // Set the access token using
-//                // currentAccessToken when it's loaded or set.
-//            }
-//        };
-//        // If the access token is available already assign it.
-//        accessToken = AccessToken.getCurrentAccessToken();
-//        // If already logged in show the home view
-//        if (accessToken != null) {//<- IMPORTANT
-//            Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
-//            startActivity(intent);
-//            finish();//<- IMPORTANT
-//        }
-
 
     public void disconnectFromFacebook() {
 
@@ -140,9 +115,7 @@ public class LoginScreen extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (callbackManager.onActivityResult(requestCode, resultCode, data)) {
-            return;
-        }
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
 }

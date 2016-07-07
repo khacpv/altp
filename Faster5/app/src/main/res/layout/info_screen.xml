@@ -21,7 +21,7 @@
         app:civ_border_width="2dp" />
 
     <TextView
-        android:id="@+id/nameUser"
+        android:id="@+id/userName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/imageView2"
@@ -79,6 +79,25 @@
         android:layout_alignRight="@+id/buttonDone"
         android:layout_alignTop="@+id/imageView2"
         android:src="@drawable/logo3" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Xin chào,"
+        android:id="@+id/xinChao"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/userName"
+        android:layout_alignStart="@+id/userName"
+        android:enabled="true" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/fblogout_button"
+        android:layout_above="@+id/buttonDone"
+        android:layout_alignLeft="@+id/userName"
+        android:layout_alignStart="@+id/userName" />
 
 
 </RelativeLayout>
