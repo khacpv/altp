@@ -10,72 +10,75 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.gcs.faster5.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Hán Trung Kiên"
-        android:id="@+id/nameUser"
-        android:layout_marginTop="30dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:enabled="true"
-        android:layout_gravity="right|center" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/avatarUser"
-        android:src="@drawable/avatar"
-        android:layout_alignParentTop="true"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView"
-        android:src="@drawable/logo1"
-        android:layout_alignTop="@+id/imageView2"
-        android:layout_alignLeft="@+id/avatarUser"
-        android:layout_alignStart="@+id/avatarUser" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView2"
-        android:src="@drawable/logo2"
-        android:layout_below="@+id/buttonDone"
-        android:layout_centerHorizontal="true" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView3"
-        android:src="@drawable/logo3"
-        android:layout_alignTop="@+id/imageView2"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        app:civ_border_color="#FFFFFF"
+        app:civ_border_width="2dp" />
 
     <TextView
+        android:id="@+id/nameUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Hãy chọn chủ đề"
+        android:layout_alignLeft="@+id/imageView2"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/imageView2"
+        android:layout_gravity="right|center"
+        android:layout_marginTop="32dp"
+        android:enabled="true"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
         android:id="@+id/chooseTopic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="108dp"
         android:enabled="true"
         android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:layout_below="@+id/avatarUser"
-        android:layout_alignLeft="@+id/avatarUser"
-        android:layout_alignStart="@+id/avatarUser" />
+        android:text="Hãy chọn chủ đề"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
+        android:id="@+id/buttonDone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Done"
-        android:id="@+id/buttonDone"
-        android:layout_below="@+id/avatarUser"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_below="@+id/avatarUser"
+        android:text="Done" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/imageView2"
+        android:src="@drawable/logo1" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="185dp"
+        android:src="@drawable/logo2" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/buttonDone"
+        android:layout_alignRight="@+id/buttonDone"
+        android:layout_alignTop="@+id/imageView2"
+        android:src="@drawable/logo3" />
+
+
 </RelativeLayout>
