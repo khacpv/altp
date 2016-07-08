@@ -1,6 +1,11 @@
 package com.example.gcs.faster5;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -19,8 +24,6 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 
-import com.facebook.login.widget.LoginButton;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -35,6 +38,8 @@ public class InfoScreen extends AppCompatActivity {
     TextView userName;
     Intent idfB, moveMainScreen, logout;
     ImageButton logoutButton;
+    public ConnectivityManager connectivityManager;
+    final Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +56,27 @@ public class InfoScreen extends AppCompatActivity {
         hinhNen.setBackgroundResource(R.drawable.bgaccount);
         doneButton = (Button) findViewById(R.id.buttonDone);
         doneButton.setOnClickListener(new PlayGame());
+
         logout = new Intent(InfoScreen.this, LoginScreen.class);
-        GetUserInfo();
+
+        if (checkInternetConnection(InfoScreen.this)) {
+            GetUserInfo();
+        } else {
+
+            AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+            alertDialog.setTitle("Connection failed");
+            alertDialog.setMessage("Unable to establish connection with the server");
+            alertDialog.setCancelable(false);
+            alertDialog.setButton("Try Again", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    LoginManager.getInstance().logOut();
+                    startActivity(logout);
+                    finish();
+                }
+            });
+            alertDialog.show();
+        }
+
         logoutButton = (ImageButton) findViewById(R.id.fblogout_button);
         logoutButton.setImageResource(R.drawable.logout);
         logoutButton.setOnClickListener(new View.OnClickListener() {
@@ -64,6 +88,18 @@ public class InfoScreen extends AppCompatActivity {
             }
         });
 
+    }
+
+    public boolean checkInternetConnection(Context context) {
+        connectivityManager = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager.getActiveNetworkInfo() != null
+                && connectivityManager.getActiveNetworkInfo().isAvailable()
+                && connectivityManager.getActiveNetworkInfo().isConnected()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void GetUserInfo() {
@@ -112,7 +148,26 @@ public class InfoScreen extends AppCompatActivity {
         }
     }
 
-    public void onBackPressed() {
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (checkInternetConnection(InfoScreen.this)) {
+        } else {
+            AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+            alertDialog.setTitle("Connection failed");
+            alertDialog.setMessage("Unable to establish connection with the server");
+            alertDialog.setCancelable(false);
+            alertDialog.setButton("Try Again", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    LoginManager.getInstance().logOut();
+                    startActivity(logout);
+                    finish();
+                }
+            });
+            alertDialog.show();
+        }
+    }
 
+    public void onBackPressed() {
     }
 }
