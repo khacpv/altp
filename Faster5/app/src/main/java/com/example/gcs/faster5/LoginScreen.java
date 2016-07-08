@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
@@ -32,8 +34,9 @@ public class LoginScreen extends AppCompatActivity {
     private AccessToken accessToken;
     private AccessTokenTracker accessTokenTracker;
     public Intent startActivity;
-
+    public ConnectivityManager connectivityManager;
     final Context context = this;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,33 +95,27 @@ public class LoginScreen extends AppCompatActivity {
 
                     @Override
                     public void onError(FacebookException exception) {
-                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
-                        alertDialog.setTitle("Connection failed");
-                        alertDialog.setMessage("Do you want to go to Wifi Settings?");
-                        alertDialog.setCancelable(false);
-                        alertDialog.setNegativeButton("YES",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
-                                        finish();
-                                    }
-                                });
-
-                        alertDialog.setPositiveButton("NO",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        moveTaskToBack(true);
-                                        android.os.Process.killProcess(android.os.Process.myPid());
-                                        System.exit(1);
-                                        dialog.cancel();
-                                    }
-                                });
-                        alertDialog.show();
 
                     }
                 }
         );
         accessTokenTracker.startTracking();
+        if (checkInternetConnection(LoginScreen.this)) {
+        } else {
+            AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+            alertDialog.setTitle("Connection failed");
+            alertDialog.setMessage("Unable to establish connection with the server");
+            alertDialog.setCancelable(false);
+            alertDialog.setButton("Try Again", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = getIntent();
+                    finish();
+                    startActivity(intent);
+                }
+            });
+            alertDialog.show();
+        }
+
     }
 
 
@@ -127,6 +124,19 @@ public class LoginScreen extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
+
+    public boolean checkInternetConnection(Context context) {
+        connectivityManager = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager.getActiveNetworkInfo() != null
+                && connectivityManager.getActiveNetworkInfo().isAvailable()
+                && connectivityManager.getActiveNetworkInfo().isConnected()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public void onBackPressed() {
 
     }
