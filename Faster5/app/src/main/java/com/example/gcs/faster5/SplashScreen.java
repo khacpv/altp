@@ -25,7 +25,7 @@ public class SplashScreen extends AppCompatActivity {
         hinhNen = (RelativeLayout) findViewById(R.id.BackGround);
         hinhNen.setBackgroundResource(R.drawable.splash);
 
-        new CountDownTimer(3000, 1000) {
+        new CountDownTimer(2500, 1000) {
             public void onFinish() {
                 Intent startActivity = new Intent(getBaseContext(), LoginScreen.class);
                 startActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
