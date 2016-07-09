@@ -10,92 +10,88 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.gcs.faster5.MainActivity">
 
-    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:id="@+id/avatarUser1"
-        android:src="@drawable/avatar"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/avatarUser2"
-        android:src="@drawable/avatar"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/fiftyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-100dp"
         android:src="@drawable/fifty" />
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/callButton"
-        android:src="@drawable/call"
-        android:layout_alignTop="@+id/fiftyButton"
-        android:layout_centerHorizontal="true" />
-
-    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="-100dp"
+        android:src="@drawable/call" />
+
+    <ImageView
         android:id="@+id/khangiaButton"
-        android:src="@drawable/khangia"
-        android:layout_alignTop="@+id/callButton"
-        android:layout_alignRight="@+id/avatarUser2"
-        android:layout_alignEnd="@+id/avatarUser2" />
-
-    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="-100dp"
+        android:src="@drawable/khangia" />
+
+    <ImageView
         android:id="@+id/tableQuestion"
-        android:src="@drawable/cauhoi"
-        android:layout_below="@+id/fiftyButton"
-        android:layout_centerHorizontal="true" />
-
-    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:src="@drawable/cauhoi" />
+
+    <ImageView
         android:id="@+id/case1Button"
-        android:src="@drawable/case1"
-        android:layout_below="@+id/tableQuestion"
-        android:layout_alignRight="@+id/callButton"
-        android:layout_alignEnd="@+id/callButton"
-        android:layout_marginRight="29dp"
-        android:layout_marginEnd="29dp" />
-
-    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:src="@drawable/case1"
+        android:layout_marginTop="320dp"
+        android:layout_marginLeft="-250dp"
+        />
+
+    <ImageView
         android:id="@+id/case2Button"
-        android:src="@drawable/case1"
-        android:layout_alignTop="@+id/case1Button"
-        android:layout_alignLeft="@+id/callButton"
-        android:layout_alignStart="@+id/callButton"
-        android:layout_marginLeft="36dp"
-        android:layout_marginStart="36dp" />
-
-    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:src="@drawable/case1"
+        android:layout_marginLeft="370dp"
+        android:layout_marginTop="370dp"
+        />
+
+    <ImageView
         android:id="@+id/case3Button"
-        android:src="@drawable/case1"
-        android:layout_below="@+id/case1Button"
-        android:layout_alignRight="@+id/case1Button"
-        android:layout_alignEnd="@+id/case1Button" />
-
-    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/case4Button"
         android:src="@drawable/case1"
-        android:layout_alignBottom="@+id/case3Button"
-        android:layout_alignLeft="@+id/case2Button"
-        android:layout_alignStart="@+id/case2Button" />
+        android:layout_marginTop="420dp"
+        android:layout_marginLeft="-250dp"/>
+
+    <ImageView
+        android:id="@+id/case4Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/case1"
+        android:layout_marginLeft="370dp"
+        android:layout_marginTop="470dp"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/avatarUser1"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/avatar"
+        app:civ_border_color="#FFFFFF"
+        app:civ_border_width="2dp"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/avatarUser2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/avatar"
+        app:civ_border_color="#FFFFFF"
+        app:civ_border_width="2dp"/>
+
 </RelativeLayout>
