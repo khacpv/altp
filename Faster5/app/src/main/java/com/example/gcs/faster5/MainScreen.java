@@ -20,7 +20,7 @@ import com.bumptech.glide.Glide;
  * test
  */
 public class MainScreen extends AppCompatActivity {
-    RelativeLayout hinhNen;
+    RelativeLayout backGround;
     ImageView avatarUser1, avatarUser2, fiftyHelp, callHelp, lookerHelp, case1, case2, case3, case4, tableQuestion;
     TranslateAnimation animationCase1, animationCase2, animationHelp;
 
@@ -37,8 +37,8 @@ public class MainScreen extends AppCompatActivity {
         Glide.with(getApplicationContext()).load("https://graph.facebook.com/" + InfoScreen.idUserFB + "/picture?width=100&height=100").into(avatarUser1);
         avatarUser2 = (ImageView) findViewById(R.id.avatarUser2);
 
-        hinhNen = (RelativeLayout) findViewById(R.id.BackGround);
-        hinhNen.setBackgroundResource(R.drawable.bgmain);
+        backGround = (RelativeLayout) findViewById(R.id.background);
+        backGround.setBackgroundResource(R.drawable.background);
         tableQuestion = (ImageView) findViewById(R.id.tableQuestion);
         fiftyHelp = (ImageView) findViewById(R.id.fiftyButton);
         callHelp = (ImageView) findViewById(R.id.callButton);

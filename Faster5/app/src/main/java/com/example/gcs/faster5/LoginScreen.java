@@ -1,16 +1,28 @@
 package com.example.gcs.faster5;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
-import android.net.wifi.WifiManager;
+
+import android.support.annotation.DrawableRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 
 import com.facebook.AccessToken;
@@ -19,6 +31,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -33,17 +46,23 @@ public class LoginScreen extends AppCompatActivity {
     private CallbackManager callbackManager;
     private AccessToken accessToken;
     private AccessTokenTracker accessTokenTracker;
-    public Intent startActivity;
+    public Intent startActivity, userNameIntent;
     public ConnectivityManager connectivityManager;
     final Context context = this;
+    RelativeLayout backGround;
+    EditText editText;
+    InputMethodManager softkeyboard;
+    String username;
+    ImageButton playButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         getSupportActionBar().hide();
+
         startActivity = new Intent(LoginScreen.this, InfoScreen.class);
         FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
                     @Override
@@ -61,8 +80,79 @@ public class LoginScreen extends AppCompatActivity {
         );
 
         setContentView(R.layout.login_screen);
+        backGround = (RelativeLayout) findViewById(R.id.BackGround);
+        backGround.setBackgroundResource(R.drawable.background);
+
+        softkeyboard = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
 
+        editText = (EditText) findViewById(R.id.editText);
+        Typeface font = Typeface.createFromAsset(getAssets(),
+                "fonts/dimboregular.ttf");
+        editText.setTypeface(font);
+        editText.setHint("Choose username");
+        editText.setFocusableInTouchMode(false);
+        editText.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                editText.setHint("");
+                editText.requestFocusFromTouch();
+                editText.setFocusableInTouchMode(true);
+                softkeyboard.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+                return false;
+            }
+        });
+
+        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    editText.clearFocus();
+                    editText.setHint("Choose username");
+                    editText.setFocusableInTouchMode(false);
+                }
+            }
+        });
+        backGround.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                backGround.setFocusable(true);
+                editText.clearFocus();
+                softkeyboard.hideSoftInputFromWindow(backGround.getWindowToken(), 0);
+                return false;
+            }
+        });
+
+        userNameIntent = new Intent(LoginScreen.this, InfoScreen.class);
+        playButton = (ImageButton) findViewById(R.id.playbutton);
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                username = editText.getText().toString();
+                if (username.length() <= 3) {
+                    AlertDialog alertDialogLogin = new AlertDialog.Builder(context).create();
+                    alertDialogLogin.setMessage("Username incorrect. Username must be at least 4 characters!");
+                    alertDialogLogin.setCancelable(false);
+                    alertDialogLogin.setButton("Try Again", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    alertDialogLogin.show();
+                } else {
+                    userNameIntent.putExtra("NAME", username);
+                    startActivity(startActivity);
+                    startActivity(userNameIntent);
+                    finish();
+                }
+            }
+        });
+        LoginFB();
+
+    }
+
+    public void LoginFB() {
         //register a callback to respond to a login result,
         callbackManager = CallbackManager.Factory.create();
 
@@ -76,45 +166,53 @@ public class LoginScreen extends AppCompatActivity {
                     }
                 }
         ;
-        loginButton = (LoginButton) findViewById(R.id.fblogin_button);
+        loginButton = (LoginButton) findViewById(R.id.fbbutton);
+        loginButton.setBackgroundResource(R.drawable.fbbutton);
+        loginButton.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
         loginButton.setReadPermissions("public_profile");
-        // Callback registration
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-                    @Override
-                    public void onSuccess(LoginResult loginResult) {
-                        loginButton.setVisibility(View.INVISIBLE);
-                        accessToken = loginResult.getAccessToken();
-                        startActivity(startActivity);
-                        finish();
-                    }
+        loginButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (checkInternetConnection(LoginScreen.this)) {
+                    // Callback registration
+                    loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                                @Override
+                                public void onSuccess(LoginResult loginResult) {
+                                    loginButton.setVisibility(View.INVISIBLE);
+                                    accessToken = loginResult.getAccessToken();
+                                    startActivity(startActivity);
+                                    finish();
+                                }
 
-                    @Override
-                    public void onCancel() {
+                                @Override
+                                public void onCancel() {
 
-                    }
+                                }
 
-                    @Override
-                    public void onError(FacebookException exception) {
+                                @Override
+                                public void onError(FacebookException exception) {
 
-                    }
+                                }
+                            }
+                    );
+                    accessTokenTracker.startTracking();
+                } else {
+                    AlertDialog alertDialogFB = new AlertDialog.Builder(context).create();
+                    alertDialogFB.setTitle("Connection failed");
+                    alertDialogFB.setMessage("Unable to establish connection with the server");
+                    alertDialogFB.setCancelable(false);
+                    alertDialogFB.setButton("Try Again", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = getIntent();
+                            finish();
+                            startActivity(intent);
+                        }
+                    });
+                    alertDialogFB.show();
                 }
-        );
-        accessTokenTracker.startTracking();
-        if (checkInternetConnection(LoginScreen.this)) {
-        } else {
-            AlertDialog alertDialog = new AlertDialog.Builder(context).create();
-            alertDialog.setTitle("Connection failed");
-            alertDialog.setMessage("Unable to establish connection with the server");
-            alertDialog.setCancelable(false);
-            alertDialog.setButton("Try Again", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent intent = getIntent();
-                    finish();
-                    startActivity(intent);
-                }
-            });
-            alertDialog.show();
-        }
+                return false;
+            }
+        });
 
     }
 

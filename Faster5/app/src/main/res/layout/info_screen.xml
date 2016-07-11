@@ -1,140 +1,203 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-
+    android:id="@+id/BackGround"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:weightSum="1"
     tools:context="com.example.gcs.faster5.MainActivity">
 
-    <ImageView
-        android:id="@+id/actionBar"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:background="#000000" />
-
-    <TextView
-        android:id="@+id/appName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="12dp"
-        android:text="Faster5"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold" />
-
-
-    <ImageButton
-        android:id="@+id/settingButton"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_gravity="left"
-        android:background="#000000"
-        android:src="@drawable/setting_small" />
 
     <ImageView
-        android:id="@+id/bgAvatar"
-        android:layout_width="match_parent"
-        android:layout_height="297px"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/actionBar"
-        android:src="@drawable/bgtable" />
+        android:id="@+id/tableinfo"
+        android:layout_width="400dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="50dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:src="@drawable/tableinfo" />
 
     <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/avatarUser"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="70dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/tableinfo"
+        android:layout_marginLeft="35dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="25dp"
         android:src="@drawable/avatar"
         app:civ_border_color="#FFFFFF"
-        app:civ_border_width="3dp" />
+        app:civ_border_width="5dp" />
+
 
     <TextView
         android:id="@+id/userName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="150dp"
-        android:layout_marginTop="75dp"
+        android:layout_alignTop="@+id/avatarUser"
+        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_toEndOf="@+id/avatarUser"
+        android:layout_toRightOf="@+id/avatarUser"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#FFFFFF"
+        android:textColor="#000000"
+        android:textSize="30dp"
         android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/favtopic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableinfo"
+        android:layout_marginLeft="20dp"
+        android:text="Favorite topics"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#000000"
+        android:textSize="25dp"
+        android:textStyle="bold"
+
+        />
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/favtopic"
+        android:overScrollMode="never">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+
+
+            <ImageButton
+                android:id="@+id/footballButton"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="20dp"
+                android:background="@null"
+                android:scaleType="centerInside"
+                android:src="@drawable/football" />
+
+            <ImageButton
+                android:id="@+id/artButton"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:background="@null"
+                android:scaleType="centerInside"
+                android:src="@drawable/art" />
+
+            <ImageButton
+                android:id="@+id/mathButton"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="20dp"
+                android:background="@null"
+                android:scaleType="centerInside"
+                android:src="@drawable/math" />
+
+            <ImageButton
+                android:id="@+id/fruitButton"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_alignLeft="@+id/footballButton"
+                android:layout_alignStart="@+id/footballButton"
+                android:layout_alignTop="@+id/musicButton"
+                android:background="@null"
+                android:scaleType="centerInside"
+                android:src="@drawable/fruit" />
+
+            <ImageButton
+                android:id="@+id/musicButton"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_alignLeft="@+id/artButton"
+                android:layout_alignStart="@+id/artButton"
+                android:layout_below="@+id/artButton"
+                android:layout_marginTop="30dp"
+                android:background="@null"
+                android:scaleType="centerInside"
+                android:src="@drawable/music" />
+
+            <ImageButton
+                android:id="@+id/techButton"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_alignLeft="@+id/mathButton"
+                android:layout_alignStart="@+id/mathButton"
+                android:layout_alignTop="@+id/musicButton"
+                android:background="@null"
+                android:scaleType="centerInside"
+                android:src="@drawable/tech" />
+
+            <ImageButton
+                android:id="@+id/lockButton"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="280dp"
+                android:background="@null"
+                android:scaleType="centerInside"
+                android:src="@drawable/lock" />
+
+        </RelativeLayout>
+    </ScrollView>
 
     <ImageView
         android:id="@+id/fblogout_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_alignLeft="@+id/userName"
-        android:layout_marginTop="110dp"
-        android:src="@drawable/logout" />
-
-    <TextView
-        android:id="@+id/chooseTopic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="210dp"
-        android:text="Hãy chọn chủ đề ..."
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#000000"
-        android:textStyle="italic" />
-
-
-    <ImageView
-        android:id="@+id/topPic1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/chooseTopic"
-        android:layout_alignStart="@+id/chooseTopic"
-        android:layout_below="@+id/chooseTopic"
-        android:layout_marginTop="24dp"
-        android:src="@drawable/logo1" />
-
-    <ImageView
-        android:id="@+id/topPic2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/topPic1"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/logo2" />
-
-    <ImageView
-        android:id="@+id/topPic3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/topPic2"
-        android:layout_marginRight="10dp"
-        android:src="@drawable/logo3" />
-
-    <ImageView
-        android:id="@+id/actionBarbottom"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:background="#000000" />
+        android:layout_below="@+id/avatarUser"
+        android:src="@drawable/logout" />
 
-    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/playButton"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
+    <ImageView
+        android:id="@+id/actionbar"
+        android:layout_width="400dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/actionbar" />
+
+    <ImageView
+        android:id="@+id/setting"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/setting"
+        android:layout_marginTop="1dp"
+        android:layout_marginLeft="1dp"/>
+
+    <TextView
+        android:id="@+id/faster5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/play"
-        app:civ_border_color="#000000"
-        app:civ_border_width="3dp" />
+        android:layout_marginTop="10dp"
+        android:text="FASTER5"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#000000"
+        android:textSize="25dp"
+        android:textStyle="bold" />
 
 
 </RelativeLayout>

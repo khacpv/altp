@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -33,11 +34,13 @@ import org.json.JSONObject;
 public class InfoScreen extends AppCompatActivity {
 
     public static String idUserFB, fullNameFb;
-    TextView userName;
-    Intent idfB, moveMainScreen, logout;
-    ImageView avatarfb, playButton, logoutButton;
+    TextView userName, favTopic;
+    Intent moveMainScreenIntent, logoutIntent;
+    ImageView avatarfb, logoutButton;
     public ConnectivityManager connectivityManager;
     final Context context = this;
+    RelativeLayout backGround;
+    boolean isLoginFB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,18 +50,23 @@ public class InfoScreen extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
         setContentView(R.layout.info_screen);
+
+        backGround = (RelativeLayout) findViewById(R.id.BackGround);
+        backGround.setBackgroundResource(R.drawable.background);
         userName = (TextView) findViewById(R.id.userName);
+        Typeface font = Typeface.createFromAsset(getAssets(),
+                "fonts/dimboregular.ttf");
+        userName.setTypeface(font);
+
+        favTopic = (TextView) findViewById(R.id.favtopic);
+        favTopic.setTypeface(font);
+
         avatarfb = (ImageView) findViewById(R.id.avatarUser);
 
-        playButton = (ImageView) findViewById(R.id.playButton);
-        playButton.setOnClickListener(new PlayGame());
-
-        logout = new Intent(InfoScreen.this, LoginScreen.class);
 
         if (checkInternetConnection(InfoScreen.this)) {
             GetUserInfo();
         } else {
-
             AlertDialog alertDialog = new AlertDialog.Builder(context).create();
             alertDialog.setTitle("Connection failed");
             alertDialog.setMessage("Unable to establish connection with the server");
@@ -66,24 +74,33 @@ public class InfoScreen extends AppCompatActivity {
             alertDialog.setButton("Try Again", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     LoginManager.getInstance().logOut();
-                    startActivity(logout);
+                    startActivity(logoutIntent);
                     finish();
                 }
             });
             alertDialog.show();
         }
 
+        Bundle extrasName = getIntent().getExtras();
+        if (extrasName != null) {
+            String name = extrasName.getString("NAME");
+            userName.setText(name);
+            isLoginFB = false;
+        } else {
+            isLoginFB = true;
+        }
+
+        logoutIntent = new Intent(InfoScreen.this, LoginScreen.class);
         logoutButton = (ImageView) findViewById(R.id.fblogout_button);
         logoutButton.setImageResource(R.drawable.logout);
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 LoginManager.getInstance().logOut();
-                startActivity(logout);
+                startActivity(logoutIntent);
                 finish();
             }
         });
-
     }
 
     public boolean checkInternetConnection(Context context) {
@@ -108,15 +125,18 @@ public class InfoScreen extends AppCompatActivity {
                             GraphResponse response) {
                         // Application code
                         try {
-                            idUserFB = object.getString("id");
-                            if (idUserFB == null) {
-                                avatarfb.setImageResource(R.drawable.avatar);
-                            } else {
-                                Glide.with(getApplicationContext()).load("https://graph.facebook.com/" + idUserFB + "/picture?width=500&height=500").into(avatarfb);
-                            }
+                            if (isLoginFB) {
+                                idUserFB = object.getString("id");
+                                if (idUserFB == null) {
+                                    avatarfb.setImageResource(R.drawable.avatar);
+                                } else {
+                                    fullNameFb = object.getString("name");
+                                    userName.setText(fullNameFb);
+                                    Glide.with(getApplicationContext()).load("https://graph.facebook.com/" + idUserFB + "/picture?width=500&height=500").into(avatarfb);
+                                }
 
-                            fullNameFb = object.getString("name");
-                            userName.setText(fullNameFb);
+
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -132,9 +152,9 @@ public class InfoScreen extends AppCompatActivity {
     public class PlayGame implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            moveMainScreen = new Intent(getApplicationContext(), MainScreen.class);
-            moveMainScreen.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(moveMainScreen);
+            moveMainScreenIntent = new Intent(getApplicationContext(), MainScreen.class);
+            moveMainScreenIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(moveMainScreenIntent);
             finish();
         }
     }
@@ -151,7 +171,7 @@ public class InfoScreen extends AppCompatActivity {
             alertDialog.setButton("Try Again", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     LoginManager.getInstance().logOut();
-                    startActivity(logout);
+                    startActivity(logoutIntent);
                     finish();
                 }
             });
