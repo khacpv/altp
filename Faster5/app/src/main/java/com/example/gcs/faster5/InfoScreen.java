@@ -31,13 +31,11 @@ import org.json.JSONObject;
  * Created by Kien on 07/05/2016.
  */
 public class InfoScreen extends AppCompatActivity {
-    RelativeLayout hinhNen;
-    Button doneButton;
-    ImageView avatarfb;
-    String idUserFB, fullNameFb;
+
+    public static String idUserFB, fullNameFb;
     TextView userName;
     Intent idfB, moveMainScreen, logout;
-    ImageButton logoutButton;
+    ImageView avatarfb, playButton, logoutButton;
     public ConnectivityManager connectivityManager;
     final Context context = this;
 
@@ -52,10 +50,8 @@ public class InfoScreen extends AppCompatActivity {
         userName = (TextView) findViewById(R.id.userName);
         avatarfb = (ImageView) findViewById(R.id.avatarUser);
 
-        hinhNen = (RelativeLayout) findViewById(R.id.BackGround);
-        hinhNen.setBackgroundResource(R.drawable.bgaccount);
-        doneButton = (Button) findViewById(R.id.buttonDone);
-        doneButton.setOnClickListener(new PlayGame());
+        playButton = (ImageView) findViewById(R.id.playButton);
+        playButton.setOnClickListener(new PlayGame());
 
         logout = new Intent(InfoScreen.this, LoginScreen.class);
 
@@ -77,7 +73,7 @@ public class InfoScreen extends AppCompatActivity {
             alertDialog.show();
         }
 
-        logoutButton = (ImageButton) findViewById(R.id.fblogout_button);
+        logoutButton = (ImageView) findViewById(R.id.fblogout_button);
         logoutButton.setImageResource(R.drawable.logout);
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,13 +109,10 @@ public class InfoScreen extends AppCompatActivity {
                         // Application code
                         try {
                             idUserFB = object.getString("id");
-                            idfB = new Intent(InfoScreen.this, MainScreen.class);
-                            idfB.putExtra("IDFB", idUserFB);
-
                             if (idUserFB == null) {
                                 avatarfb.setImageResource(R.drawable.avatar);
                             } else {
-                                Glide.with(getApplicationContext()).load("https://graph.facebook.com/" + idUserFB + "/picture?width=100&height=100").into(avatarfb);
+                                Glide.with(getApplicationContext()).load("https://graph.facebook.com/" + idUserFB + "/picture?width=500&height=500").into(avatarfb);
                             }
 
                             fullNameFb = object.getString("name");
@@ -142,9 +135,7 @@ public class InfoScreen extends AppCompatActivity {
             moveMainScreen = new Intent(getApplicationContext(), MainScreen.class);
             moveMainScreen.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(moveMainScreen);
-            startActivity(idfB);
             finish();
-
         }
     }
 
