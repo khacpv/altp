@@ -14,8 +14,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:id="@+id/testText"
-        android:layout_below="@+id/starnoload1"
+        android:id="@+id/text_test"
+        android:layout_below="@+id/image_starload1"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="33dp"
         android:textSize="40dp" />
@@ -23,7 +23,7 @@
     <ImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:id="@+id/starnoload2"
+        android:id="@+id/image_starload2"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="109dp"
@@ -32,18 +32,18 @@
     <ImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:id="@+id/starnoload1"
+        android:id="@+id/image_starload1"
         android:src="@drawable/starnoload"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/starnoload2"
-        android:layout_toStartOf="@+id/starnoload2" />
+        android:layout_toLeftOf="@+id/image_starload2"
+        android:layout_toStartOf="@+id/image_starload2" />
 
     <ImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:id="@+id/starnoload3"
+        android:id="@+id/image_starload3"
         android:src="@drawable/starnoload"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/starnoload2"
-        android:layout_toEndOf="@+id/starnoload2" />
+        android:layout_toRightOf="@+id/image_starload2"
+        android:layout_toEndOf="@+id/image_starload2" />
 </RelativeLayout>

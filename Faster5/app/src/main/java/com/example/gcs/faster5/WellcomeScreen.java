@@ -15,7 +15,7 @@ import android.widget.RelativeLayout;
 public class WellcomeScreen extends AppCompatActivity {
 
     RelativeLayout backGround;
-    ImageButton playNormalButton;
+    ImageButton playNormalButtonImgB;
     boolean isPressed = false;
 
     @Override
@@ -29,8 +29,8 @@ public class WellcomeScreen extends AppCompatActivity {
         backGround = (RelativeLayout) findViewById(R.id.BackGround);
         backGround.setBackgroundResource(R.drawable.background);
 
-        playNormalButton = (ImageButton) findViewById(R.id.playbutton);
-        playNormalButton.setImageResource(R.drawable.play_normal);
+        playNormalButtonImgB = (ImageButton) findViewById(R.id.playbutton);
+        playNormalButtonImgB.setImageResource(R.drawable.play_normal);
         playButtonPressed();
     }
 
@@ -39,9 +39,9 @@ public class WellcomeScreen extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (isPressed)
-                    playNormalButton.setImageResource(R.drawable.play_normal);
+                    playNormalButtonImgB.setImageResource(R.drawable.play_normal);
                 else
-                    playNormalButton.setImageResource(R.drawable.play_pressed);
+                    playNormalButtonImgB.setImageResource(R.drawable.play_pressed);
                 isPressed = !isPressed;
                 Intent moveMainScreen = new Intent(getApplicationContext(), LoginScreen.class);
                 moveMainScreen.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -49,7 +49,7 @@ public class WellcomeScreen extends AppCompatActivity {
                 finish();
             }
         };
-        playNormalButton.setOnClickListener(buttonListener);
+        playNormalButtonImgB.setOnClickListener(buttonListener);
     }
 
     public void onBackPressed() {

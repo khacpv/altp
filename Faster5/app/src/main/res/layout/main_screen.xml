@@ -10,88 +10,131 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.gcs.faster5.MainActivity">
 
-    <ImageView
-        android:id="@+id/fiftyButton"
+    <TextView
+        android:id="@+id/timeLeft"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="-100dp"
-        android:src="@drawable/fifty" />
-
-    <ImageView
-        android:id="@+id/callButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="-100dp"
-        android:src="@drawable/call" />
+        android:text="TIME LEFT"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="bold"
+        android:textSize="25sp"/>
 
-    <ImageView
-        android:id="@+id/khangiaButton"
+    <TextView
+        android:id="@+id/timer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="-100dp"
-        android:src="@drawable/khangia" />
-
-    <ImageView
-        android:id="@+id/tableQuestion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_below="@+id/timeLeft"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp"
-        android:src="@drawable/cauhoi" />
+        android:text="10"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="bold"
+        android:textColor="#FF0000"/>
 
     <ImageView
-        android:id="@+id/case1Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/case1"
-        android:layout_marginTop="320dp"
-        android:layout_marginLeft="-250dp"
-        />
-
-    <ImageView
-        android:id="@+id/case2Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/case1"
-        android:layout_marginLeft="370dp"
-        android:layout_marginTop="370dp"
-        />
-
-    <ImageView
-        android:id="@+id/case3Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/case1"
-        android:layout_marginTop="420dp"
-        android:layout_marginLeft="-250dp"/>
-
-    <ImageView
-        android:id="@+id/case4Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/case1"
-        android:layout_marginLeft="370dp"
-        android:layout_marginTop="470dp"/>
+        android:id="@+id/troophy"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/timer"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/troophy" />
 
     <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/avatarUser1"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
         android:src="@drawable/avatar"
-        app:civ_border_color="#FFFFFF"
-        app:civ_border_width="2dp"/>
+        app:civ_border_color="#000000"
+        app:civ_border_width="2dp"
+        android:layout_marginTop="45dp"
+        android:layout_marginLeft="20dp"/>
 
     <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/avatarUser2"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
+        android:layout_marginTop="45dp"
         android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
         android:src="@drawable/avatar"
-        app:civ_border_color="#FFFFFF"
-        app:civ_border_width="2dp"/>
+        app:civ_border_color="#000000"
+        app:civ_border_width="2dp" />
+
+    <TextView
+        android:id="@+id/noRound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="130dp"
+        android:text="ROUND 1 OF 5"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/question"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="180dp"
+        android:background="@drawable/actionbar"
+        android:text="1 + 4 -3 + 4 - 9 = ?"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="bold"
+        android:textSize="30sp"/>
+
+    <include
+        layout="@layout/layout_answer_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
+
+    <TextView
+        android:id="@+id/userName1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="15sp"
+        android:text="User name1"
+        android:textStyle="bold"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="10dp"/>
+
+    <TextView
+        android:id="@+id/userName2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:text="User name2"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/scoreUser1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="bold"
+        android:layout_marginTop="55dp"
+        android:layout_marginLeft="80dp"/>
+
+    <TextView
+        android:id="@+id/scoreUser2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="55dp"
+        android:layout_marginRight="80dp"
+        android:layout_alignParentRight="true"
+        android:text="10"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="bold" />
+
 
 </RelativeLayout>
+

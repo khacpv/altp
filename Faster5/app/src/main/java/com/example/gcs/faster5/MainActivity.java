@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
-        Intent myIntent = new Intent(getApplicationContext(), SplashScreen.class);
+        Intent myIntent = new Intent(getApplicationContext(),SplashScreen.class);
         myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(myIntent);
         finish();

@@ -21,6 +21,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -46,14 +47,15 @@ public class LoginScreen extends AppCompatActivity {
     private CallbackManager callbackManager;
     private AccessToken accessToken;
     private AccessTokenTracker accessTokenTracker;
-    public Intent startActivity, userNameIntent;
+    public Intent startActivityIntent, userNameIntent;
     public ConnectivityManager connectivityManager;
     final Context context = this;
     RelativeLayout backGround;
     EditText editText;
     InputMethodManager softkeyboard;
     String username;
-    ImageButton playButton;
+    ImageButton playButtonImgB, tryagainButtonImgB;
+    ImageView connectFailImgV, textLoginImgV, roundRecEdittxImgV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +65,7 @@ public class LoginScreen extends AppCompatActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         getSupportActionBar().hide();
 
-        startActivity = new Intent(LoginScreen.this, InfoScreen.class);
+        startActivityIntent = new Intent(LoginScreen.this, InfoScreen.class);
         FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
                     @Override
                     public void onInitialized() {
@@ -72,7 +74,7 @@ public class LoginScreen extends AppCompatActivity {
                         accessToken = AccessToken.getCurrentAccessToken();
                         if (accessToken == null) {
                         } else {
-                            startActivity(startActivity);
+                            startActivity(startActivityIntent);
                             finish();
                         }
                     }
@@ -93,7 +95,6 @@ public class LoginScreen extends AppCompatActivity {
         editText.setHint("Choose username");
         editText.setFocusableInTouchMode(false);
         editText.setOnTouchListener(new View.OnTouchListener() {
-
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 editText.setHint("");
@@ -125,8 +126,8 @@ public class LoginScreen extends AppCompatActivity {
         });
 
         userNameIntent = new Intent(LoginScreen.this, InfoScreen.class);
-        playButton = (ImageButton) findViewById(R.id.playbutton);
-        playButton.setOnClickListener(new View.OnClickListener() {
+        playButtonImgB = (ImageButton) findViewById(R.id.playbutton);
+        playButtonImgB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -142,14 +143,22 @@ public class LoginScreen extends AppCompatActivity {
                     alertDialogLogin.show();
                 } else {
                     userNameIntent.putExtra("NAME", username);
-                    startActivity(startActivity);
+                    startActivity(startActivityIntent);
                     startActivity(userNameIntent);
                     finish();
                 }
             }
         });
-        LoginFB();
 
+        tryagainButtonImgB = (ImageButton) findViewById(R.id.tryagainButton);
+        tryagainButtonImgB.setVisibility(View.GONE);
+        connectFailImgV = (ImageView) findViewById(R.id.connectfail);
+        connectFailImgV.setVisibility(View.GONE);
+        textLoginImgV = (ImageView) findViewById(R.id.textlogin);
+        textLoginImgV.setImageResource(R.drawable.text);
+        roundRecEdittxImgV = (ImageView) findViewById(R.id.roundrec);
+        roundRecEdittxImgV.setImageResource(R.drawable.roundrec);
+        LoginFB();
     }
 
     public void LoginFB() {
@@ -180,7 +189,7 @@ public class LoginScreen extends AppCompatActivity {
                                 public void onSuccess(LoginResult loginResult) {
                                     loginButton.setVisibility(View.INVISIBLE);
                                     accessToken = loginResult.getAccessToken();
-                                    startActivity(startActivity);
+                                    startActivity(startActivityIntent);
                                     finish();
                                 }
 
@@ -197,23 +206,30 @@ public class LoginScreen extends AppCompatActivity {
                     );
                     accessTokenTracker.startTracking();
                 } else {
-                    AlertDialog alertDialogFB = new AlertDialog.Builder(context).create();
-                    alertDialogFB.setTitle("Connection failed");
-                    alertDialogFB.setMessage("Unable to establish connection with the server");
-                    alertDialogFB.setCancelable(false);
-                    alertDialogFB.setButton("Try Again", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+                    loginButton.setVisibility(View.GONE);
+                    playButtonImgB.setVisibility(View.GONE);
+                    textLoginImgV.setVisibility(View.GONE);
+                    roundRecEdittxImgV.setVisibility(View.GONE);
+                    editText.setVisibility(View.GONE);
+                    tryagainButtonImgB.setVisibility(View.VISIBLE);
+                    connectFailImgV.setVisibility(View.VISIBLE);
+
+                    editText.setHint("");
+                    connectFailImgV.setImageResource(R.drawable.connectfail);
+                    tryagainButtonImgB.setImageResource(R.drawable.tryagainbutton);
+                    tryagainButtonImgB.setFocusable(true);
+                    tryagainButtonImgB.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
                             Intent intent = getIntent();
                             finish();
                             startActivity(intent);
                         }
                     });
-                    alertDialogFB.show();
                 }
                 return false;
             }
         });
-
     }
 
 

@@ -27,7 +27,7 @@
         android:layout_alignTop="@+id/tableinfo"
         android:layout_marginLeft="35dp"
         android:layout_marginStart="35dp"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="27dp"
         android:src="@drawable/avatar"
         app:civ_border_color="#FFFFFF"
         app:civ_border_width="5dp" />
@@ -61,101 +61,13 @@
 
         />
 
-    <ScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/favtopic"
-        android:overScrollMode="never">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical">
-
-
-            <ImageButton
-                android:id="@+id/footballButton"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="20dp"
-                android:background="@null"
-                android:scaleType="centerInside"
-                android:src="@drawable/football" />
-
-            <ImageButton
-                android:id="@+id/artButton"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"
-                android:background="@null"
-                android:scaleType="centerInside"
-                android:src="@drawable/art" />
-
-            <ImageButton
-                android:id="@+id/mathButton"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="20dp"
-                android:background="@null"
-                android:scaleType="centerInside"
-                android:src="@drawable/math" />
-
-            <ImageButton
-                android:id="@+id/fruitButton"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_alignLeft="@+id/footballButton"
-                android:layout_alignStart="@+id/footballButton"
-                android:layout_alignTop="@+id/musicButton"
-                android:background="@null"
-                android:scaleType="centerInside"
-                android:src="@drawable/fruit" />
-
-            <ImageButton
-                android:id="@+id/musicButton"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_alignLeft="@+id/artButton"
-                android:layout_alignStart="@+id/artButton"
-                android:layout_below="@+id/artButton"
-                android:layout_marginTop="30dp"
-                android:background="@null"
-                android:scaleType="centerInside"
-                android:src="@drawable/music" />
-
-            <ImageButton
-                android:id="@+id/techButton"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_alignLeft="@+id/mathButton"
-                android:layout_alignStart="@+id/mathButton"
-                android:layout_alignTop="@+id/musicButton"
-                android:background="@null"
-                android:scaleType="centerInside"
-                android:src="@drawable/tech" />
-
-            <ImageButton
-                android:id="@+id/lockButton"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="280dp"
-                android:background="@null"
-                android:scaleType="centerInside"
-                android:src="@drawable/lock" />
-
-        </RelativeLayout>
-    </ScrollView>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/my_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/favtopic"
+        android:scrollbars="vertical"
+        android:overScrollMode="never"/>
 
     <ImageView
         android:id="@+id/fblogout_button"
@@ -182,9 +94,9 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:src="@drawable/setting"
+        android:layout_marginLeft="1dp"
         android:layout_marginTop="1dp"
-        android:layout_marginLeft="1dp"/>
+        android:src="@drawable/setting" />
 
     <TextView
         android:id="@+id/faster5"
@@ -196,7 +108,7 @@
         android:text="FASTER5"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#000000"
-        android:textSize="25dp"
+        android:textSize="30dp"
         android:textStyle="bold" />
 
 

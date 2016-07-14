@@ -15,9 +15,9 @@ import android.widget.TextView;
  * Created by Kien on 07/05/2016.
  */
 public class SplashScreen extends AppCompatActivity {
-    RelativeLayout background;
-    TextView loadingText;
-    ImageView starLoad1, starLoad2, starLoad3;
+    RelativeLayout mRelativeLayoutBg;
+    TextView mTextViewLoading;
+    ImageView mImageViewStarLoad1, mImageViewStarLoad2, mImageViewStarLoad3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,25 +28,24 @@ public class SplashScreen extends AppCompatActivity {
         getSupportActionBar().hide();
         setContentView(R.layout.splash_screen);
 
-        background = (RelativeLayout) findViewById(R.id.background);
-        background.setBackgroundResource(R.drawable.background);
+        mRelativeLayoutBg = (RelativeLayout) findViewById(R.id.background);
+        mRelativeLayoutBg.setBackgroundResource(R.drawable.background);
 
-        starLoad1 = (ImageView) findViewById(R.id.starnoload1);
-        starLoad2 = (ImageView) findViewById(R.id.starnoload2);
-        starLoad3 = (ImageView) findViewById(R.id.starnoload3);
-        starLoad1.setImageResource(R.drawable.starnoload);
-        starLoad2.setImageResource(R.drawable.starnoload);
-        starLoad3.setImageResource(R.drawable.starnoload);
+        mImageViewStarLoad1 = (ImageView) findViewById(R.id.image_starload1);
+        mImageViewStarLoad2 = (ImageView) findViewById(R.id.image_starload2);
+        mImageViewStarLoad3 = (ImageView) findViewById(R.id.image_starload3);
+        mImageViewStarLoad1.setImageResource(R.drawable.starnoload);
+        mImageViewStarLoad2.setImageResource(R.drawable.starnoload);
+        mImageViewStarLoad3.setImageResource(R.drawable.starnoload);
 
-
-        loadingText = (TextView) findViewById(R.id.testText);
+        mTextViewLoading = (TextView) findViewById(R.id.text_test);
         Typeface font = Typeface.createFromAsset(getAssets(),
                 "fonts/dimboregular.ttf");
-        loadingText.setTypeface(font);
+        mTextViewLoading.setTypeface(font);
         new CountDownTimer(1000, 1000) {
             public void onFinish() {
-                loadingText.setText("30%.");
-                starLoad1.setImageResource(R.drawable.starunfinish);
+                mTextViewLoading.setText("30%.");
+                mImageViewStarLoad1.setImageResource(R.drawable.starunfinish);
             }
 
             public void onTick(long millisUntilFinished) {
@@ -55,8 +54,8 @@ public class SplashScreen extends AppCompatActivity {
 
         new CountDownTimer(2000, 1000) {
             public void onFinish() {
-                loadingText.setText("33%.");
-                starLoad1.setImageResource(R.drawable.starloaded);
+                mTextViewLoading.setText("33%.");
+                mImageViewStarLoad1.setImageResource(R.drawable.starloaded);
             }
 
             public void onTick(long millisUntilFinished) {
@@ -64,8 +63,8 @@ public class SplashScreen extends AppCompatActivity {
         }.start();
         new CountDownTimer(3000, 1000) {
             public void onFinish() {
-                loadingText.setText("66%..");
-                starLoad2.setImageResource(R.drawable.starloaded);
+                mTextViewLoading.setText("66%..");
+                mImageViewStarLoad2.setImageResource(R.drawable.starloaded);
             }
 
             public void onTick(long millisUntilFinished) {
@@ -73,8 +72,8 @@ public class SplashScreen extends AppCompatActivity {
         }.start();
         new CountDownTimer(3500, 1000) {
             public void onFinish() {
-                loadingText.setText("99%...");
-                starLoad3.setImageResource(R.drawable.starunfinish);
+                mTextViewLoading.setText("99%...");
+                mImageViewStarLoad3.setImageResource(R.drawable.starunfinish);
             }
 
             public void onTick(long millisUntilFinished) {
@@ -82,11 +81,11 @@ public class SplashScreen extends AppCompatActivity {
         }.start();
         new CountDownTimer(5000, 1000) {
             public void onFinish() {
-                loadingText.setText("100%");
-                starLoad3.setImageResource(R.drawable.starloaded);
-                Intent startActivity = new Intent(getBaseContext(), WellcomeScreen.class);
-                startActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(startActivity);
+                mTextViewLoading.setText("100%");
+                mImageViewStarLoad3.setImageResource(R.drawable.starloaded);
+                Intent mIntent = new Intent(getBaseContext(), WellcomeScreen.class);
+                mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(mIntent);
                 finish();
             }
 
