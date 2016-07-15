@@ -6,25 +6,25 @@
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/ans1"
+        android:id="@+id/button_ans1"
         android:onClick="btnAnswerClick"
         style="@style/ButtonAnswerStyle"
         android:text="Answer1" />
 
     <Button
-        android:id="@+id/ans2"
+        android:id="@+id/button_ans2"
         android:onClick="btnAnswerClick"
         style="@style/ButtonAnswerStyle"
         android:text="Answer2" />
 
     <Button
-        android:id="@+id/ans3"
+        android:id="@+id/button_ans3"
         android:onClick="btnAnswerClick"
         style="@style/ButtonAnswerStyle"
         android:text="Answer3" />
 
     <Button
-        android:id="@+id/ans4"
+        android:id="@+id/button_ans4"
         android:onClick="btnAnswerClick"
         style="@style/ButtonAnswerStyle"
         android:text="Answer4" />

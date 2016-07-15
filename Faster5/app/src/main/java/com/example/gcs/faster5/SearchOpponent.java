@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -12,7 +11,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
@@ -22,14 +20,12 @@ import com.facebook.FacebookSdk;
  */
 public class SearchOpponent extends AppCompatActivity {
 
-    RelativeLayout backGround;
-    TextView nameTopicTxtV, userName1TxtV, userName2TxtV;
-    ImageView avatarUser1ImgV, avatarUser2ImgV;
-    ImageButton playButtonImgB;
-    AccessToken accessToken;
-    int idTopic;
-    String nameTopic;
-
+    RelativeLayout mRelativeLayoutBg;
+    TextView mTextViewTopicName, mTextViewUserName1, mTextViewUserName2;
+    ImageView mImageViewUserAvatar1, mImageViewUserAvatar2;
+    ImageButton mImageButtonPlay;
+    int mTopicId;
+    String mTopicName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,57 +38,53 @@ public class SearchOpponent extends AppCompatActivity {
 
         Bundle extrasName = getIntent().getExtras();
         if (extrasName != null) {
-            idTopic = extrasName.getInt("IDTOPIC");
-            nameTopic = extrasName.getString("NAMETOPIC");
+            mTopicId = extrasName.getInt("IDTOPIC");
+            mTopicName = extrasName.getString("NAMETOPIC");
         }
 
         Typeface font = Typeface.createFromAsset(getAssets(),
                 "fonts/dimboregular.ttf");
 
-        backGround = (RelativeLayout) findViewById(R.id.BackGround);
-        backGround.setBackgroundResource(R.drawable.background);
+        mRelativeLayoutBg = (RelativeLayout) findViewById(R.id.background);
+        mRelativeLayoutBg.setBackgroundResource(R.drawable.background);
 
-        playButtonImgB = (ImageButton) findViewById(R.id.playbutton);
-        playButtonImgB.setImageResource(R.drawable.playbutton);
+        mImageButtonPlay = (ImageButton) findViewById(R.id.button_play);
+        mImageButtonPlay.setImageResource(R.drawable.playbutton);
 
-        avatarUser1ImgV = (ImageView) findViewById(R.id.avatarUser1);
-        avatarUser2ImgV = (ImageView) findViewById(R.id.avatarUser2);
+        mImageViewUserAvatar1 = (ImageView) findViewById(R.id.image_useravatar1);
+        mImageViewUserAvatar2 = (ImageView) findViewById(R.id.image_useravatar2);
 
-        userName1TxtV = (TextView) findViewById(R.id.userName1);
-        userName2TxtV = (TextView) findViewById(R.id.userName2);
-        userName1TxtV.setTypeface(font);
-        userName2TxtV.setTypeface(font);
+        mTextViewUserName1 = (TextView) findViewById(R.id.text_username1);
+        mTextViewUserName2 = (TextView) findViewById(R.id.text_username2);
+        mTextViewUserName1.setTypeface(font);
+        mTextViewUserName2.setTypeface(font);
 
-        nameTopicTxtV = (TextView) findViewById(R.id.nameTopic);
-        nameTopicTxtV.setTypeface(font);
-        nameTopicTxtV.setText(nameTopic);
-
-
+        mTextViewTopicName = (TextView) findViewById(R.id.text_topicname);
+        mTextViewTopicName.setTypeface(font);
+        mTextViewTopicName.setText(mTopicName);
 
         FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
             @Override
             public void onInitialized() {
-                //AccessToken is for us to check whether we have previously logged in into
-                //this app, and this information is save in shared preferences and sets it during SDK initialization
-                accessToken = AccessToken.getCurrentAccessToken();
+
+                AccessToken accessToken = AccessToken.getCurrentAccessToken();
                 if (accessToken != null) {
-                    userName1TxtV.setText(InfoScreen.fullNameFb);
-                    Glide.with(getApplicationContext()).load("https://graph.facebook.com/" + InfoScreen.idUserFB + "/picture?width=500&height=500").into(avatarUser1ImgV);
+                    mTextViewUserName1.setText(InfoScreen.sFullNameFb);
+                    Glide.with(getApplicationContext())
+                            .load("https://graph.facebook.com/" + InfoScreen.sUserFbId + "/picture?width=500&height=500").into(mImageViewUserAvatar1);
                 } else {
-                    userName1TxtV.setText(InfoScreen.nameManual);
-                    avatarUser1ImgV.setImageResource(R.drawable.avatar);
+                    mTextViewUserName1.setText(InfoScreen.sManualName);
+                    mImageViewUserAvatar1.setImageResource(R.drawable.avatar);
                 }
             }
         });
 
-
-
-        playButtonImgB.setOnClickListener(new View.OnClickListener() {
+        mImageButtonPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent moveMainScreenIntent = new Intent(getApplicationContext(), MainScreen.class);
-                moveMainScreenIntent.putExtra("IDTOPIC", idTopic);
-                startActivity(moveMainScreenIntent);
+                Intent intent = new Intent(getApplicationContext(), MainScreen.class);
+                intent.putExtra("IDTOPIC", mTopicId);
+                startActivity(intent);
                 finish();
             }
         });

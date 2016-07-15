@@ -1,30 +1,22 @@
 package com.example.gcs.faster5;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
-
-import android.support.annotation.DrawableRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
-
 
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
@@ -32,8 +24,6 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-
-import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
@@ -43,96 +33,86 @@ import com.facebook.login.widget.LoginButton;
  */
 public class LoginScreen extends AppCompatActivity {
 
-    private LoginButton loginButton;
-    private CallbackManager callbackManager;
-    private AccessToken accessToken;
-    private AccessTokenTracker accessTokenTracker;
-    public Intent startActivityIntent, userNameIntent;
-    public ConnectivityManager connectivityManager;
+    private LoginButton mLoginButtonFb;
+    private CallbackManager mCallbackManager;
     final Context context = this;
-    RelativeLayout backGround;
-    EditText editText;
-    InputMethodManager softkeyboard;
-    String username;
-    ImageButton playButtonImgB, tryagainButtonImgB;
-    ImageView connectFailImgV, textLoginImgV, roundRecEdittxImgV;
+    AccessTokenTracker mAccessTokenTracker;
+    RelativeLayout mRelativeLayoutBg;
+    EditText mEditText;
+    String mStringUserName;
+    ImageButton mImageButtonPlay, mImageButtonTryAgain;
+    ImageView mImageViewConnectFail, mImageViewTextLogin, mImageViewRoundRec;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         getSupportActionBar().hide();
 
-        startActivityIntent = new Intent(LoginScreen.this, InfoScreen.class);
         FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
                     @Override
                     public void onInitialized() {
-                        //AccessToken is for us to check whether we have previously logged in into
-                        //this app, and this information is save in shared preferences and sets it during SDK initialization
-                        accessToken = AccessToken.getCurrentAccessToken();
-                        if (accessToken == null) {
+                        AccessToken mAccessToken = AccessToken.getCurrentAccessToken();
+                        if (mAccessToken == null) {
                         } else {
-                            startActivity(startActivityIntent);
+                            Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
+                            startActivity(intent);
                             finish();
                         }
                     }
                 }
         );
-
         setContentView(R.layout.login_screen);
-        backGround = (RelativeLayout) findViewById(R.id.BackGround);
-        backGround.setBackgroundResource(R.drawable.background);
 
-        softkeyboard = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        mRelativeLayoutBg = (RelativeLayout) findViewById(R.id.background);
+        mRelativeLayoutBg.setBackgroundResource(R.drawable.background);
 
-
-        editText = (EditText) findViewById(R.id.editText);
+        mEditText = (EditText) findViewById(R.id.text_edit);
         Typeface font = Typeface.createFromAsset(getAssets(),
                 "fonts/dimboregular.ttf");
-        editText.setTypeface(font);
-        editText.setHint("Choose username");
-        editText.setFocusableInTouchMode(false);
-        editText.setOnTouchListener(new View.OnTouchListener() {
+        mEditText.setTypeface(font);
+        mEditText.setHint("Choose username");
+        mEditText.setFocusableInTouchMode(false);
+        mEditText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                editText.setHint("");
-                editText.requestFocusFromTouch();
-                editText.setFocusableInTouchMode(true);
-                softkeyboard.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+                mEditText.setHint("");
+                mEditText.requestFocusFromTouch();
+                mEditText.setFocusableInTouchMode(true);
+                InputMethodManager keyBoard = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                keyBoard.showSoftInput(mEditText, InputMethodManager.SHOW_IMPLICIT);
                 return false;
             }
         });
-
-        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        mEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
-                    editText.clearFocus();
-                    editText.setHint("Choose username");
-                    editText.setFocusableInTouchMode(false);
+                    mEditText.clearFocus();
+                    mEditText.setHint("Choose username");
+                    mEditText.setFocusableInTouchMode(false);
                 }
             }
         });
-        backGround.setOnTouchListener(new View.OnTouchListener() {
+
+        mRelativeLayoutBg.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                backGround.setFocusable(true);
-                editText.clearFocus();
-                softkeyboard.hideSoftInputFromWindow(backGround.getWindowToken(), 0);
+                mRelativeLayoutBg.setFocusable(true);
+                mEditText.clearFocus();
+                InputMethodManager keyBoard = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                keyBoard.hideSoftInputFromWindow(mRelativeLayoutBg.getWindowToken(), 0);
                 return false;
             }
         });
 
-        userNameIntent = new Intent(LoginScreen.this, InfoScreen.class);
-        playButtonImgB = (ImageButton) findViewById(R.id.playbutton);
-        playButtonImgB.setOnClickListener(new View.OnClickListener() {
+        mImageButtonPlay = (ImageButton) findViewById(R.id.button_play);
+        mImageButtonPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                username = editText.getText().toString();
-                if (username.length() <= 3) {
+                mStringUserName = mEditText.getText().toString();
+                if (mStringUserName.length() <= 3) {
                     AlertDialog alertDialogLogin = new AlertDialog.Builder(context).create();
                     alertDialogLogin.setMessage("Username incorrect. Username must be at least 4 characters!");
                     alertDialogLogin.setCancelable(false);
@@ -142,83 +122,77 @@ public class LoginScreen extends AppCompatActivity {
                     });
                     alertDialogLogin.show();
                 } else {
-                    userNameIntent.putExtra("NAME", username);
-                    startActivity(startActivityIntent);
-                    startActivity(userNameIntent);
+                    Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
+                    intent.putExtra("NAME", mStringUserName);
+                    startActivity(intent);
                     finish();
                 }
             }
         });
 
-        tryagainButtonImgB = (ImageButton) findViewById(R.id.tryagainButton);
-        tryagainButtonImgB.setVisibility(View.GONE);
-        connectFailImgV = (ImageView) findViewById(R.id.connectfail);
-        connectFailImgV.setVisibility(View.GONE);
-        textLoginImgV = (ImageView) findViewById(R.id.textlogin);
-        textLoginImgV.setImageResource(R.drawable.text);
-        roundRecEdittxImgV = (ImageView) findViewById(R.id.roundrec);
-        roundRecEdittxImgV.setImageResource(R.drawable.roundrec);
+        mImageButtonTryAgain = (ImageButton) findViewById(R.id.button_tryagain);
+        mImageButtonTryAgain.setVisibility(View.GONE);
+        mImageViewConnectFail = (ImageView) findViewById(R.id.image_connectfail);
+        mImageViewConnectFail.setVisibility(View.GONE);
+        mImageViewTextLogin = (ImageView) findViewById(R.id.image_textlogin);
+        mImageViewTextLogin.setImageResource(R.drawable.text);
+        mImageViewRoundRec = (ImageView) findViewById(R.id.image_roundrec);
+        mImageViewRoundRec.setImageResource(R.drawable.roundrec);
         LoginFB();
     }
 
     public void LoginFB() {
-        //register a callback to respond to a login result,
-        callbackManager = CallbackManager.Factory.create();
-
-        //register access token to check whether user logged in before
-        accessTokenTracker = new
-
+        mCallbackManager = CallbackManager.Factory.create();
+        mAccessTokenTracker = new
                 AccessTokenTracker() {
                     @Override
                     protected void onCurrentAccessTokenChanged(AccessToken oldToken, AccessToken newToken) {
-                        accessToken = newToken;
+                        AccessToken mAccessToken = newToken;
                     }
                 }
         ;
-        loginButton = (LoginButton) findViewById(R.id.fbbutton);
-        loginButton.setBackgroundResource(R.drawable.fbbutton);
-        loginButton.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-        loginButton.setReadPermissions("public_profile");
-        loginButton.setOnTouchListener(new View.OnTouchListener() {
+        mLoginButtonFb = (LoginButton) findViewById(R.id.button_fb);
+        mLoginButtonFb.setBackgroundResource(R.drawable.fbbutton);
+        mLoginButtonFb.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+        mLoginButtonFb.setReadPermissions("public_profile");
+        mLoginButtonFb.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (checkInternetConnection(LoginScreen.this)) {
-                    // Callback registration
-                    loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                    mLoginButtonFb.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
                                 @Override
                                 public void onSuccess(LoginResult loginResult) {
-                                    loginButton.setVisibility(View.INVISIBLE);
-                                    accessToken = loginResult.getAccessToken();
-                                    startActivity(startActivityIntent);
+                                    mLoginButtonFb.setVisibility(View.INVISIBLE);
+                                    AccessToken mAccessToken = loginResult.getAccessToken();
+                                    Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
+                                    startActivity(intent);
                                     finish();
                                 }
 
                                 @Override
                                 public void onCancel() {
-
                                 }
 
                                 @Override
                                 public void onError(FacebookException exception) {
-
                                 }
                             }
                     );
-                    accessTokenTracker.startTracking();
+                    mAccessTokenTracker.startTracking();
                 } else {
-                    loginButton.setVisibility(View.GONE);
-                    playButtonImgB.setVisibility(View.GONE);
-                    textLoginImgV.setVisibility(View.GONE);
-                    roundRecEdittxImgV.setVisibility(View.GONE);
-                    editText.setVisibility(View.GONE);
-                    tryagainButtonImgB.setVisibility(View.VISIBLE);
-                    connectFailImgV.setVisibility(View.VISIBLE);
+                    mLoginButtonFb.setVisibility(View.GONE);
+                    mImageButtonPlay.setVisibility(View.GONE);
+                    mImageViewTextLogin.setVisibility(View.GONE);
+                    mImageViewRoundRec.setVisibility(View.GONE);
+                    mEditText.setVisibility(View.GONE);
+                    mImageButtonTryAgain.setVisibility(View.VISIBLE);
+                    mImageViewConnectFail.setVisibility(View.VISIBLE);
 
-                    editText.setHint("");
-                    connectFailImgV.setImageResource(R.drawable.connectfail);
-                    tryagainButtonImgB.setImageResource(R.drawable.tryagainbutton);
-                    tryagainButtonImgB.setFocusable(true);
-                    tryagainButtonImgB.setOnClickListener(new View.OnClickListener() {
+                    mEditText.setHint("");
+                    mImageViewConnectFail.setImageResource(R.drawable.connectfail);
+                    mImageButtonTryAgain.setImageResource(R.drawable.tryagainbutton);
+                    mImageButtonTryAgain.setFocusable(true);
+                    mImageButtonTryAgain.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Intent intent = getIntent();
@@ -232,15 +206,14 @@ public class LoginScreen extends AppCompatActivity {
         });
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     public boolean checkInternetConnection(Context context) {
-        connectivityManager = (ConnectivityManager) context
+        ConnectivityManager connectivityManager = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager.getActiveNetworkInfo() != null
                 && connectivityManager.getActiveNetworkInfo().isAvailable()

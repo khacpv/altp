@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/BackGround"
+    android:id="@+id/background"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
     <ImageView
-        android:id="@+id/searchOpponent"
+        android:id="@+id/image_searchopponent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -15,12 +15,11 @@
         android:src="@drawable/opponent" />
 
     <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/avatarUser1"
+        android:id="@+id/image_useravatar1"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignTop="@+id/tableinfo"
         android:layout_marginLeft="35dp"
         android:layout_marginStart="35dp"
         android:layout_marginTop="118dp"
@@ -29,12 +28,12 @@
         app:civ_border_width="5dp" />
 
     <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/avatarUser2"
+        android:id="@+id/image_useravatar2"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:layout_above="@+id/playbutton"
-        android:layout_alignLeft="@+id/avatarUser1"
-        android:layout_alignStart="@+id/avatarUser1"
+        android:layout_above="@+id/button_play"
+        android:layout_alignLeft="@+id/image_useravatar1"
+        android:layout_alignStart="@+id/image_useravatar1"
         android:layout_marginBottom="60dp"
         android:src="@drawable/avatar"
         app:civ_border_color="#FFFFFF"
@@ -42,7 +41,7 @@
 
 
     <TextView
-        android:id="@+id/nameTopic"
+        android:id="@+id/text_topicname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -55,7 +54,7 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/userName1"
+        android:id="@+id/text_username1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="120dp"
@@ -66,7 +65,7 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/userName2"
+        android:id="@+id/text_username2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="120dp"
@@ -74,12 +73,10 @@
         android:text="User Name2"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="25dp"
-        android:textStyle="bold"
-
-        />
+        android:textStyle="bold" />
 
     <ImageButton
-        android:id="@+id/playbutton"
+        android:id="@+id/button_play"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

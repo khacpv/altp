@@ -18,7 +18,7 @@
         android:layout_below="@+id/image_starload1"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="33dp"
-        android:textSize="40dp" />
+        android:textSize="40sp" />
 
     <ImageView
         android:layout_width="100dp"

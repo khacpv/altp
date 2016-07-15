@@ -14,8 +14,8 @@ import android.widget.RelativeLayout;
  */
 public class WellcomeScreen extends AppCompatActivity {
 
-    RelativeLayout backGround;
-    ImageButton playNormalButtonImgB;
+    RelativeLayout mRelativeLayoutBg;
+    ImageButton mImageButtonPlayNormal;
     boolean isPressed = false;
 
     @Override
@@ -26,11 +26,11 @@ public class WellcomeScreen extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
         setContentView(R.layout.wellcome_screen);
-        backGround = (RelativeLayout) findViewById(R.id.BackGround);
-        backGround.setBackgroundResource(R.drawable.background);
+        mRelativeLayoutBg = (RelativeLayout) findViewById(R.id.background);
+        mRelativeLayoutBg.setBackgroundResource(R.drawable.background);
 
-        playNormalButtonImgB = (ImageButton) findViewById(R.id.playbutton);
-        playNormalButtonImgB.setImageResource(R.drawable.play_normal);
+        mImageButtonPlayNormal = (ImageButton) findViewById(R.id.button_play);
+        mImageButtonPlayNormal.setImageResource(R.drawable.play_normal);
         playButtonPressed();
     }
 
@@ -39,9 +39,9 @@ public class WellcomeScreen extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (isPressed)
-                    playNormalButtonImgB.setImageResource(R.drawable.play_normal);
+                    mImageButtonPlayNormal.setImageResource(R.drawable.play_normal);
                 else
-                    playNormalButtonImgB.setImageResource(R.drawable.play_pressed);
+                    mImageButtonPlayNormal.setImageResource(R.drawable.play_pressed);
                 isPressed = !isPressed;
                 Intent moveMainScreen = new Intent(getApplicationContext(), LoginScreen.class);
                 moveMainScreen.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -49,7 +49,7 @@ public class WellcomeScreen extends AppCompatActivity {
                 finish();
             }
         };
-        playNormalButtonImgB.setOnClickListener(buttonListener);
+        mImageButtonPlayNormal.setOnClickListener(buttonListener);
     }
 
     public void onBackPressed() {

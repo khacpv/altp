@@ -4,39 +4,38 @@ package com.example.gcs.faster5;
  * Created by Kien on 07/14/2016.
  */
 public class Topic {
-    private int photo;
-    private int idTopic;
-    private String nameTopic;
-
+    private int mPhoto;
+    private int mTopicId;
+    private String mTopicName;
 
     public int getPhoto() {
-        return photo;
+        return mPhoto;
     }
 
     public void setPhoto(int photo) {
-        this.photo = photo;
+        this.mPhoto = photo;
     }
 
     public int getIdTopic() {
-        return idTopic;
+        return mTopicId;
     }
 
     public void setIdTopic(int idTopic) {
-        this.idTopic = idTopic;
+        this.mTopicId = idTopic;
     }
 
     public String getNameTopic() {
-        return nameTopic;
+        return mTopicName;
     }
 
-    public void setNameTopic(String nameTopic) {
-        this.nameTopic = nameTopic;
+    public void setNameTopic(String topicName) {
+        this.mTopicName = topicName;
     }
 
-    public Topic(int idTopic, String nameTopic , int photo) {
-        this.idTopic = idTopic;
-        this.nameTopic = nameTopic;
+    public Topic(int topicId, String topicName, int photo) {
+        this.mTopicId = topicId;
+        this.mTopicName = topicName;
 
-        this.photo = photo;
+        this.mPhoto = photo;
     }
 }

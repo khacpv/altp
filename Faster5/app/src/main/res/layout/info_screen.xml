@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/BackGround"
+    android:id="@+id/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
@@ -10,7 +10,7 @@
 
 
     <ImageView
-        android:id="@+id/tableinfo"
+        android:id="@+id/image_tableinfo"
         android:layout_width="400dp"
         android:layout_height="150dp"
         android:layout_marginTop="50dp"
@@ -18,13 +18,14 @@
         android:paddingRight="10dp"
         android:src="@drawable/tableinfo" />
 
-    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/avatarUser"
+    <de.hdodenhof.circleimageview.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/image_useravatar"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignTop="@+id/tableinfo"
+        android:layout_alignTop="@+id/image_tableinfo"
         android:layout_marginLeft="35dp"
         android:layout_marginStart="35dp"
         android:layout_marginTop="27dp"
@@ -32,42 +33,39 @@
         app:civ_border_color="#FFFFFF"
         app:civ_border_width="5dp" />
 
-
     <TextView
-        android:id="@+id/userName"
+        android:id="@+id/text_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/avatarUser"
+        android:layout_alignTop="@+id/image_useravatar"
         android:layout_marginLeft="20dp"
         android:layout_marginStart="20dp"
-        android:layout_toEndOf="@+id/avatarUser"
-        android:layout_toRightOf="@+id/avatarUser"
+        android:layout_toEndOf="@+id/image_useravatar"
+        android:layout_toRightOf="@+id/image_useravatar"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#000000"
-        android:textSize="30dp"
+        android:textSize="30sp"
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/favtopic"
+        android:id="@+id/text_topicfav"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tableinfo"
+        android:layout_below="@+id/image_tableinfo"
         android:layout_marginLeft="20dp"
         android:text="Favorite topics"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#000000"
-        android:textSize="25dp"
-        android:textStyle="bold"
-
-        />
+        android:textSize="25sp"
+        android:textStyle="bold" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/my_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/favtopic"
-        android:scrollbars="vertical"
-        android:overScrollMode="never"/>
+        android:layout_below="@+id/text_topicfav"
+        android:overScrollMode="never"
+        android:scrollbars="vertical" />
 
     <ImageView
         android:id="@+id/fblogout_button"
@@ -75,11 +73,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/avatarUser"
+        android:layout_below="@+id/image_useravatar"
         android:src="@drawable/logout" />
 
     <ImageView
-        android:id="@+id/actionbar"
+        android:id="@+id/image_actionbar"
         android:layout_width="400dp"
         android:layout_height="50dp"
         android:layout_alignParentLeft="true"
@@ -88,7 +86,7 @@
         android:src="@drawable/actionbar" />
 
     <ImageView
-        android:id="@+id/setting"
+        android:id="@+id/image_setting"
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_alignParentLeft="true"
@@ -99,7 +97,7 @@
         android:src="@drawable/setting" />
 
     <TextView
-        android:id="@+id/faster5"
+        android:id="@+id/text_appname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -108,8 +106,21 @@
         android:text="FASTER5"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#000000"
-        android:textSize="30dp"
+        android:textSize="30sp"
         android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="0"
+        android:id="@+id/text_gold"
+        android:textColor="#000000"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:layout_marginTop="125dp"
+        android:layout_marginLeft="180dp"
+     />
 
 
 </RelativeLayout>

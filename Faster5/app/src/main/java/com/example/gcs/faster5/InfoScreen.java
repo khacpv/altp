@@ -6,10 +6,8 @@ import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -35,17 +33,14 @@ import java.util.List;
  */
 public class InfoScreen extends AppCompatActivity {
 
-    public static String idUserFB, fullNameFb, nameManual;
-    TextView userNameTxTV, favTopicTxTV, nameAppTxTV;
-    Intent  logoutIntent;
-    ImageView avatarfbImgV, logoutButtonImgV;
-    ConnectivityManager connectivityManager;
-    RelativeLayout backGround;
-    AccessToken accessToken;
+    public static String sUserFbId, sFullNameFb, sManualName;
+    TextView mTextViewNameUser, mTextViewTopicFav, mTextViewAppName, mTextViewGold;
+    ImageView mImageViewFbAvatar, logoutButtonImgV;
+    RelativeLayout mRelativeLayoutBg;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-
+    int mGold = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,32 +63,40 @@ public class InfoScreen extends AppCompatActivity {
 
         Typeface font = Typeface.createFromAsset(getAssets(),
                 "fonts/dimboregular.ttf");
-        backGround = (RelativeLayout) findViewById(R.id.BackGround);
-        backGround.setBackgroundResource(R.drawable.background);
+        mRelativeLayoutBg = (RelativeLayout) findViewById(R.id.background);
+        mRelativeLayoutBg.setBackgroundResource(R.drawable.background);
 
-        userNameTxTV = (TextView) findViewById(R.id.userName);
-        userNameTxTV.setTypeface(font);
+        mTextViewNameUser = (TextView) findViewById(R.id.text_username);
+        mTextViewNameUser.setTypeface(font);
 
-        nameAppTxTV = (TextView) findViewById(R.id.faster5);
-        nameAppTxTV.setText("FASTER5");
-        nameAppTxTV.setTypeface(font);
+        mTextViewAppName = (TextView) findViewById(R.id.text_appname);
+        mTextViewAppName.setText("FASTER5");
+        mTextViewAppName.setTypeface(font);
 
-        favTopicTxTV = (TextView) findViewById(R.id.favtopic);
-        favTopicTxTV.setTypeface(font);
+        mTextViewTopicFav = (TextView) findViewById(R.id.text_topicfav);
+        mTextViewTopicFav.setTypeface(font);
 
-        avatarfbImgV = (ImageView) findViewById(R.id.avatarUser);
+        mImageViewFbAvatar = (ImageView) findViewById(R.id.image_useravatar);
+
+        mTextViewGold = (TextView) findViewById(R.id.text_gold);
+        mTextViewGold.setTypeface(font);
+        Bundle extrasName = getIntent().getExtras();
+        if (extrasName != null) {
+            mGold = extrasName.getInt("SCORE");
+        }
+        mTextViewGold.setText(Integer.toString(mGold));
         FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
                     @Override
                     public void onInitialized() {
                         //AccessToken is for us to check whether we have previously logged in into
                         //this app, and this information is save in shared preferences and sets it during SDK initialization
-                        accessToken = AccessToken.getCurrentAccessToken();
+                        AccessToken accessToken = AccessToken.getCurrentAccessToken();
                         if (accessToken == null) {
 
                             Bundle extrasName = getIntent().getExtras();
                             if (extrasName != null) {
-                                nameManual = extrasName.getString("NAME");
-                                userNameTxTV.setText(nameManual);
+                                sManualName = extrasName.getString("NAME");
+                                mTextViewNameUser.setText(sManualName);
 
                             }
                         } else {
@@ -104,26 +107,25 @@ public class InfoScreen extends AppCompatActivity {
                     }
                 }
         );
-
-        logoutIntent = new Intent(InfoScreen.this, LoginScreen.class);
         logoutButtonImgV = (ImageView) findViewById(R.id.fblogout_button);
         logoutButtonImgV.setImageResource(R.drawable.logout);
         logoutButtonImgV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 LoginManager.getInstance().logOut();
-                startActivity(logoutIntent);
+                Intent intent = new Intent(InfoScreen.this, LoginScreen.class);
+                startActivity(intent);
                 finish();
             }
         });
     }
 
     public boolean checkInternetConnection(Context context) {
-        connectivityManager = (ConnectivityManager) context
+        ConnectivityManager mConnectivityManager = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager.getActiveNetworkInfo() != null
-                && connectivityManager.getActiveNetworkInfo().isAvailable()
-                && connectivityManager.getActiveNetworkInfo().isConnected()) {
+        if (mConnectivityManager.getActiveNetworkInfo() != null
+                && mConnectivityManager.getActiveNetworkInfo().isAvailable()
+                && mConnectivityManager.getActiveNetworkInfo().isConnected()) {
             return true;
         } else {
             return false;
@@ -140,13 +142,14 @@ public class InfoScreen extends AppCompatActivity {
                             GraphResponse response) {
                         // Application code
                         try {
-                            idUserFB = object.getString("id");
-                            if (idUserFB == null) {
-                                avatarfbImgV.setImageResource(R.drawable.avatar);
+                            sUserFbId = object.getString("id");
+                            if (sUserFbId == null) {
+                                mImageViewFbAvatar.setImageResource(R.drawable.avatar);
                             } else {
-                                fullNameFb = object.getString("name");
-                                userNameTxTV.setText(fullNameFb);
-                                Glide.with(getApplicationContext()).load("https://graph.facebook.com/" + idUserFB + "/picture?width=500&height=500").into(avatarfbImgV);
+                                sFullNameFb = object.getString("name");
+                                mTextViewNameUser.setText(sFullNameFb);
+                                Glide.with(getApplicationContext())
+                                        .load("https://graph.facebook.com/" + sUserFbId + "/picture?width=500&height=500").into(mImageViewFbAvatar);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -158,7 +161,6 @@ public class InfoScreen extends AppCompatActivity {
         request.setParameters(parameters);
         request.executeAsync();
     }
-
 
     private List<Topic> getAllItemList() {
 

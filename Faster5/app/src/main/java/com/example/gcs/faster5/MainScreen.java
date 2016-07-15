@@ -1,6 +1,5 @@
 package com.example.gcs.faster5;
 
-
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -24,17 +23,17 @@ import com.facebook.FacebookSdk;
  * test
  */
 public class MainScreen extends AppCompatActivity {
-    RelativeLayout backGround;
-    ImageView avatarUser1ImgV, avatarUser2ImgV;
-    TextView timeleftTxtV, score1TxtV, score2TxtV, roundTxtV, questionTxtV,
-            ansTxtV1, ansTxtV2, ansTxtV3, ansTxtV4, timerTxtV, userName1TxtV, userName2TxtV;
-    AccessToken accessToken;
-    String question, ans1, ans2, ans3, ans4;
-    Integer idCorrectAns, idTopic, stt = 1;
-    Button[] ansImgB;
-    ListQuestion questionList;
-    CountDownTimer timeLeft, waitTimenextQues, waitTime;
+    RelativeLayout mRelativeLayoutBg;
+    ImageView mImageViewUserAvatar1, mImageViewUserAvatar2;
+    TextView mTextViewTimeLeft, mTextViewScore1, mTextViewScore2, mTextViewRound, mTextViewQuestion,
+            mTextViewAns1, mTextViewAns2, mTextViewAns3, mTextViewAns4, mTextViewTimer, mTextViewNameUser1, mTextViewNameUser2;
+    String mQuestion, mAns1, mAns2, mAns3, mAns4;
+    Integer mCorrectAnsId, mTopicId, mStt = 1, mUserScore1 = 0, mUserScore2 = 0;
+    Button[] mButtonAns;
+    ListQuestion mListQuestion;
+    CountDownTimer mTimeLeft, mWaitTimeNextQues, mWaitTime;
     boolean clickable = true;
+    long timeLeft;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,127 +44,130 @@ public class MainScreen extends AppCompatActivity {
         getSupportActionBar().hide();
         setContentView(R.layout.main_screen);
 
-        timeLeft = new CountDownTimer(12000, 1000) {
+        mTimeLeft = new CountDownTimer(12000, 1000) {
             public void onTick(long millisUntilFinished) {
-                long timeLeft = (millisUntilFinished / 1000) - 1;
+                timeLeft = (millisUntilFinished / 1000) - 1;
                 if (timeLeft > 0) {
-                    timerTxtV.setText("" + timeLeft);
+                    mTextViewTimer.setText("" + timeLeft);
                 } else {
-                    timerTxtV.setText("TIME OUT");
+                    mTextViewTimer.setText("TIME OUT");
                     clickable = false;
                     gameOver();
                 }
             }
+
             public void onFinish() {
-                timerTxtV.setText("TIME OUT");
+                mTextViewTimer.setText("TIME OUT");
                 clickable = false;
             }
         };
-        ansImgB = new Button[4];
+        mButtonAns = new Button[4];
 
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/dimboregular.ttf");
 
-        backGround = (RelativeLayout) findViewById(R.id.background);
-        backGround.setBackgroundResource(R.drawable.background);
-        timeleftTxtV = (TextView) findViewById(R.id.timeLeft);
-        timeleftTxtV.setTypeface(font);
-        timerTxtV = (TextView) findViewById(R.id.timer);
-        timerTxtV.setTypeface(font);
-        roundTxtV = (TextView) findViewById(R.id.noRound);
-        roundTxtV.setTypeface(font);
-        score1TxtV = (TextView) findViewById(R.id.scoreUser1);
-        score1TxtV.setTypeface(font);
-        score2TxtV = (TextView) findViewById(R.id.scoreUser2);
-        score2TxtV.setTypeface(font);
+        mRelativeLayoutBg = (RelativeLayout) findViewById(R.id.background);
+        mRelativeLayoutBg.setBackgroundResource(R.drawable.background);
+        mTextViewTimeLeft = (TextView) findViewById(R.id.text_timeleft);
+        mTextViewTimeLeft.setTypeface(font);
+        mTextViewTimer = (TextView) findViewById(R.id.text_timer);
+        mTextViewTimer.setTypeface(font);
+        mTextViewRound = (TextView) findViewById(R.id.text_roundnumber);
+        mTextViewRound.setTypeface(font);
+        mTextViewScore1 = (TextView) findViewById(R.id.text_userscore1);
+        mTextViewScore1.setTypeface(font);
+        mTextViewScore1.setText(Integer.toString(mUserScore1));
+        mTextViewScore2 = (TextView) findViewById(R.id.text_userscore2);
+        mTextViewScore2.setTypeface(font);
+        mTextViewScore2.setText(Integer.toString(mUserScore2));
 
-        questionTxtV = (TextView) findViewById(R.id.question);
-        ansTxtV1 = (TextView) findViewById(R.id.ans1);
-        ansTxtV2 = (TextView) findViewById(R.id.ans2);
-        ansTxtV3 = (TextView) findViewById(R.id.ans3);
-        ansTxtV4 = (TextView) findViewById(R.id.ans4);
+        mTextViewQuestion = (TextView) findViewById(R.id.text_question);
+        mTextViewAns1 = (TextView) findViewById(R.id.button_ans1);
+        mTextViewAns2 = (TextView) findViewById(R.id.button_ans2);
+        mTextViewAns3 = (TextView) findViewById(R.id.button_ans3);
+        mTextViewAns4 = (TextView) findViewById(R.id.button_ans4);
 
-        questionTxtV.setTypeface(font);
-        ansTxtV1.setTypeface(font);
-        ansTxtV2.setTypeface(font);
-        ansTxtV3.setTypeface(font);
-        ansTxtV4.setTypeface(font);
+        mTextViewQuestion.setTypeface(font);
+        mTextViewAns1.setTypeface(font);
+        mTextViewAns2.setTypeface(font);
+        mTextViewAns3.setTypeface(font);
+        mTextViewAns4.setTypeface(font);
 
-        userName1TxtV = (TextView) findViewById(R.id.userName1);
-        userName1TxtV.setTypeface(font);
-        userName2TxtV = (TextView) findViewById(R.id.userName2);
-        userName2TxtV.setTypeface(font);
-        avatarUser1ImgV = (ImageView) findViewById(R.id.avatarUser1);
+        mTextViewNameUser1 = (TextView) findViewById(R.id.text_username1);
+        mTextViewNameUser1.setTypeface(font);
+        mTextViewNameUser2 = (TextView) findViewById(R.id.text_username2);
+        mTextViewNameUser2.setTypeface(font);
+        mImageViewUserAvatar1 = (ImageView) findViewById(R.id.image_useravatar1);
         setAvatar();
 
         for (int i = 0; i < 4; i++) {
             if (i == 0) {
-                ansImgB[i] = (Button) findViewById(R.id.ans1);
+                mButtonAns[i] = (Button) findViewById(R.id.button_ans1);
             }
             if (i == 1) {
-                ansImgB[i] = (Button) findViewById(R.id.ans2);
+                mButtonAns[i] = (Button) findViewById(R.id.button_ans2);
             }
             if (i == 2) {
-                ansImgB[i] = (Button) findViewById(R.id.ans3);
+                mButtonAns[i] = (Button) findViewById(R.id.button_ans3);
             }
             if (i == 3) {
-                ansImgB[i] = (Button) findViewById(R.id.ans4);
+                mButtonAns[i] = (Button) findViewById(R.id.button_ans4);
             }
-            ansImgB[i].setBackgroundResource(R.drawable.opt);
+            mButtonAns[i].setBackgroundResource(R.drawable.opt);
         }
 
         Bundle extrasName = getIntent().getExtras();
         if (extrasName != null) {
-            idTopic = extrasName.getInt("IDTOPIC");
+            mCorrectAnsId = extrasName.getInt("IDTOPIC");
         }
-        Question.idTopic = idTopic;
-        setQA(0, Question.idTopic);
+        Question.sTopicId = mCorrectAnsId;
+        setQA(0, Question.sTopicId);
 
-        roundTxtV.setText("ROUND " + (stt + 1) + " OF " + Question.listQuestion.size());
+        mTextViewRound.setText("ROUND " + (mStt + 1) + " OF " + Question.listQuestion.size());
 
     }
 
     public void setQA(int stt, int idTopic) {
-        this.stt = stt;
-        this.idTopic = idTopic;
-        questionList = Question.getQuestion().get(stt);
-        question = questionList.getQuestion();
-        ans1 = questionList.getAns1();
-        ans2 = questionList.getAns2();
-        ans3 = questionList.getAns3();
-        ans4 = questionList.getAns4();
-        idCorrectAns = questionList.getIdAnsCorrect();
-        questionTxtV.setText(question);
-        ansTxtV1.setText(ans1);
-        ansTxtV2.setText(ans2);
-        ansTxtV3.setText(ans3);
-        ansTxtV4.setText(ans4);
-        timeLeft.start();
+        this.mStt = stt;
+        this.mTopicId = idTopic;
+        mListQuestion = Question.getQuestion().get(stt);
+        mQuestion = mListQuestion.getQuestion();
+        mAns1 = mListQuestion.getAns1();
+        mAns2 = mListQuestion.getAns2();
+        mAns3 = mListQuestion.getAns3();
+        mAns4 = mListQuestion.getAns4();
+        mCorrectAnsId = mListQuestion.getIdAnsCorrect();
+        mTextViewQuestion.setText(mQuestion);
+        mTextViewAns1.setText(mAns1);
+        mTextViewAns2.setText(mAns2);
+        mTextViewAns3.setText(mAns3);
+        mTextViewAns4.setText(mAns4);
+        mTimeLeft.start();
     }
 
     public boolean checkAns(int answerIndex) {
-        return answerIndex == idCorrectAns;
+        return answerIndex == mCorrectAnsId;
     }
 
     public void btnAnswerClick(final View btnAnswer) {
         if (clickable) {
-            timeLeft.cancel();
+            mTimeLeft.cancel();
             int answerIndex = 0;
             switch (btnAnswer.getId()) {
-                case R.id.ans1:
+                case R.id.button_ans1:
                     answerIndex = 0;
                     break;
-                case R.id.ans2:
+                case R.id.button_ans2:
                     answerIndex = 1;
                     break;
-                case R.id.ans3:
+                case R.id.button_ans3:
                     answerIndex = 2;
                     break;
-                case R.id.ans4:
+                case R.id.button_ans4:
                     answerIndex = 3;
                     break;
             }
             final int _answerIndex = answerIndex;
-            waitTime = new CountDownTimer(3000, 100) {
+            mWaitTime = new CountDownTimer(3000, 100) {
                 boolean isBlue = true;
 
                 public void onTick(long millisUntilFinished) {
@@ -180,6 +182,7 @@ public class MainScreen extends AppCompatActivity {
                     if (checkAns(_answerIndex)) {
                         clickable = false;
                         btnAnswer.setBackgroundResource(R.drawable.opttrue);
+                        plusPoint();
                         correct(btnAnswer);
 
                     } else {
@@ -189,56 +192,62 @@ public class MainScreen extends AppCompatActivity {
                     }
                 }
             };
-            waitTime.start();
+            mWaitTime.start();
         }
     }
 
     public void correct(final View btnAnswer) {
-        waitTimenextQues = new CountDownTimer(2000, 100) {
+        mWaitTimeNextQues = new CountDownTimer(2000, 100) {
             public void onTick(long millisUntilFinished) {
             }
 
             public void onFinish() {
                 setNewQuestion();
-                waitTime.cancel();
-                waitTimenextQues.cancel();
+                mWaitTime.cancel();
+                mWaitTimeNextQues.cancel();
             }
         };
-        waitTimenextQues.start();
+        mWaitTimeNextQues.start();
     }
 
     public void inCorrect() {
-        waitTimenextQues = new CountDownTimer(2000, 100) {
+        mWaitTimeNextQues = new CountDownTimer(2000, 100) {
             public void onTick(long millisUntilFinished) {
-                ansImgB[idCorrectAns].setBackgroundResource(R.drawable.opttrue);
+                mButtonAns[mCorrectAnsId].setBackgroundResource(R.drawable.opttrue);
             }
 
             public void onFinish() {
-                waitTime.cancel();
-                waitTimenextQues.cancel();
+                mWaitTime.cancel();
+                mWaitTimeNextQues.cancel();
                 gameOver();
             }
         };
-        waitTimenextQues.start();
+        mWaitTimeNextQues.start();
+    }
+
+    public void plusPoint(){
+        mUserScore1 = mUserScore1 + (int) timeLeft;
+        mTextViewScore1.setText(Integer.toString(mUserScore1));
     }
 
     public void setNewQuestion() {
         clickable = true;
-        stt = stt + 1;
-        roundTxtV.setText("ROUND " + (stt + 1) + " OF " + Question.listQuestion.size());
-        if (stt == (Question.listQuestion.size())) {
+        mStt = mStt + 1;
+        mTextViewRound.setText("ROUND " + (mStt + 1) + " OF " + Question.listQuestion.size());
+        if (mStt == (Question.listQuestion.size())) {
             gameOver();
         } else {
-            setQA(stt, idTopic);
+            setQA(mStt, mTopicId);
             for (int i = 0; i < 4; i++) {
-                ansImgB[i].setBackgroundResource(R.drawable.opt);
+                mButtonAns[i].setBackgroundResource(R.drawable.opt);
             }
-            timeLeft.start();
+            mTimeLeft.start();
         }
     }
 
     public void gameOver() {
         Intent intent = new Intent(getApplicationContext(), GameOver.class);
+        intent.putExtra("SCORE", mUserScore1);
         startActivity(intent);
         finish();
     }
@@ -249,13 +258,13 @@ public class MainScreen extends AppCompatActivity {
                     public void onInitialized() {
                         //AccessToken is for us to check whether we have previously logged in into
                         //this app, and this information is save in shared preferences and sets it during SDK initialization
-                        accessToken = AccessToken.getCurrentAccessToken();
+                        AccessToken accessToken = AccessToken.getCurrentAccessToken();
                         if (accessToken == null) {
-                            userName1TxtV.setText(InfoScreen.nameManual);
+                            mTextViewNameUser1.setText(InfoScreen.sManualName);
                         } else {
-                            userName1TxtV.setText(InfoScreen.fullNameFb);
+                            mTextViewNameUser1.setText(InfoScreen.sFullNameFb);
                             Glide.with(getApplicationContext())
-                                    .load("https://graph.facebook.com/" + InfoScreen.idUserFB + "/picture?width=500&height=500").into(avatarUser1ImgV);
+                                    .load("https://graph.facebook.com/" + InfoScreen.sUserFbId + "/picture?width=500&height=500").into(mImageViewUserAvatar1);
 //                            if (checkInternetConnection(InfoScreen.this)) {
 //                                GetUserInfo();
 //                            } else {
