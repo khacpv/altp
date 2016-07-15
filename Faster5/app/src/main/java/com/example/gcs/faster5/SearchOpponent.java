@@ -1,6 +1,8 @@
 package com.example.gcs.faster5;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
@@ -21,7 +24,7 @@ import com.facebook.FacebookSdk;
 public class SearchOpponent extends AppCompatActivity {
 
     RelativeLayout mRelativeLayoutBg;
-    TextView mTextViewTopicName, mTextViewUserName1, mTextViewUserName2;
+    TextView mTextViewTopicName, mTextViewUserName1, mTextViewUserName2, mTextViewGold1, mTextViewGold2;
     ImageView mImageViewUserAvatar1, mImageViewUserAvatar2;
     ImageButton mImageButtonPlay;
     int mTopicId;
@@ -35,6 +38,7 @@ public class SearchOpponent extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
         setContentView(R.layout.search_opponent);
+        SharedPreferences prefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
         Bundle extrasName = getIntent().getExtras();
         if (extrasName != null) {
@@ -58,6 +62,10 @@ public class SearchOpponent extends AppCompatActivity {
         mTextViewUserName2 = (TextView) findViewById(R.id.text_username2);
         mTextViewUserName1.setTypeface(font);
         mTextViewUserName2.setTypeface(font);
+
+        mTextViewGold1 = (TextView) findViewById(R.id.text_gold1);
+        mTextViewGold1.setTypeface(font);
+        mTextViewGold1.setText(Integer.toString(prefs.getInt("Gold", 0)));
 
         mTextViewTopicName = (TextView) findViewById(R.id.text_topicname);
         mTextViewTopicName.setTypeface(font);

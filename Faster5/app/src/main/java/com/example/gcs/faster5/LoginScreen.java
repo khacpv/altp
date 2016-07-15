@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +18,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
@@ -27,12 +27,16 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
+import java.io.File;
+
 
 /**
  * Created by Kien on 07/05/2016.
  */
 public class LoginScreen extends AppCompatActivity {
 
+    public SharedPreferences prefs;
+    public SharedPreferences.Editor editor;
     private LoginButton mLoginButtonFb;
     private CallbackManager mCallbackManager;
     final Context context = this;
@@ -64,6 +68,16 @@ public class LoginScreen extends AppCompatActivity {
                 }
         );
         setContentView(R.layout.login_screen);
+
+        File preferences = new File(
+                "/data/data/com.example.gcs.faster5/shared_prefs/MyPrefs.xml");
+        if (preferences.exists()) {
+            Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
+            startActivity(intent);
+            finish();
+        } else {
+            prefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        }
 
         mRelativeLayoutBg = (RelativeLayout) findViewById(R.id.background);
         mRelativeLayoutBg.setBackgroundResource(R.drawable.background);
@@ -122,8 +136,11 @@ public class LoginScreen extends AppCompatActivity {
                     });
                     alertDialogLogin.show();
                 } else {
+                    editor = prefs.edit();
+                    editor.putString("Name", mStringUserName);
+                    editor.putInt("Gold", 0);
+                    editor.commit();
                     Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
-                    intent.putExtra("NAME", mStringUserName);
                     startActivity(intent);
                     finish();
                 }

@@ -1,6 +1,8 @@
 package com.example.gcs.faster5;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -24,7 +26,9 @@ public class GameOver extends AppCompatActivity {
     TextView mTextViewNameUser1, mTextViewNameUser2, mResult, mUserScore1, mUserScore2;
     RelativeLayout mRelativeLayoutBg;
     ImageButton mImageButtonOk;
-    Integer mScore1 = 0, mScore2 = 0;
+    Integer mScore1 = 0, mScore2 = 0, mGold;
+    public SharedPreferences prefs;
+    public SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +38,9 @@ public class GameOver extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
         setContentView(R.layout.game_over);
+
+        prefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/dimboregular.ttf");
         mRelativeLayoutBg = (RelativeLayout) findViewById(R.id.background);
         mRelativeLayoutBg.setBackgroundResource(R.drawable.background);
@@ -68,38 +75,46 @@ public class GameOver extends AppCompatActivity {
             }
         });
 
+
+        Score();
+        buttonOkPressed();
+    }
+
+    public void Score() {
+        Bundle extrasName = getIntent().getExtras();
+        if (extrasName != null) {
+            mScore1 = extrasName.getInt("SCORE");
+            if (mScore1 > mScore2) {
+                mResult.setText("YOU WIN");
+            } else if (mScore1 < mScore2) {
+                mResult.setText("YOU LOSE");
+            } else if (mScore1 == mScore2) {
+                mResult.setText("DRAW");
+            }
+            mUserScore1.setText(Integer.toString(mScore1));
+            mUserScore2.setText(Integer.toString(mScore2));
+
+        }
+    }
+
+    public void buttonOkPressed() {
         mImageButtonOk = (ImageButton) findViewById(R.id.button_ok);
         mImageButtonOk.setImageResource(R.drawable.okbutton);
         mImageButtonOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), InfoScreen.class);
-                intent.putExtra("SCORE", mScore1);
+                mGold = prefs.getInt("Gold", 0);
+                mGold = mGold + mScore1;
+                editor = prefs.edit();
+                editor.putInt("Gold", mGold);
+                editor.commit();
                 startActivity(intent);
                 finish();
             }
         });
-        Score();
-
     }
 
-    public void Score(){
-        Bundle extrasName = getIntent().getExtras();
-        if (extrasName != null) {
-            mScore1 = extrasName.getInt("SCORE");
-            if(mScore1 > mScore2){
-                mResult.setText("YOU WIN");
-            }
-            else if (mScore1 < mScore2)
-            {
-                mResult.setText("YOU LOSE");
-            }
-            else if (mScore1 == mScore2){
-                mResult.setText("DRAW");
-            }
-            mUserScore1.setText(Integer.toString(mScore1));
-            mUserScore2.setText(Integer.toString(mScore2));
-        }
+    public void onBackPressed() {
     }
-
 }

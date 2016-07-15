@@ -2,6 +2,7 @@ package com.example.gcs.faster5;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -32,15 +33,15 @@ import java.util.List;
  * Created by Kien on 07/05/2016.
  */
 public class InfoScreen extends AppCompatActivity {
-
     public static String sUserFbId, sFullNameFb, sManualName;
+    public static int sGold;
     TextView mTextViewNameUser, mTextViewTopicFav, mTextViewAppName, mTextViewGold;
     ImageView mImageViewFbAvatar, logoutButtonImgV;
     RelativeLayout mRelativeLayoutBg;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    int mGold = 0;
+    public SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,8 @@ public class InfoScreen extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
         setContentView(R.layout.info_screen);
+
+        prefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
         Question.listQuestion = null;
 
@@ -80,11 +83,9 @@ public class InfoScreen extends AppCompatActivity {
 
         mTextViewGold = (TextView) findViewById(R.id.text_gold);
         mTextViewGold.setTypeface(font);
-        Bundle extrasName = getIntent().getExtras();
-        if (extrasName != null) {
-            mGold = extrasName.getInt("SCORE");
-        }
-        mTextViewGold.setText(Integer.toString(mGold));
+        sGold = prefs.getInt("Gold",0);
+        mTextViewGold.setText(Integer.toString(sGold));
+
         FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
                     @Override
                     public void onInitialized() {
@@ -92,13 +93,8 @@ public class InfoScreen extends AppCompatActivity {
                         //this app, and this information is save in shared preferences and sets it during SDK initialization
                         AccessToken accessToken = AccessToken.getCurrentAccessToken();
                         if (accessToken == null) {
-
-                            Bundle extrasName = getIntent().getExtras();
-                            if (extrasName != null) {
-                                sManualName = extrasName.getString("NAME");
-                                mTextViewNameUser.setText(sManualName);
-
-                            }
+                            sManualName = prefs.getString("Name", "");
+                            mTextViewNameUser.setText(sManualName);
                         } else {
                             if (checkInternetConnection(InfoScreen.this)) {
                                 GetUserInfo();
