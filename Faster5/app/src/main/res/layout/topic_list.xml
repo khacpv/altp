@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/footballButton"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:background="@null"
+    android:scaleType="centerInside"
+    android:src="@drawable/football"></ImageButton>

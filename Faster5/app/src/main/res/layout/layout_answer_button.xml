@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/button_ans1"
+        android:onClick="btnAnswerClick"
+        style="@style/ButtonAnswerStyle"
+        android:text="Answer1" />
+
+    <Button
+        android:id="@+id/button_ans2"
+        android:onClick="btnAnswerClick"
+        style="@style/ButtonAnswerStyle"
+        android:text="Answer2" />
+
+    <Button
+        android:id="@+id/button_ans3"
+        android:onClick="btnAnswerClick"
+        style="@style/ButtonAnswerStyle"
+        android:text="Answer3" />
+
+    <Button
+        android:id="@+id/button_ans4"
+        android:onClick="btnAnswerClick"
+        style="@style/ButtonAnswerStyle"
+        android:text="Answer4" />
+</LinearLayout>
