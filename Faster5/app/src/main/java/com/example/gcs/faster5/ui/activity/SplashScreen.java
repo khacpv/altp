@@ -1,15 +1,26 @@
-package com.example.gcs.faster5;
+package com.example.gcs.faster5.ui.activity;
 
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.example.gcs.faster5.R;
+import com.example.gcs.faster5.model.Topic;
+import com.example.gcs.faster5.network.ServiceMng;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Kien on 07/05/2016.
@@ -92,5 +103,25 @@ public class SplashScreen extends AppCompatActivity {
             public void onTick(long millisUntilFinished) {
             }
         }.start();
+
+        getAllTopics();
+    }
+
+    /**
+     * get all topic
+     * */
+    private void getAllTopics(){
+        new ServiceMng().api().getTopic().enqueue(new Callback<List<Topic>>() {
+            @Override
+            public void onResponse(Call<List<Topic>> call, Response<List<Topic>> response) {
+                List<Topic> topics = response.body();
+                Log.e("TAG","SUCCESS topics: "+topics.size());
+            }
+
+            @Override
+            public void onFailure(Call<List<Topic>> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 }

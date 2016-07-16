@@ -1,4 +1,4 @@
-package com.example.gcs.faster5;
+package com.example.gcs.faster5.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +8,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+
+import com.example.gcs.faster5.R;
 
 /**
  * Created by Kien on 07/10/2016.

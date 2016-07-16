@@ -1,14 +1,14 @@
-package com.example.gcs.faster5;
+package com.example.gcs.faster5.model;
 
 
 /**
  * Created by Kien on 07/12/2016.
  */
-public class ListQuestion {
+public class Question {
     String mQuestion, mAns1, mAns2, mAns3, mAns4;
     Integer mStt, mCorrectAnsId;
 
-    public ListQuestion(Integer stt, String question, String ans1, String ans2, String ans3, String ans4, Integer idAnsCorrect) {
+    public Question(Integer stt, String question, String ans1, String ans2, String ans3, String ans4, Integer idAnsCorrect) {
         this.mStt = stt;
         this.mQuestion = question;
         this.mAns1 = ans1;

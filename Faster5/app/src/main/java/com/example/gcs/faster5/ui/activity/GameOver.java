@@ -1,8 +1,6 @@
-package com.example.gcs.faster5;
+package com.example.gcs.faster5.ui.activity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +13,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.gcs.faster5.R;
+import com.example.gcs.faster5.util.PrefUtils;
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 
@@ -22,13 +22,14 @@ import com.facebook.FacebookSdk;
  * Created by Kien on 07/14/2016.
  */
 public class GameOver extends AppCompatActivity {
+
+    public static final String EXTRA_SCORE = "score";
+
     ImageView mImageViewUserAvatar1, mImageViewUserAvatar2;
     TextView mTextViewNameUser1, mTextViewNameUser2, mResult, mUserScore1, mUserScore2;
     RelativeLayout mRelativeLayoutBg;
     ImageButton mImageButtonOk;
     Integer mScore1 = 0, mScore2 = 0, mGold;
-    public SharedPreferences prefs;
-    public SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +39,6 @@ public class GameOver extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
         setContentView(R.layout.game_over);
-
-        prefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/dimboregular.ttf");
         mRelativeLayoutBg = (RelativeLayout) findViewById(R.id.background);
@@ -83,7 +82,7 @@ public class GameOver extends AppCompatActivity {
     public void Score() {
         Bundle extrasName = getIntent().getExtras();
         if (extrasName != null) {
-            mScore1 = extrasName.getInt("SCORE");
+            mScore1 = extrasName.getInt(EXTRA_SCORE);
             if (mScore1 > mScore2) {
                 mResult.setText("YOU WIN");
             } else if (mScore1 < mScore2) {
@@ -104,11 +103,9 @@ public class GameOver extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), InfoScreen.class);
-                mGold = prefs.getInt("Gold", 0);
+                mGold = PrefUtils.getInstance(GameOver.this).get(PrefUtils.KEY_GOLD,0);
                 mGold = mGold + mScore1;
-                editor = prefs.edit();
-                editor.putInt("Gold", mGold);
-                editor.commit();
+                PrefUtils.getInstance(GameOver.this).set(PrefUtils.KEY_GOLD,mGold);
                 startActivity(intent);
                 finish();
             }

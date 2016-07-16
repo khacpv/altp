@@ -1,4 +1,4 @@
-package com.example.gcs.faster5;
+package com.example.gcs.faster5.ui.activity;
 
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -12,9 +12,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.gcs.faster5.R;
+import com.example.gcs.faster5.logic.QuestionMng;
+import com.example.gcs.faster5.model.Question;
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 
@@ -23,6 +25,9 @@ import com.facebook.FacebookSdk;
  * test
  */
 public class MainScreen extends AppCompatActivity {
+
+    private final String TXT_TIME_OUT = "TIME OUT";
+
     RelativeLayout mRelativeLayoutBg;
     ImageView mImageViewUserAvatar1, mImageViewUserAvatar2;
     TextView mTextViewTimeLeft, mTextViewScore1, mTextViewScore2, mTextViewRound, mTextViewQuestion,
@@ -30,7 +35,7 @@ public class MainScreen extends AppCompatActivity {
     String mQuestion, mAns1, mAns2, mAns3, mAns4;
     Integer mCorrectAnsId, mTopicId, mStt = 1, mUserScore1 = 0, mUserScore2 = 0;
     Button[] mButtonAns;
-    ListQuestion mListQuestion;
+    Question mListQuestion;
     CountDownTimer mTimeLeft, mWaitTimeNextQues, mWaitTime;
     boolean clickable = true;
     long timeLeft;
@@ -50,14 +55,14 @@ public class MainScreen extends AppCompatActivity {
                 if (timeLeft > 0) {
                     mTextViewTimer.setText("" + timeLeft);
                 } else {
-                    mTextViewTimer.setText("TIME OUT");
+                    mTextViewTimer.setText(TXT_TIME_OUT);
                     clickable = false;
                     gameOver();
                 }
             }
 
             public void onFinish() {
-                mTextViewTimer.setText("TIME OUT");
+                mTextViewTimer.setText(TXT_TIME_OUT);
                 clickable = false;
             }
         };
@@ -75,10 +80,10 @@ public class MainScreen extends AppCompatActivity {
         mTextViewRound.setTypeface(font);
         mTextViewScore1 = (TextView) findViewById(R.id.text_userscore1);
         mTextViewScore1.setTypeface(font);
-        mTextViewScore1.setText(Integer.toString(mUserScore1));
+        mTextViewScore1.setText(String.valueOf(mUserScore1));
         mTextViewScore2 = (TextView) findViewById(R.id.text_userscore2);
         mTextViewScore2.setTypeface(font);
-        mTextViewScore2.setText(Integer.toString(mUserScore2));
+        mTextViewScore2.setText(String.valueOf(mUserScore2));
 
         mTextViewQuestion = (TextView) findViewById(R.id.text_question);
         mTextViewAns1 = (TextView) findViewById(R.id.button_ans1);
@@ -101,35 +106,35 @@ public class MainScreen extends AppCompatActivity {
 
         for (int i = 0; i < 4; i++) {
             if (i == 0) {
-                mButtonAns[i] = (Button) findViewById(R.id.button_ans1);
+                mButtonAns[i] = (Button)mTextViewAns1;
             }
             if (i == 1) {
-                mButtonAns[i] = (Button) findViewById(R.id.button_ans2);
+                mButtonAns[i] = (Button) mTextViewAns2;
             }
             if (i == 2) {
-                mButtonAns[i] = (Button) findViewById(R.id.button_ans3);
+                mButtonAns[i] = (Button) mTextViewAns3;
             }
             if (i == 3) {
-                mButtonAns[i] = (Button) findViewById(R.id.button_ans4);
+                mButtonAns[i] = (Button) mTextViewAns4;
             }
             mButtonAns[i].setBackgroundResource(R.drawable.opt);
         }
 
         Bundle extrasName = getIntent().getExtras();
         if (extrasName != null) {
-            mCorrectAnsId = extrasName.getInt("IDTOPIC");
+            mCorrectAnsId = extrasName.getInt(SearchOpponent.EXTRA_ANSWER_RIGHT);
         }
-        Question.sTopicId = mCorrectAnsId;
-        setQA(0, Question.sTopicId);
+        QuestionMng.sTopicId = mCorrectAnsId;
+        setQA(0, QuestionMng.sTopicId);
 
-        mTextViewRound.setText("ROUND " + (mStt + 1) + " OF " + Question.listQuestion.size());
+        setTxtRound(mStt+1);
 
     }
 
     public void setQA(int stt, int idTopic) {
         this.mStt = stt;
         this.mTopicId = idTopic;
-        mListQuestion = Question.getQuestion().get(stt);
+        mListQuestion = QuestionMng.getQuestion().get(stt);
         mQuestion = mListQuestion.getQuestion();
         mAns1 = mListQuestion.getAns1();
         mAns2 = mListQuestion.getAns2();
@@ -227,14 +232,14 @@ public class MainScreen extends AppCompatActivity {
 
     public void plusPoint(){
         mUserScore1 = mUserScore1 + (int) timeLeft;
-        mTextViewScore1.setText(Integer.toString(mUserScore1));
+        mTextViewScore1.setText(String.valueOf(mUserScore1));
     }
 
     public void setNewQuestion() {
         clickable = true;
         mStt = mStt + 1;
-        mTextViewRound.setText("ROUND " + (mStt + 1) + " OF " + Question.listQuestion.size());
-        if (mStt == (Question.listQuestion.size())) {
+        setTxtRound(mStt+1);
+        if (mStt == (QuestionMng.listQuestion.size())) {
             gameOver();
         } else {
             setQA(mStt, mTopicId);
@@ -245,9 +250,14 @@ public class MainScreen extends AppCompatActivity {
         }
     }
 
+    private void setTxtRound(int round){
+        String txtRound = String.format("ROUND %s OF %s", round, QuestionMng.listQuestion.size());
+        mTextViewRound.setText(txtRound);
+    }
+
     public void gameOver() {
         Intent intent = new Intent(getApplicationContext(), GameOver.class);
-        intent.putExtra("SCORE", mUserScore1);
+        intent.putExtra(GameOver.EXTRA_SCORE, mUserScore1);
         startActivity(intent);
         finish();
     }
@@ -256,8 +266,6 @@ public class MainScreen extends AppCompatActivity {
         FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
                     @Override
                     public void onInitialized() {
-                        //AccessToken is for us to check whether we have previously logged in into
-                        //this app, and this information is save in shared preferences and sets it during SDK initialization
                         AccessToken accessToken = AccessToken.getCurrentAccessToken();
                         if (accessToken == null) {
                             mTextViewNameUser1.setText(InfoScreen.sManualName);
@@ -265,11 +273,6 @@ public class MainScreen extends AppCompatActivity {
                             mTextViewNameUser1.setText(InfoScreen.sFullNameFb);
                             Glide.with(getApplicationContext())
                                     .load("https://graph.facebook.com/" + InfoScreen.sUserFbId + "/picture?width=500&height=500").into(mImageViewUserAvatar1);
-//                            if (checkInternetConnection(InfoScreen.this)) {
-//                                GetUserInfo();
-//                            } else {
-//
-//                            }
                         }
                     }
                 }
@@ -282,6 +285,5 @@ public class MainScreen extends AppCompatActivity {
         myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(myIntent);
         finish();
-        return;
     }
 }

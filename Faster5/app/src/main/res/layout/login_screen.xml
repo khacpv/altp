@@ -6,7 +6,7 @@
     android:layout_height="fill_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context="com.example.gcs.faster5.MainActivity">
+    tools:context=".ui.activity.MainActivity">
 
     <ImageView
         android:id="@+id/image_textlogin"

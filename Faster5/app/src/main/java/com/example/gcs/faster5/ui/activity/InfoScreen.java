@@ -1,10 +1,7 @@
-package com.example.gcs.faster5;
+package com.example.gcs.faster5.ui.activity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,6 +14,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.gcs.faster5.R;
+import com.example.gcs.faster5.logic.QuestionMng;
+import com.example.gcs.faster5.logic.TopicMng;
+import com.example.gcs.faster5.model.Topic;
+import com.example.gcs.faster5.ui.adapter.TopicAdapter;
+import com.example.gcs.faster5.util.NetworkUtils;
+import com.example.gcs.faster5.util.PrefUtils;
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
@@ -26,7 +30,6 @@ import com.facebook.login.LoginManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,7 +44,6 @@ public class InfoScreen extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    public SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,16 +54,14 @@ public class InfoScreen extends AppCompatActivity {
         getSupportActionBar().hide();
         setContentView(R.layout.info_screen);
 
-        prefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        QuestionMng.listQuestion = null;
 
-        Question.listQuestion = null;
-
-        List<Topic> rowListItem = getAllItemList();
+        List<Topic> rowListItem = TopicMng.getAllItemList();
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new GridLayoutManager(this, 3);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new RecyclerViewAdapter(rowListItem);
+        mAdapter = new TopicAdapter(rowListItem);
         mRecyclerView.setAdapter(mAdapter);
 
         Typeface font = Typeface.createFromAsset(getAssets(),
@@ -83,7 +83,7 @@ public class InfoScreen extends AppCompatActivity {
 
         mTextViewGold = (TextView) findViewById(R.id.text_gold);
         mTextViewGold.setTypeface(font);
-        sGold = prefs.getInt("Gold",0);
+        sGold = PrefUtils.getInstance(this).get(PrefUtils.KEY_GOLD,0);
         mTextViewGold.setText(Integer.toString(sGold));
 
         FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
@@ -93,10 +93,10 @@ public class InfoScreen extends AppCompatActivity {
                         //this app, and this information is save in shared preferences and sets it during SDK initialization
                         AccessToken accessToken = AccessToken.getCurrentAccessToken();
                         if (accessToken == null) {
-                            sManualName = prefs.getString("Name", "");
+                            sManualName = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_NAME,"");
                             mTextViewNameUser.setText(sManualName);
                         } else {
-                            if (checkInternetConnection(InfoScreen.this)) {
+                            if (NetworkUtils.checkInternetConnection(InfoScreen.this)) {
                                 GetUserInfo();
                             }
                         }
@@ -114,18 +114,6 @@ public class InfoScreen extends AppCompatActivity {
                 finish();
             }
         });
-    }
-
-    public boolean checkInternetConnection(Context context) {
-        ConnectivityManager mConnectivityManager = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (mConnectivityManager.getActiveNetworkInfo() != null
-                && mConnectivityManager.getActiveNetworkInfo().isAvailable()
-                && mConnectivityManager.getActiveNetworkInfo().isConnected()) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     private void GetUserInfo() {
@@ -156,20 +144,6 @@ public class InfoScreen extends AppCompatActivity {
         parameters.putString("fields", "id,gender,name,birthday,picture.type(large)");
         request.setParameters(parameters);
         request.executeAsync();
-    }
-
-    private List<Topic> getAllItemList() {
-
-        List<Topic> allItems = new ArrayList<Topic>();
-        allItems.add(new Topic(1, "FootBall", R.drawable.football));
-        allItems.add(new Topic(2, "Art", R.drawable.art));
-        allItems.add(new Topic(3, "Basic Math", R.drawable.math));
-        allItems.add(new Topic(4, "Fruits", R.drawable.fruit));
-        allItems.add(new Topic(5, "Music", R.drawable.music));
-        allItems.add(new Topic(6, "Technology", R.drawable.tech));
-        allItems.add(new Topic(0, "Lock", R.drawable.lock));
-
-        return allItems;
     }
 
     @Override

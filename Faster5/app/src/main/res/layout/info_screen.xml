@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:weightSum="1"
-    tools:context="com.example.gcs.faster5.MainActivity">
+    tools:context=".ui.activity.MainActivity">
 
 
     <ImageView

@@ -1,4 +1,4 @@
-package com.example.gcs.faster5;
+package com.example.gcs.faster5.ui.activity;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;

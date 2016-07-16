@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name="android.support.multidex.MultiDexApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -25,7 +26,7 @@
 
             />
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.activity.SplashScreen"
             >
 
             <intent-filter>
@@ -34,14 +35,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginScreen"
-            android:windowSoftInputMode="stateVisible|adjustResize"></activity>
-        <activity android:name=".SplashScreen"></activity>
-        <activity android:name=".InfoScreen"></activity>
-        <activity android:name=".MainScreen"></activity>
-        <activity android:name=".WellcomeScreen"></activity>
-        <activity android:name=".SearchOpponent"></activity>
-        <activity android:name=".GameOver"></activity>
+        <activity android:name=".ui.activity.LoginScreen"
+            android:windowSoftInputMode="stateVisible|adjustResize"/>
+        <activity android:name=".ui.activity.MainActivity"/>
+        <activity android:name=".ui.activity.InfoScreen"/>
+        <activity android:name=".ui.activity.MainScreen"/>
+        <activity android:name=".ui.activity.WellcomeScreen"/>
+        <activity android:name=".ui.activity.SearchOpponent"/>
+        <activity android:name=".ui.activity.GameOver"/>
 
         <provider
             android:name="com.facebook.FacebookContentProvider"

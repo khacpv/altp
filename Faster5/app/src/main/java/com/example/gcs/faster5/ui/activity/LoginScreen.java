@@ -1,14 +1,12 @@
-package com.example.gcs.faster5;
+package com.example.gcs.faster5.ui.activity;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.net.ConnectivityManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -18,6 +16,10 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+
+import com.example.gcs.faster5.R;
+import com.example.gcs.faster5.util.NetworkUtils;
+import com.example.gcs.faster5.util.PrefUtils;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
@@ -27,16 +29,12 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
-import java.io.File;
-
 
 /**
  * Created by Kien on 07/05/2016.
  */
 public class LoginScreen extends AppCompatActivity {
 
-    public SharedPreferences prefs;
-    public SharedPreferences.Editor editor;
     private LoginButton mLoginButtonFb;
     private CallbackManager mCallbackManager;
     final Context context = this;
@@ -69,14 +67,10 @@ public class LoginScreen extends AppCompatActivity {
         );
         setContentView(R.layout.login_screen);
 
-        File preferences = new File(
-                "/data/data/com.example.gcs.faster5/shared_prefs/MyPrefs.xml");
-        if (preferences.exists()) {
+        if (PrefUtils.getInstance(this).get(PrefUtils.KEY_LOGGED_IN,false)) {
             Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
             startActivity(intent);
             finish();
-        } else {
-            prefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         }
 
         mRelativeLayoutBg = (RelativeLayout) findViewById(R.id.background);
@@ -136,10 +130,9 @@ public class LoginScreen extends AppCompatActivity {
                     });
                     alertDialogLogin.show();
                 } else {
-                    editor = prefs.edit();
-                    editor.putString("Name", mStringUserName);
-                    editor.putInt("Gold", 0);
-                    editor.commit();
+                    PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_NAME,mStringUserName);
+                    PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_GOLD,0);
+
                     Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
                     startActivity(intent);
                     finish();
@@ -175,12 +168,14 @@ public class LoginScreen extends AppCompatActivity {
         mLoginButtonFb.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (checkInternetConnection(LoginScreen.this)) {
+                if (NetworkUtils.checkInternetConnection(LoginScreen.this)) {
                     mLoginButtonFb.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
                                 @Override
                                 public void onSuccess(LoginResult loginResult) {
                                     mLoginButtonFb.setVisibility(View.INVISIBLE);
                                     AccessToken mAccessToken = loginResult.getAccessToken();
+                                    PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_ACCESS_TOKEN,mAccessToken.getToken());
+
                                     Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
                                     startActivity(intent);
                                     finish();
@@ -227,18 +222,6 @@ public class LoginScreen extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
-    }
-
-    public boolean checkInternetConnection(Context context) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager.getActiveNetworkInfo() != null
-                && connectivityManager.getActiveNetworkInfo().isAvailable()
-                && connectivityManager.getActiveNetworkInfo().isConnected()) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     public void onBackPressed() {
