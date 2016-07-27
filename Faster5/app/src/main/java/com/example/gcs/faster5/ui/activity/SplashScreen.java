@@ -13,6 +13,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.gcs.faster5.R;
+import com.example.gcs.faster5.logic.QuestionMng;
+import com.example.gcs.faster5.logic.TopicMng;
+import com.example.gcs.faster5.model.Question;
 import com.example.gcs.faster5.model.Topic;
 import com.example.gcs.faster5.network.ServiceMng;
 
@@ -103,25 +106,24 @@ public class SplashScreen extends AppCompatActivity {
             public void onTick(long millisUntilFinished) {
             }
         }.start();
-
-        getAllTopics();
     }
 
     /**
      * get all topic
-     * */
-    private void getAllTopics(){
+     */
+    private void getAllTopics() {
         new ServiceMng().api().getTopic().enqueue(new Callback<List<Topic>>() {
             @Override
             public void onResponse(Call<List<Topic>> call, Response<List<Topic>> response) {
                 List<Topic> topics = response.body();
-                Log.e("TAG","SUCCESS topics: "+topics.size());
+                TopicMng.updateTopicList(topics);
+                Log.e("TAG", "SUCCESS topics: " + topics.get(1).getNameTopic());
             }
-
             @Override
             public void onFailure(Call<List<Topic>> call, Throwable t) {
                 t.printStackTrace();
             }
         });
     }
+
 }

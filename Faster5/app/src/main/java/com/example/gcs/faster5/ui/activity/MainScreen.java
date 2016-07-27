@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.gcs.faster5.R;
 import com.example.gcs.faster5.logic.QuestionMng;
-import com.example.gcs.faster5.model.Question;
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 
@@ -33,9 +32,8 @@ public class MainScreen extends AppCompatActivity {
     TextView mTextViewTimeLeft, mTextViewScore1, mTextViewScore2, mTextViewRound, mTextViewQuestion,
             mTextViewAns1, mTextViewAns2, mTextViewAns3, mTextViewAns4, mTextViewTimer, mTextViewNameUser1, mTextViewNameUser2;
     String mQuestion, mAns1, mAns2, mAns3, mAns4;
-    Integer mCorrectAnsId, mTopicId, mStt = 1, mUserScore1 = 0, mUserScore2 = 0;
+    Integer mCorrectAnsId, mStt = 1, mUserScore1 = 0, mUserScore2 = 0;
     Button[] mButtonAns;
-    Question mListQuestion;
     CountDownTimer mTimeLeft, mWaitTimeNextQues, mWaitTime;
     boolean clickable = true;
     long timeLeft;
@@ -102,11 +100,11 @@ public class MainScreen extends AppCompatActivity {
         mTextViewNameUser2 = (TextView) findViewById(R.id.text_username2);
         mTextViewNameUser2.setTypeface(font);
         mImageViewUserAvatar1 = (ImageView) findViewById(R.id.image_useravatar1);
-        setAvatar();
+        setInfo();
 
         for (int i = 0; i < 4; i++) {
             if (i == 0) {
-                mButtonAns[i] = (Button)mTextViewAns1;
+                mButtonAns[i] = (Button) mTextViewAns1;
             }
             if (i == 1) {
                 mButtonAns[i] = (Button) mTextViewAns2;
@@ -125,22 +123,18 @@ public class MainScreen extends AppCompatActivity {
             mCorrectAnsId = extrasName.getInt(SearchOpponent.EXTRA_ANSWER_RIGHT);
         }
         QuestionMng.sTopicId = mCorrectAnsId;
-        setQA(0, QuestionMng.sTopicId);
-
-        setTxtRound(mStt+1);
-
+        setQA(0);
+        setTxtRound(mStt + 1);
     }
 
-    public void setQA(int stt, int idTopic) {
+    public void setQA(int stt) {
         this.mStt = stt;
-        this.mTopicId = idTopic;
-        mListQuestion = QuestionMng.getQuestion().get(stt);
-        mQuestion = mListQuestion.getQuestion();
-        mAns1 = mListQuestion.getAns1();
-        mAns2 = mListQuestion.getAns2();
-        mAns3 = mListQuestion.getAns3();
-        mAns4 = mListQuestion.getAns4();
-        mCorrectAnsId = mListQuestion.getIdAnsCorrect();
+        mQuestion = SearchOpponent.questions.get(stt).getQuestion();
+        mAns1 = SearchOpponent.questions.get(stt).getmAns().get(0);
+        mAns2 = SearchOpponent.questions.get(stt).getmAns().get(1);
+        mAns3 = SearchOpponent.questions.get(stt).getmAns().get(2);
+        mAns4 = SearchOpponent.questions.get(stt).getmAns().get(3);
+        mCorrectAnsId = SearchOpponent.questions.get(stt).getIdAnsCorrect();
         mTextViewQuestion.setText(mQuestion);
         mTextViewAns1.setText(mAns1);
         mTextViewAns2.setText(mAns2);
@@ -230,28 +224,33 @@ public class MainScreen extends AppCompatActivity {
         mWaitTimeNextQues.start();
     }
 
-    public void plusPoint(){
+    public void plusPoint() {
         mUserScore1 = mUserScore1 + (int) timeLeft;
         mTextViewScore1.setText(String.valueOf(mUserScore1));
     }
 
     public void setNewQuestion() {
-        clickable = true;
         mStt = mStt + 1;
-        setTxtRound(mStt+1);
-        if (mStt == (QuestionMng.listQuestion.size())) {
+        clickable = true;
+        if (mStt == SearchOpponent.questions.size()) {
+            setTxtRound(mStt);
+        } else {
+            setTxtRound(mStt + 1);
+        }
+        if (mStt == (SearchOpponent.questions.size())) {
             gameOver();
         } else {
-            setQA(mStt, mTopicId);
+            setQA(mStt);
             for (int i = 0; i < 4; i++) {
                 mButtonAns[i].setBackgroundResource(R.drawable.opt);
             }
             mTimeLeft.start();
         }
+
     }
 
-    private void setTxtRound(int round){
-        String txtRound = String.format("ROUND %s OF %s", round, QuestionMng.listQuestion.size());
+    private void setTxtRound(int round) {
+        String txtRound = String.format("ROUND %s OF %s", round, SearchOpponent.questions.size());
         mTextViewRound.setText(txtRound);
     }
 
@@ -259,10 +258,11 @@ public class MainScreen extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), GameOver.class);
         intent.putExtra(GameOver.EXTRA_SCORE, mUserScore1);
         startActivity(intent);
+        overridePendingTransition(R.animator.right_in, R.animator.left_out);
         finish();
     }
 
-    public void setAvatar() {
+    public void setInfo() {
         FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
                     @Override
                     public void onInitialized() {
@@ -281,9 +281,6 @@ public class MainScreen extends AppCompatActivity {
 
 
     public void onBackPressed() {
-        Intent myIntent = new Intent(getApplicationContext(), GameOver.class);
-        myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(myIntent);
-        finish();
+
     }
 }

@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:name="android.support.multidex.MultiDexApplication"
@@ -25,24 +27,26 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
 
             />
-        <activity
-            android:name=".ui.activity.SplashScreen"
-            >
-
+        <activity android:name=".ui.activity.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.LoginScreen"
-            android:windowSoftInputMode="stateVisible|adjustResize"/>
-        <activity android:name=".ui.activity.MainActivity"/>
-        <activity android:name=".ui.activity.InfoScreen"/>
-        <activity android:name=".ui.activity.MainScreen"/>
-        <activity android:name=".ui.activity.WellcomeScreen"/>
-        <activity android:name=".ui.activity.SearchOpponent"/>
-        <activity android:name=".ui.activity.GameOver"/>
+        <activity
+            android:name=".ui.activity.LoginScreen"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity android:name=".ui.activity.MainActivity" />
+        <activity android:name=".ui.activity.InfoScreen" />
+        <activity android:name=".ui.activity.MainScreen" />
+        <activity android:name=".ui.activity.WellcomeScreen" />
+        <activity android:name=".ui.activity.SearchOpponent" />
+        <activity android:name=".ui.activity.GameOver" />
+        <activity
+            android:name=".ui.activity.PopupLogin"
+            android:theme="@style/AppTheme.CustomTheme"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
 
         <provider
             android:name="com.facebook.FacebookContentProvider"

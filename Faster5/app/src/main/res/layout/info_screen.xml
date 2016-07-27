@@ -18,8 +18,7 @@
         android:paddingRight="10dp"
         android:src="@drawable/tableinfo" />
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/image_useravatar"
         android:layout_width="70dp"
         android:layout_height="70dp"
@@ -47,7 +46,7 @@
         android:textSize="30sp"
         android:textStyle="bold" />
 
-    <TextView
+    <!-- <TextView
         android:id="@+id/text_topicfav"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -57,15 +56,15 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#000000"
         android:textSize="25sp"
-        android:textStyle="bold" />
+        android:textStyle="bold" />-->
 
-    <android.support.v7.widget.RecyclerView
+    <!--<android.support.v7.widget.RecyclerView
         android:id="@+id/my_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/text_topicfav"
         android:overScrollMode="never"
-        android:scrollbars="vertical" />
+        android:scrollbars="vertical" />-->
 
     <ImageView
         android:id="@+id/fblogout_button"
@@ -110,17 +109,24 @@
         android:textStyle="bold" />
 
     <TextView
+        android:id="@+id/text_gold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_marginLeft="180dp"
+        android:layout_marginTop="125dp"
         android:text="0"
-        android:id="@+id/text_gold"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#000000"
         android:textSize="25sp"
-        android:textStyle="bold"
-        android:layout_marginTop="125dp"
-        android:layout_marginLeft="180dp"
-     />
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/button_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="PLAY" />
 
 
 </RelativeLayout>

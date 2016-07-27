@@ -1,8 +1,6 @@
 package com.example.gcs.faster5.ui.activity;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -59,6 +57,7 @@ public class LoginScreen extends AppCompatActivity {
                         if (mAccessToken == null) {
                         } else {
                             Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
+                            overridePendingTransition(R.animator.right_in, R.animator.left_out);
                             startActivity(intent);
                             finish();
                         }
@@ -67,7 +66,7 @@ public class LoginScreen extends AppCompatActivity {
         );
         setContentView(R.layout.login_screen);
 
-        if (PrefUtils.getInstance(this).get(PrefUtils.KEY_LOGGED_IN,false)) {
+        if (PrefUtils.getInstance(this).get(PrefUtils.KEY_LOGGED_IN, false)) {
             Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
             startActivity(intent);
             finish();
@@ -116,29 +115,51 @@ public class LoginScreen extends AppCompatActivity {
         });
 
         mImageButtonPlay = (ImageButton) findViewById(R.id.button_play);
+//        mImageButtonPlay.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mStringUserName = mEditText.getText().toString();
+//                if (mStringUserName.length() <= 3) {
+//                    AlertDialog alertDialogLogin = new AlertDialog.Builder(context).create();
+//                    alertDialogLogin.setMessage("Username incorrect. Username must be at least 4 characters!");
+//                    alertDialogLogin.setCancelable(false);
+//                    alertDialogLogin.setButton("Try Again", new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//                        }
+//                    });
+//                    alertDialogLogin.show();
+//                } else {
+//                    PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_NAME, mStringUserName);
+//                    PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_GOLD, 0);
+//
+//                    Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
+//                    startActivity(intent);
+//                    finish();
+//                }
+//            }
+//      });
         mImageButtonPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mStringUserName = mEditText.getText().toString();
-                if (mStringUserName.length() <= 3) {
-                    AlertDialog alertDialogLogin = new AlertDialog.Builder(context).create();
-                    alertDialogLogin.setMessage("Username incorrect. Username must be at least 4 characters!");
-                    alertDialogLogin.setCancelable(false);
-                    alertDialogLogin.setButton("Try Again", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    });
-                    alertDialogLogin.show();
-                } else {
-                    PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_NAME,mStringUserName);
-                    PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_GOLD,0);
+//                LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+//                View popupView = layoutInflater.inflate(R.layout.popup_login, null);
+//                final PopupWindow pw = new PopupWindow(popupView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
+//                pw.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+//
+//                Button btnDismiss = (Button)popupView.findViewById(R.id.button_close);
+//                btnDismiss.setOnClickListener(new Button.OnClickListener(){
+//                    @Override
+//                    public void onClick(View v) {
+//                        // TODO Auto-generated method stub
+//                        pw.dismiss();
+//                    }});
 
-                    Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
-                    startActivity(intent);
-                    finish();
-                }
+                Intent intent = new Intent(getApplicationContext(), PopupLogin.class);
+                startActivity(intent);
+                overridePendingTransition(R.animator.slide_in_bottom, R.animator.slide_out_bottom);
             }
         });
+
 
         mImageButtonTryAgain = (ImageButton) findViewById(R.id.button_tryagain);
         mImageButtonTryAgain.setVisibility(View.GONE);
@@ -159,8 +180,7 @@ public class LoginScreen extends AppCompatActivity {
                     protected void onCurrentAccessTokenChanged(AccessToken oldToken, AccessToken newToken) {
                         AccessToken mAccessToken = newToken;
                     }
-                }
-        ;
+                };
         mLoginButtonFb = (LoginButton) findViewById(R.id.button_fb);
         mLoginButtonFb.setBackgroundResource(R.drawable.fbbutton);
         mLoginButtonFb.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
@@ -174,10 +194,10 @@ public class LoginScreen extends AppCompatActivity {
                                 public void onSuccess(LoginResult loginResult) {
                                     mLoginButtonFb.setVisibility(View.INVISIBLE);
                                     AccessToken mAccessToken = loginResult.getAccessToken();
-                                    PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_ACCESS_TOKEN,mAccessToken.getToken());
-
+                                    PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_ACCESS_TOKEN, mAccessToken.getToken());
                                     Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
                                     startActivity(intent);
+                                    overridePendingTransition(R.animator.right_in, R.animator.left_out);
                                     finish();
                                 }
 
@@ -208,8 +228,9 @@ public class LoginScreen extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             Intent intent = getIntent();
-                            finish();
                             startActivity(intent);
+                            overridePendingTransition(R.animator.in_from_left, R.animator.out_to_right);
+                            finish();
                         }
                     });
                 }
@@ -224,7 +245,4 @@ public class LoginScreen extends AppCompatActivity {
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void onBackPressed() {
-
-    }
 }

@@ -31,13 +31,12 @@
         android:id="@+id/image_useravatar2"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:layout_above="@+id/button_play"
-        android:layout_alignLeft="@+id/image_useravatar1"
-        android:layout_alignStart="@+id/image_useravatar1"
-        android:layout_marginBottom="60dp"
         android:src="@drawable/avatar"
         app:civ_border_color="#FFFFFF"
-        app:civ_border_width="5dp" />
+        app:civ_border_width="5dp"
+        android:layout_alignBottom="@+id/text_gold2"
+        android:layout_alignLeft="@+id/image_useravatar1"
+        android:layout_alignStart="@+id/image_useravatar1" />
 
 
     <TextView
@@ -84,8 +83,7 @@
         android:layout_marginBottom="25dp"
         android:adjustViewBounds="true"
         android:background="@null"
-        android:scaleType="centerInside"
-        android:src="@drawable/playbutton" />
+        android:scaleType="centerInside" />
 
     <TextView
         android:id="@+id/text_gold1"
