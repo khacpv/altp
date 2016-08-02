@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+
     <application
         android:name="android.support.multidex.MultiDexApplication"
         android:allowBackup="true"
@@ -15,6 +16,14 @@
         android:largeHeap="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <receiver android:name="com.example.gcs.faster5.network.ConnectivityChangeReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+                <action android:name="android.net.wifi.STATE_CHANGE" />
+            </intent-filter>
+        </receiver>
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -27,7 +36,7 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
 
             />
-        <activity android:name=".ui.activity.SplashScreen">
+        <activity android:name=".ui.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,14 +46,14 @@
         <activity
             android:name=".ui.activity.LoginScreen"
             android:windowSoftInputMode="stateVisible|adjustResize" />
-        <activity android:name=".ui.activity.MainActivity" />
+        <activity android:name=".ui.activity.SplashScreen" />
         <activity android:name=".ui.activity.InfoScreen" />
         <activity android:name=".ui.activity.MainScreen" />
         <activity android:name=".ui.activity.WellcomeScreen" />
         <activity android:name=".ui.activity.SearchOpponent" />
         <activity android:name=".ui.activity.GameOver" />
         <activity
-            android:name=".ui.activity.PopupLogin"
+            android:name=".ui.activity.PopupConnection"
             android:theme="@style/AppTheme.CustomTheme"
             android:windowSoftInputMode="stateVisible|adjustResize" />
 

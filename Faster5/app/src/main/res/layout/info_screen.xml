@@ -1,132 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
+    android:background="@drawable/background"
+    android:orientation="vertical"
     android:weightSum="1"
     tools:context=".ui.activity.MainActivity">
 
-
-    <ImageView
-        android:id="@+id/image_tableinfo"
-        android:layout_width="400dp"
-        android:layout_height="150dp"
-        android:layout_marginTop="50dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:src="@drawable/tableinfo" />
-
-    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/image_useravatar"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignTop="@+id/image_tableinfo"
-        android:layout_marginLeft="35dp"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="27dp"
-        android:src="@drawable/avatar"
-        app:civ_border_color="#FFFFFF"
-        app:civ_border_width="5dp" />
-
-    <TextView
-        android:id="@+id/text_username"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/image_useravatar"
-        android:layout_marginLeft="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_toEndOf="@+id/image_useravatar"
-        android:layout_toRightOf="@+id/image_useravatar"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#000000"
-        android:textSize="30sp"
-        android:textStyle="bold" />
-
-    <!-- <TextView
-        android:id="@+id/text_topicfav"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/image_tableinfo"
-        android:layout_marginLeft="20dp"
-        android:text="Favorite topics"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#000000"
-        android:textSize="25sp"
-        android:textStyle="bold" />-->
-
-    <!--<android.support.v7.widget.RecyclerView
-        android:id="@+id/my_recycler_view"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/text_topicfav"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imageview_useravatar"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="30dp"
+                android:src="@drawable/avatar" />
+
+            <TextView
+                android:id="@+id/textview_usernname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/imageview_useravatar"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="5dp"
+                android:layout_toEndOf="@+id/imageview_useravatar"
+                android:layout_toRightOf="@+id/imageview_useravatar"
+                android:ellipsize="end"
+                android:lines="1"
+                android:text="PLAYER"
+                android:textColor="#ffffff"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textview_city_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/textview_usernname"
+                android:layout_alignStart="@+id/textview_usernname"
+                android:layout_below="@+id/textview_usernname"
+                android:ellipsize="end"
+                android:lines="1"
+                android:text="CITY"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:id="@+id/textview_money"
+                android:layout_width="220dp"
+                android:layout_height="45dp"
+                android:layout_alignLeft="@+id/imageview_useravatar"
+                android:layout_below="@+id/imageview_useravatar"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/button_money"
+                android:gravity="center_horizontal"
+                android:paddingTop="7dp"
+                android:text="000.000.000"
+                android:textColor="#000000"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+
+
+        <Button
+            android:id="@+id/button_search"
+            android:layout_width="120dp"
+            android:layout_height="100dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/button_search"
+            android:clickable="false" />
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/button_opponent"
+        android:scaleType="centerInside"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:clipToPadding="false"
         android:overScrollMode="never"
-        android:scrollbars="vertical" />-->
+        android:scrollbars="none">
 
-    <ImageView
-        android:id="@+id/fblogout_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/image_useravatar"
-        android:src="@drawable/logout" />
+        <include
 
-    <ImageView
-        android:id="@+id/image_actionbar"
-        android:layout_width="400dp"
-        android:layout_height="50dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:src="@drawable/actionbar" />
-
-    <ImageView
-        android:id="@+id/image_setting"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="1dp"
-        android:layout_marginTop="1dp"
-        android:src="@drawable/setting" />
-
-    <TextView
-        android:id="@+id/text_appname"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:text="FASTER5"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#000000"
-        android:textSize="30sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/text_gold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="180dp"
-        android:layout_marginTop="125dp"
-        android:text="0"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#000000"
-        android:textSize="25sp"
-        android:textStyle="bold" />
-
-    <Button
-        android:id="@+id/button_play"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="PLAY" />
+            layout="@layout/layout_list_player"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </ScrollView>
 
 
-</RelativeLayout>
+</LinearLayout>

@@ -1,21 +1,27 @@
 package com.example.gcs.faster5.ui.activity;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.example.gcs.faster5.R;
+import com.example.gcs.faster5.network.ConnectivityChangeReceiver;
+import com.example.gcs.faster5.util.JSONParser;
 import com.example.gcs.faster5.util.NetworkUtils;
 import com.example.gcs.faster5.util.PrefUtils;
 import com.facebook.AccessToken;
@@ -27,12 +33,17 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 /**
  * Created by Kien on 07/05/2016.
  */
 public class LoginScreen extends AppCompatActivity {
 
+    private static String url = "http://209.58.180.196/json/"; //URL to get JSON Array
+    private static final String TAG_CITY = "city";
     private LoginButton mLoginButtonFb;
     private CallbackManager mCallbackManager;
     final Context context = this;
@@ -40,8 +51,10 @@ public class LoginScreen extends AppCompatActivity {
     RelativeLayout mRelativeLayoutBg;
     EditText mEditText;
     String mStringUserName;
-    ImageButton mImageButtonPlay, mImageButtonTryAgain;
-    ImageView mImageViewConnectFail, mImageViewTextLogin, mImageViewRoundRec;
+    Button mImageButtonPlay;
+    TextView mTextViewCity;
+    Typeface font;
+    public static String city;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,34 +63,32 @@ public class LoginScreen extends AppCompatActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         getSupportActionBar().hide();
 
-        FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
-                    @Override
-                    public void onInitialized() {
-                        AccessToken mAccessToken = AccessToken.getCurrentAccessToken();
-                        if (mAccessToken == null) {
-                        } else {
-                            Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
-                            overridePendingTransition(R.animator.right_in, R.animator.left_out);
-                            startActivity(intent);
-                            finish();
-                        }
-                    }
-                }
-        );
+        checkLogin();
         setContentView(R.layout.login_screen);
+        strictMode();
+        findViewbyId();
+        editTexConfig();
+        parserJSON();
+        loginFB();
+        loginManual();
 
-        if (PrefUtils.getInstance(this).get(PrefUtils.KEY_LOGGED_IN, false)) {
-            Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
-            startActivity(intent);
-            finish();
+        if (city == null) {
+            mTextViewCity.setText("VIETNAM");
+        } else {
+            mTextViewCity.setText(city);
         }
+    }
 
+    public void findViewbyId() {
+        mTextViewCity = (TextView) findViewById(R.id.textview_city_login);
         mRelativeLayoutBg = (RelativeLayout) findViewById(R.id.background);
-        mRelativeLayoutBg.setBackgroundResource(R.drawable.background);
-
         mEditText = (EditText) findViewById(R.id.text_edit);
-        Typeface font = Typeface.createFromAsset(getAssets(),
-                "fonts/dimboregular.ttf");
+        mImageButtonPlay = (Button) findViewById(R.id.button_login);
+        font = Typeface.createFromAsset(getAssets(),
+                "fonts/roboto.ttf");
+    }
+
+    public void editTexConfig() {
         mEditText.setTypeface(font);
         mEditText.setHint("Choose username");
         mEditText.setFocusableInTouchMode(false);
@@ -113,74 +124,11 @@ public class LoginScreen extends AppCompatActivity {
                 return false;
             }
         });
-
-        mImageButtonPlay = (ImageButton) findViewById(R.id.button_play);
-//        mImageButtonPlay.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mStringUserName = mEditText.getText().toString();
-//                if (mStringUserName.length() <= 3) {
-//                    AlertDialog alertDialogLogin = new AlertDialog.Builder(context).create();
-//                    alertDialogLogin.setMessage("Username incorrect. Username must be at least 4 characters!");
-//                    alertDialogLogin.setCancelable(false);
-//                    alertDialogLogin.setButton("Try Again", new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int which) {
-//                        }
-//                    });
-//                    alertDialogLogin.show();
-//                } else {
-//                    PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_NAME, mStringUserName);
-//                    PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_GOLD, 0);
-//
-//                    Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
-//                    startActivity(intent);
-//                    finish();
-//                }
-//            }
-//      });
-        mImageButtonPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-//                View popupView = layoutInflater.inflate(R.layout.popup_login, null);
-//                final PopupWindow pw = new PopupWindow(popupView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
-//                pw.showAtLocation(popupView, Gravity.CENTER, 0, 0);
-//
-//                Button btnDismiss = (Button)popupView.findViewById(R.id.button_close);
-//                btnDismiss.setOnClickListener(new Button.OnClickListener(){
-//                    @Override
-//                    public void onClick(View v) {
-//                        // TODO Auto-generated method stub
-//                        pw.dismiss();
-//                    }});
-
-                Intent intent = new Intent(getApplicationContext(), PopupLogin.class);
-                startActivity(intent);
-                overridePendingTransition(R.animator.slide_in_bottom, R.animator.slide_out_bottom);
-            }
-        });
-
-
-        mImageButtonTryAgain = (ImageButton) findViewById(R.id.button_tryagain);
-        mImageButtonTryAgain.setVisibility(View.GONE);
-        mImageViewConnectFail = (ImageView) findViewById(R.id.image_connectfail);
-        mImageViewConnectFail.setVisibility(View.GONE);
-        mImageViewTextLogin = (ImageView) findViewById(R.id.image_textlogin);
-        mImageViewTextLogin.setImageResource(R.drawable.text);
-        mImageViewRoundRec = (ImageView) findViewById(R.id.image_roundrec);
-        mImageViewRoundRec.setImageResource(R.drawable.roundrec);
-        LoginFB();
     }
 
-    public void LoginFB() {
+    public void loginFB() {
         mCallbackManager = CallbackManager.Factory.create();
-        mAccessTokenTracker = new
-                AccessTokenTracker() {
-                    @Override
-                    protected void onCurrentAccessTokenChanged(AccessToken oldToken, AccessToken newToken) {
-                        AccessToken mAccessToken = newToken;
-                    }
-                };
+
         mLoginButtonFb = (LoginButton) findViewById(R.id.button_fb);
         mLoginButtonFb.setBackgroundResource(R.drawable.fbbutton);
         mLoginButtonFb.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
@@ -189,60 +137,158 @@ public class LoginScreen extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (NetworkUtils.checkInternetConnection(LoginScreen.this)) {
-                    mLoginButtonFb.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+                    mAccessTokenTracker = new
+                            AccessTokenTracker() {
                                 @Override
-                                public void onSuccess(LoginResult loginResult) {
-                                    mLoginButtonFb.setVisibility(View.INVISIBLE);
-                                    AccessToken mAccessToken = loginResult.getAccessToken();
-                                    PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_ACCESS_TOKEN, mAccessToken.getToken());
-                                    Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
-                                    startActivity(intent);
-                                    overridePendingTransition(R.animator.right_in, R.animator.left_out);
-                                    finish();
+                                protected void onCurrentAccessTokenChanged(AccessToken oldToken, AccessToken newToken) {
+                                    AccessToken mAccessToken = newToken;
                                 }
-
+                            };
+                    FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
                                 @Override
-                                public void onCancel() {
-                                }
+                                public void onInitialized() {
+                                    AccessToken mAccessToken = AccessToken.getCurrentAccessToken();
+                                    if (mAccessToken != null) {
+                                        parserJSON();
+                                        Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
+                                        overridePendingTransition(R.animator.right_in, R.animator.left_out);
+                                        startActivity(intent);
+                                        finish();
+                                        return;
+                                    } else {
+                                        mLoginButtonFb.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+                                                    @Override
+                                                    public void onSuccess(LoginResult loginResult) {
+                                                        mLoginButtonFb.setVisibility(View.INVISIBLE);
+                                                        AccessToken mAccessToken = loginResult.getAccessToken();
+                                                        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_ACCESS_TOKEN, mAccessToken.getToken());
+                                                        Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
+                                                        startActivity(intent);
+                                                        overridePendingTransition(R.animator.right_in, R.animator.left_out);
+                                                        finish();
+                                                    }
 
-                                @Override
-                                public void onError(FacebookException exception) {
+                                                    @Override
+                                                    public void onCancel() {
+                                                    }
+
+                                                    @Override
+                                                    public void onError(FacebookException exception) {
+                                                    }
+                                                }
+                                        );
+                                        return;
+                                    }
+
                                 }
                             }
                     );
+
                     mAccessTokenTracker.startTracking();
                 } else {
-                    mLoginButtonFb.setVisibility(View.GONE);
-                    mImageButtonPlay.setVisibility(View.GONE);
-                    mImageViewTextLogin.setVisibility(View.GONE);
-                    mImageViewRoundRec.setVisibility(View.GONE);
-                    mEditText.setVisibility(View.GONE);
-                    mImageButtonTryAgain.setVisibility(View.VISIBLE);
-                    mImageViewConnectFail.setVisibility(View.VISIBLE);
-
-                    mEditText.setHint("");
-                    mImageViewConnectFail.setImageResource(R.drawable.connectfail);
-                    mImageButtonTryAgain.setImageResource(R.drawable.tryagainbutton);
-                    mImageButtonTryAgain.setFocusable(true);
-                    mImageButtonTryAgain.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = getIntent();
-                            startActivity(intent);
-                            overridePendingTransition(R.animator.in_from_left, R.animator.out_to_right);
-                            finish();
-                        }
-                    });
+                    NetworkUtils.movePopupConnection(LoginScreen.this);
                 }
                 return false;
             }
         });
     }
 
+    public void loginManual() {
+
+        mImageButtonPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (NetworkUtils.checkInternetConnection(LoginScreen.this)) {
+                    if (PrefUtils.getInstance(LoginScreen.this).get(PrefUtils.KEY_LOGGED_IN, false)) {
+                        parserJSON();
+                        Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
+                        startActivity(intent);
+                        finish();
+                        return;
+                    } else {
+                        mStringUserName = mEditText.getText().toString();
+                        if (mStringUserName.length() <= 3) {
+                            AlertDialog alertDialogLogin = new AlertDialog.Builder(context).create();
+                            alertDialogLogin.setMessage("Username incorrect. Username must be at least 4 characters!");
+                            alertDialogLogin.setCancelable(false);
+                            alertDialogLogin.setButton("Try Again", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            });
+                            alertDialogLogin.show();
+                        } else {
+                            PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_NAME, mStringUserName);
+                            PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_MONEY, 0);
+                            Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
+                            startActivity(intent);
+                            finish();
+
+                        }
+                    }
+                } else {
+                    NetworkUtils.movePopupConnection(LoginScreen.this);
+                }
+            }
+
+        });
+    }
+
+    public void checkLogin() {
+        FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
+                    @Override
+                    public void onInitialized() {
+                        AccessToken mAccessToken = AccessToken.getCurrentAccessToken();
+                        if (mAccessToken != null && NetworkUtils.checkInternetConnection(LoginScreen.this)) {
+                            parserJSON();
+                            Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
+                            overridePendingTransition(R.animator.right_in, R.animator.left_out);
+                            startActivity(intent);
+                            finish();
+                            return;
+                        }
+
+                    }
+                }
+        );
+        if (PrefUtils.getInstance(this).get(PrefUtils.KEY_LOGGED_IN, false) && NetworkUtils.checkInternetConnection(LoginScreen.this)) {
+            parserJSON();
+            Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+    }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void parserJSON() {
+        if (NetworkUtils.checkInternetConnection(LoginScreen.this)) {
+            JSONParser jParser = new JSONParser();
+            JSONObject json = jParser.getJSONFromUrl(url);
+            try {
+                city = json.getString(TAG_CITY);
+                Log.e("CITY", " " + city);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void strictMode() {
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
 }

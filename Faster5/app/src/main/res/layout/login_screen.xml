@@ -4,84 +4,161 @@
     android:id="@+id/background"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@drawable/background"
     android:focusable="true"
     android:focusableInTouchMode="true"
     tools:context=".ui.activity.MainActivity">
 
-    <ImageView
-        android:id="@+id/image_textlogin"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_centerHorizontal="true" />
-
 
     <ImageView
-        android:id="@+id/image_roundrec"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_alignBottom="@+id/text_edit"
-        android:layout_alignTop="@+id/text_edit"
-        android:layout_centerHorizontal="true" />
-
-
-    <EditText
-        android:id="@+id/text_edit"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:background="@android:color/transparent"
-        android:duplicateParentState="true"
-        android:ellipsize="end"
-        android:ems="1"
-        android:foregroundGravity="left"
-        android:gravity="center"
-        android:inputType="none"
-        android:maxLength="16"
-        android:paddingBottom="200dp"
-        android:paddingTop="200dp"
-        android:singleLine="true"
-        android:textSize="25sp" />
-
-    <ImageButton
-        android:id="@+id/button_play"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/image_textlogin"
+        android:id="@+id/imageview_altp"
+        android:layout_width="320dp"
+        android:layout_height="55dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="170dp"
-        android:adjustViewBounds="true"
-        android:background="@null"
-        android:scaleType="centerInside"
-        android:src="@drawable/playbutton" />
+        android:layout_marginTop="30dp"
+        android:src="@drawable/altp" />
+
+    <ImageView
+        android:id="@+id/imageview_online"
+        android:layout_width="65dp"
+        android:layout_height="30dp"
+        android:layout_alignEnd="@+id/imageview_altp"
+        android:layout_alignRight="@+id/imageview_altp"
+        android:layout_below="@+id/imageview_altp"
+        android:src="@drawable/online" />
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/button_fb"
         style="@style/FacebookLoginButton"
-        android:layout_width="180dp"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/imageview_altp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="120dp"
         android:drawableLeft="@null"
-        android:paddingBottom="30dp"
-        android:paddingTop="30dp" />
+        android:paddingBottom="50dp"
+        android:paddingTop="50dp" />
 
     <ImageView
-        android:id="@+id/image_connectfail"
-        android:layout_width="wrap_content"
-        android:layout_height="200dp"
+        android:id="@+id/imageview_or"
+        android:layout_width="150dp"
+        android:layout_height="45dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="150dp" />
+        android:layout_marginTop="200dp"
+        android:src="@drawable/or" />
 
-    <ImageButton
-        android:id="@+id/button_tryagain"
-        android:layout_width="200dp"
+    <ImageView
+        android:id="@+id/imageview_avatar"
+        android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:background="@null"
-        android:scaleType="centerInside" />
+        android:layout_alignLeft="@+id/button_fb"
+        android:layout_alignStart="@+id/button_fb"
+        android:layout_below="@+id/imageview_or"
+        android:layout_marginTop="15dp"
+        android:src="@drawable/avatar" />
+
+
+    <RelativeLayout
+        android:id="@+id/layout_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageview_avatar"
+        android:layout_marginTop="5dp">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_centerVertical="true"
+            android:background="#FFF" />
+
+        <ImageView
+            android:id="@+id/imageview_name"
+            android:layout_width="280dp"
+            android:layout_height="65dp"
+            android:layout_centerInParent="true"
+            android:paddingTop="5dp"
+            android:src="@drawable/roundrec_login" />
+
+        <EditText
+            android:id="@+id/text_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/imageview_name"
+            android:layout_alignRight="@+id/imageview_name"
+            android:layout_marginTop="17dp"
+            android:background="@android:color/transparent"
+            android:duplicateParentState="true"
+            android:ellipsize="end"
+            android:ems="1"
+            android:foregroundGravity="left"
+            android:gravity="center"
+            android:inputType="none"
+            android:maxLength="16"
+            android:paddingBottom="5dp"
+            android:singleLine="true"
+            android:textColor="#ffffff"
+            android:textColorHint="#ffffff"
+            android:textSize="20sp" />/>
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/layout_city"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layout_name">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_centerVertical="true"
+            android:background="#FFF" />
+
+        <TextView
+            android:id="@+id/textview_city_login"
+            android:layout_width="280dp"
+            android:layout_height="40dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/roundrec_login"
+            android:gravity="center_horizontal"
+            android:paddingTop="2dp"
+            android:text="VIETNAM"
+            android:textColor="#ffffff"
+            android:textSize="20sp" />
+
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/layout_button_dangnhap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layout_city"
+        android:layout_marginTop="5dp">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_centerVertical="true"
+            android:background="#FFF" />
+
+        <Button
+            android:id="@+id/button_login"
+            android:layout_width="150dp"
+            android:layout_height="40dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/button_login"
+            android:gravity="center"
+            android:paddingBottom="7dp"
+            android:text="Đăng nhập"
+            android:textAllCaps="false"
+            android:textColor="#ffffff"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
 
 
 </RelativeLayout>

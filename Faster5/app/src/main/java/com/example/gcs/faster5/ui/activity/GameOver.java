@@ -31,7 +31,7 @@ public class GameOver extends AppCompatActivity {
     TextView mTextViewNameUser1, mTextViewNameUser2, mResult, mUserScore1, mUserScore2;
     RelativeLayout mRelativeLayoutBg;
     ImageButton mImageButtonOk;
-    Integer mScore1 = 0, mScore2 = 0, mGold;
+    Integer mScore1 = 0, mScore2 = 0, mMoney;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +42,7 @@ public class GameOver extends AppCompatActivity {
         getSupportActionBar().hide();
         setContentView(R.layout.game_over);
 
-        Typeface font = Typeface.createFromAsset(getAssets(), "fonts/dimboregular.ttf");
+        Typeface font = Typeface.createFromAsset(getAssets(), "fonts/roboto.ttf");
         mRelativeLayoutBg = (RelativeLayout) findViewById(R.id.background);
         mRelativeLayoutBg.setBackgroundResource(R.drawable.background);
 
@@ -104,9 +104,9 @@ public class GameOver extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), InfoScreen.class);
-                mGold = PrefUtils.getInstance(GameOver.this).get(PrefUtils.KEY_GOLD, 0);
-                mGold = mGold + mScore1;
-                PrefUtils.getInstance(GameOver.this).set(PrefUtils.KEY_GOLD, mGold);
+                mMoney = PrefUtils.getInstance(GameOver.this).get(PrefUtils.KEY_MONEY, 0);
+                mMoney = mMoney + mScore1;
+                PrefUtils.getInstance(GameOver.this).set(PrefUtils.KEY_MONEY, mMoney);
                 startActivity(intent);
                 overridePendingTransition(R.animator.in_from_left, R.animator.out_to_right);
                 finish();

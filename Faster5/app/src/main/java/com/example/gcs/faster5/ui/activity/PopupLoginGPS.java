@@ -42,10 +42,8 @@ public class PopupLoginGPS extends AppCompatActivity implements LocationListener
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         getSupportActionBar().hide();
-        setContentView(R.layout.popup_login);
-        mEditTextLocation = (EditText) findViewById(R.id.edittext_location);
-        mEditTextLocation.setEnabled(false);
-        mTextViewLocation = (TextView) findViewById(R.id.text_location);
+        setContentView(R.layout.popup_connection);
+
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
 
@@ -54,14 +52,7 @@ public class PopupLoginGPS extends AppCompatActivity implements LocationListener
 
         getWindow().setLayout((int) (width * .9), (int) (height * .8));
 
-        Button btnDismiss = (Button) findViewById(R.id.button_close);
-        btnDismiss.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                onBackPressed();
-            }
-        });
+
 
         checkPermission();
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -119,5 +110,11 @@ public class PopupLoginGPS extends AppCompatActivity implements LocationListener
             //https://viblo.asia/bui.huu.tuan/posts/3wjAM7lBGmWe
         }
     }
-
+    public void setLayout() {
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int width = dm.widthPixels;
+        int height = dm.heightPixels;
+        getWindow().setLayout((int) (width * .9), (int) (height * .8));
+    }
 }
