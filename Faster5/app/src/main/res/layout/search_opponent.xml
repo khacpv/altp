@@ -1,113 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/background"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:background="@drawable/background"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imageview_useravatar1"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="30dp"
+            android:src="@drawable/avatar" />
+
+        <TextView
+            android:id="@+id/textview_username1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/imageview_useravatar1"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@+id/imageview_useravatar1"
+            android:layout_toRightOf="@+id/imageview_useravatar1"
+            android:text="PLAYER"
+            android:textColor="#ffffff"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textview_city_user1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textview_username1"
+            android:layout_alignStart="@+id/textview_username1"
+            android:layout_below="@+id/textview_username1"
+            android:text="CITY"
+            android:textColor="#ffffff"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textview_money1"
+            android:layout_width="220dp"
+            android:layout_height="45dp"
+            android:layout_alignLeft="@+id/imageview_useravatar1"
+            android:layout_alignStart="@+id/imageview_useravatar1"
+            android:layout_below="@+id/imageview_useravatar1"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/button_money"
+            android:gravity="center_horizontal"
+            android:paddingTop="8dp"
+            android:text="000.000.000"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+
+    </RelativeLayout>
 
     <ImageView
-        android:id="@+id/image_searchopponent"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:src="@drawable/opponent" />
+        android:src="@drawable/icon_opponent" />
 
-    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/image_useravatar1"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="35dp"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="118dp"
-        android:src="@drawable/avatar"
-        app:civ_border_color="#FFFFFF"
-        app:civ_border_width="5dp" />
+    <RelativeLayout
+        android:id="@+id/layout_opponent2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/image_useravatar2"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_above="@+id/button_play"
-        android:layout_alignLeft="@+id/image_useravatar1"
-        android:layout_alignStart="@+id/image_useravatar1"
-        android:layout_marginBottom="60dp"
-        android:src="@drawable/avatar"
-        app:civ_border_color="#FFFFFF"
-        app:civ_border_width="5dp" />
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imageview_useravatar2"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:src="@drawable/avatar" />
 
+        <TextView
+            android:id="@+id/textview_username2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/imageview_useravatar2"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/imageview_useravatar2"
+            android:text="PLAYER"
+            android:textColor="#ffffff"
+            android:textSize="30sp"
+            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/text_topicname"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/textview_city_user2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/textview_username2"
+            android:layout_below="@+id/textview_username2"
+            android:text="CITY"
+            android:textColor="#ffffff"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textview_money2"
+            android:layout_width="220dp"
+            android:layout_height="45dp"
+            android:layout_alignRight="@+id/imageview_useravatar2"
+            android:layout_below="@+id/imageview_useravatar2"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/button_money2"
+            android:gravity="center_horizontal"
+            android:paddingTop="8dp"
+            android:text="000.000.000"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+        />
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/button_search_again"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:text="Name Topic"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#000000"
-        android:textSize="40dp"
-        android:textStyle="bold" />
+        android:layout_marginTop="50dp"
+        android:background="@drawable/button_search2"
+        android:gravity="center" />
 
-    <TextView
-        android:id="@+id/text_username1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="120dp"
-        android:layout_marginTop="115dp"
-        android:text="User Name1"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="25dp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/text_username2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="120dp"
-        android:layout_marginTop="380dp"
-        android:text="User Name2"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="25dp"
-        android:textStyle="bold" />
-
-    <ImageButton
+    <Button
         android:id="@+id/button_play"
-        android:layout_width="150dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="25dp"
-        android:adjustViewBounds="true"
-        android:background="@null"
-        android:scaleType="centerInside"
-        android:src="@drawable/playbutton" />
+        android:layout_marginTop="10dp"
+        android:background="@drawable/button_play"
+        android:gravity="center" />
 
-    <TextView
-        android:id="@+id/text_gold1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="180dp"
-        android:layout_marginTop="160dp"
-        android:text="0"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#000000"
-        android:textSize="25sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/text_gold2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="0"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#000000"
-        android:textSize="25sp"
-        android:textStyle="bold"
-        android:layout_marginLeft="180dp"
-        android:layout_marginTop="420dp" />
-</RelativeLayout>
+</LinearLayout>

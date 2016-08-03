@@ -48,13 +48,11 @@ public class WellcomeScreen extends AppCompatActivity {
                 Intent moveMainScreen = new Intent(getApplicationContext(), LoginScreen.class);
                 moveMainScreen.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(moveMainScreen);
+                overridePendingTransition(R.animator.right_in, R.animator.left_out);
                 finish();
             }
         };
         mImageButtonPlayNormal.setOnClickListener(buttonListener);
     }
 
-    public void onBackPressed() {
-
-    }
 }

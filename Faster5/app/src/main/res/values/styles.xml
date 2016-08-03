@@ -8,6 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
 
     </style>
+
     <style name="FacebookLoginButton">
         <item name="android:background">@drawable/fbbutton</item>
         <item name="android:textSize">0sp</item>
@@ -22,5 +23,12 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
         <item name="android:layout_marginBottom">10dp</item>
+    </style>
+
+
+
+    <style name="AppTheme.CustomTheme">
+        <item name="android:windowIsTranslucent">true</item>
+
     </style>
 </resources>

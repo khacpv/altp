@@ -9,7 +9,7 @@ public class Topic {
 
     private int mPhoto;
 
-    @SerializedName("id")
+    @SerializedName("id")   //@: Annotation
     private int mTopicId;
 
     @SerializedName("title")
@@ -17,6 +17,12 @@ public class Topic {
 
     @SerializedName("image")
     private String mImage;
+
+    public Topic(int topicId, String topicName, int photo) {
+        this.mTopicId = topicId;
+        this.mTopicName = topicName;
+        this.mPhoto = photo;
+    }
 
     public int getPhoto() {
         return mPhoto;
@@ -40,13 +46,6 @@ public class Topic {
 
     public void setNameTopic(String topicName) {
         this.mTopicName = topicName;
-    }
-
-    public Topic(int topicId, String topicName, int photo) {
-        this.mTopicId = topicId;
-        this.mTopicName = topicName;
-
-        this.mPhoto = photo;
     }
 
     public String getmImage() {
