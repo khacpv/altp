@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.example.gcs.faster5.R;
 import com.example.gcs.faster5.network.ConnectivityChangeReceiver;
+import com.example.gcs.faster5.network.SocketIO;
 import com.example.gcs.faster5.util.JSONParser;
 import com.example.gcs.faster5.util.NetworkUtils;
 import com.example.gcs.faster5.util.PrefUtils;
@@ -36,6 +37,9 @@ import com.facebook.login.widget.LoginButton;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 
 /**
  * Created by Kien on 07/05/2016.
@@ -55,6 +59,7 @@ public class LoginScreen extends AppCompatActivity {
     TextView mTextViewCity;
     Typeface font;
     public static String city;
+    private Socket mSocket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +70,13 @@ public class LoginScreen extends AppCompatActivity {
 
         checkLogin();
         setContentView(R.layout.login_screen);
+
+        SocketIO socket = (SocketIO) getApplication();
+        mSocket = socket.getSocket();
+        mSocket.connect();
+        attemptSend();
+        mSocket.on("ping", sendPong);
+
         strictMode();
         findViewbyId();
         editTexConfig();
@@ -73,11 +85,45 @@ public class LoginScreen extends AppCompatActivity {
         loginManual();
 
         if (city == null) {
-            mTextViewCity.setText("VIETNAM");
+            mTextViewCity.setText("VIETNAM" );
         } else {
             mTextViewCity.setText(city);
         }
+
     }
+
+    private void attemptSend() {
+        if (!mSocket.connected()) {
+            Log.e("Connecting...", "Connecting" );
+
+        } else {
+            Log.e("Connected...", "Connected" );
+        }
+        String ping = "3";
+        mSocket.emit("ping", ping);
+    }
+
+    private Emitter.Listener sendPong = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    String ping;
+                    try {
+                        ping = data.getString("ping" );
+                    } catch (JSONException e) {
+                        return;
+                    }
+                    if (ping.equals("4" )) {
+                        Log.e("Connected...", "Connected" );
+                    }
+                    Log.e("SOCKETPING", "RECEIVED PING! " );
+                }
+            });
+        }
+    };
 
     public void findViewbyId() {
         mTextViewCity = (TextView) findViewById(R.id.textview_city_login);
@@ -85,17 +131,17 @@ public class LoginScreen extends AppCompatActivity {
         mEditText = (EditText) findViewById(R.id.text_edit);
         mImageButtonPlay = (Button) findViewById(R.id.button_login);
         font = Typeface.createFromAsset(getAssets(),
-                "fonts/roboto.ttf");
+                "fonts/roboto.ttf" );
     }
 
     public void editTexConfig() {
         mEditText.setTypeface(font);
-        mEditText.setHint("Choose username");
+        mEditText.setHint("Choose username" );
         mEditText.setFocusableInTouchMode(false);
         mEditText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                mEditText.setHint("");
+                mEditText.setHint("" );
                 mEditText.requestFocusFromTouch();
                 mEditText.setFocusableInTouchMode(true);
                 InputMethodManager keyBoard = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -108,7 +154,7 @@ public class LoginScreen extends AppCompatActivity {
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
                     mEditText.clearFocus();
-                    mEditText.setHint("Choose username");
+                    mEditText.setHint("Choose username" );
                     mEditText.setFocusableInTouchMode(false);
                 }
             }
@@ -132,7 +178,7 @@ public class LoginScreen extends AppCompatActivity {
         mLoginButtonFb = (LoginButton) findViewById(R.id.button_fb);
         mLoginButtonFb.setBackgroundResource(R.drawable.fbbutton);
         mLoginButtonFb.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-        mLoginButtonFb.setReadPermissions("public_profile");
+        mLoginButtonFb.setReadPermissions("public_profile" );
         mLoginButtonFb.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -209,7 +255,7 @@ public class LoginScreen extends AppCompatActivity {
                         mStringUserName = mEditText.getText().toString();
                         if (mStringUserName.length() <= 3) {
                             AlertDialog alertDialogLogin = new AlertDialog.Builder(context).create();
-                            alertDialogLogin.setMessage("Username incorrect. Username must be at least 4 characters!");
+                            alertDialogLogin.setMessage("Username incorrect. Username must be at least 4 characters!" );
                             alertDialogLogin.setCancelable(false);
                             alertDialogLogin.setButton("Try Again", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
@@ -289,6 +335,13 @@ public class LoginScreen extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        mSocket.disconnect();
     }
 
 }
