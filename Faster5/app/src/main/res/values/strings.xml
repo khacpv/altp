@@ -2,4 +2,9 @@
     <string name="app_name">Faster5</string>
     <string name="facebook_app_id">513017002219486</string>
     <string name="username1">Nguyen Van A</string>
+
+    <string name="connect">Connected</string>
+    <string name="disconnect">Disconnected, Please check your internet connection</string>
+    <string name="error_connect">Failed to connect</string>
+    <string name="timeout_connect">Timeout to connect</string>
 </resources>
