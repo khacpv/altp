@@ -36,6 +36,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -58,17 +59,29 @@ public class LoginScreen extends AppCompatActivity {
     Button mImageButtonPlay;
     TextView mTextViewCity;
     Typeface font;
+
     private LoginButton mLoginButtonFb;
     private CallbackManager mCallbackManager;
     private SockAltp mSocketAltp;
+
     private SockAltp.OnSocketEvent globalCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
             switch (event) {
-                case Socket.EVENT_CONNECT:
+                case Socket.EVENT_CONNECT:  // auto call on connect to server
+                    // send test
                     try {
                         JSONObject data = new JSONObject("{count:1}");
                         mSocketAltp.send("test", data);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    // send login
+                    try {
+                        JSONObject data = new JSONObject("{user: {name:\"khac\"," +
+                                "address:\"Hanoi\",fbId:\"12315\"}}");
+                        mSocketAltp.send("login", data);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -76,6 +89,7 @@ public class LoginScreen extends AppCompatActivity {
             }
         }
     };
+
     private SockAltp.OnSocketEvent testCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
@@ -104,6 +118,60 @@ public class LoginScreen extends AppCompatActivity {
         }
     };
 
+    private SockAltp.OnSocketEvent loginCallback = new SockAltp.OnSocketEvent() {
+        @Override
+        public void onEvent(String event, Object... args) {
+            if (args.length == 0) {
+                return;
+            }
+            JSONObject data = (JSONObject) args[0];
+            try {
+                boolean success = data.getBoolean("success");
+                JSONObject user = data.getJSONObject("user");
+                long userId = user.getLong("id");
+                String name = user.getString("name");
+                String avatar = user.getString("avatar");
+                String address = user.getString("address");
+                String fbId = user.getString("fbId");
+                String room = user.getString("room");
+                Log.e("TAG", user.toString());
+
+                // send search
+                try{
+                    JSONObject dataSearch = new JSONObject("{user: {id:\""+userId+"\"}}");
+                    mSocketAltp.send("search", dataSearch);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+    private SockAltp.OnSocketEvent searchCallback = new SockAltp.OnSocketEvent() {
+        @Override
+        public void onEvent(String event, Object... args) {
+            if (args.length == 0) {
+                return;
+            }
+            JSONObject data = (JSONObject) args[0];
+            try {
+                String room = data.getString("room");
+                JSONArray dummyUsers = data.getJSONArray("dummyUsers");
+                for(int i=0;i<dummyUsers.length();i++){
+                    JSONObject dummyUser = dummyUsers.getJSONObject(i);
+                    String id = dummyUser.getString("id");
+                    String name = dummyUser.getString("name");
+                    String avatar = dummyUser.getString("avatar");
+                }
+                Log.e("TAG", "join room: "+room);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,6 +185,8 @@ public class LoginScreen extends AppCompatActivity {
         mSocketAltp = new SockAltp(SockAltp.SERVER_PROD, true);
         mSocketAltp.addGlobalEvent(globalCallback);
         mSocketAltp.addEvent("test", testCallback);
+        mSocketAltp.addEvent("login", loginCallback);
+        mSocketAltp.addEvent("search", searchCallback);
 
         strictMode();
         findViewbyId();
