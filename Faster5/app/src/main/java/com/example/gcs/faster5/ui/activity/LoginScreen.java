@@ -19,9 +19,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.gcs.faster5.BuildConfig;
+import com.example.gcs.faster5.MainApplication;
 import com.example.gcs.faster5.R;
 import com.example.gcs.faster5.sock.SockAltp;
 import com.example.gcs.faster5.util.JSONParser;
@@ -64,19 +63,14 @@ public class LoginScreen extends AppCompatActivity {
     private CallbackManager mCallbackManager;
     private SockAltp mSocketAltp;
 
+    /**
+     * global events
+     * */
     private SockAltp.OnSocketEvent globalCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
             switch (event) {
                 case Socket.EVENT_CONNECT:  // auto call on connect to server
-                    // send test
-                    try {
-                        JSONObject data = new JSONObject("{count:1}");
-                        mSocketAltp.send("test", data);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
                     // send login
                     try {
                         JSONObject data = new JSONObject("{user: {name:\"khac\"," +
@@ -86,34 +80,6 @@ public class LoginScreen extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     break;
-            }
-        }
-    };
-
-    private SockAltp.OnSocketEvent testCallback = new SockAltp.OnSocketEvent() {
-        @Override
-        public void onEvent(String event, Object... args) {
-            if (args.length == 0) {
-                return;
-            }
-            JSONObject data = (JSONObject) args[0];
-            try {
-                int countFromServer = data.getInt("count");
-                String textFromServer = data.getString("text");
-                final String message = "server return: " + countFromServer + " with text: " +
-                        textFromServer;
-                Log.e("TAG", message);
-                if (BuildConfig.DEBUG) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    });
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
         }
     };
@@ -182,9 +148,12 @@ public class LoginScreen extends AppCompatActivity {
         checkLogin();
         setContentView(R.layout.login_screen);
 
-        mSocketAltp = new SockAltp(SockAltp.SERVER_PROD, true);
+        mSocketAltp = MainApplication.sockAltp();
+        if(!mSocketAltp.isConnected()){
+            mSocketAltp.connect();
+        }
+
         mSocketAltp.addGlobalEvent(globalCallback);
-        mSocketAltp.addEvent("test", testCallback);
         mSocketAltp.addEvent("login", loginCallback);
         mSocketAltp.addEvent("search", searchCallback);
 

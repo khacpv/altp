@@ -21,7 +21,7 @@ public class SockAltp {
 
     private Socket mSocket;
 
-    private Boolean isConnected = true;
+    private Boolean isConnected = false;
 
     private ArrayList<OnSocketEvent> listeners = new ArrayList<>();
 
@@ -135,9 +135,7 @@ public class SockAltp {
     private Emitter.Listener onConnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            if (!isConnected) {
-                isConnected = true;
-            }
+            isConnected = true;
 
             for (OnSocketEvent event : listeners) {
                 event.onEvent(Socket.EVENT_CONNECT, args);
