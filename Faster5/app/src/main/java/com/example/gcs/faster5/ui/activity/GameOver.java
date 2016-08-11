@@ -36,10 +36,13 @@ public class GameOver extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
+        if(getSupportActionBar() !=null) {
+            getSupportActionBar().hide();
+        }
+
         setContentView(R.layout.game_over);
 
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/roboto.ttf");

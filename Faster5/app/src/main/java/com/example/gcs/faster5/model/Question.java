@@ -1,6 +1,5 @@
 package com.example.gcs.faster5.model;
 
-
 import android.view.View;
 import android.widget.Button;
 
@@ -21,8 +20,12 @@ public class Question {
     @SerializedName("id")
     Integer mStt;
 
-    @SerializedName("answer_right")
+    @SerializedName("answerRight")
     Integer mCorrectAnsId;
+
+    public Question() {
+
+    }
 
     public Question(Integer stt, String question, List<String> ans, Integer idAnsCorrect) {
         this.mStt = stt;

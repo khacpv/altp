@@ -1,5 +1,6 @@
 package com.example.gcs.faster5.sock;
 
+import android.util.Log;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +16,7 @@ import io.socket.emitter.Emitter;
  */
 public class SockAltp {
 
-    public static final String SERVER_LOCAL = "http://192.168.1.102:8081";
+    public static final String SERVER_LOCAL = "http://192.168.5.23:8081";
 
     public static final String SERVER_PROD = "http://altp-oic.rhcloud.com";
 
@@ -102,7 +103,8 @@ public class SockAltp {
      */
     public void addEvent(final String eventName, final OnSocketEvent callback) {
         if (eventListeners.containsKey(eventName)) {
-            throw new RuntimeException(String.format("event with name: %s has been registered!", eventName));
+            Log.e("TAG",String.format("event with name: %s has been registered!", eventName));
+            return;
         }
         Emitter.Listener listener = new Emitter.Listener() {
             @Override

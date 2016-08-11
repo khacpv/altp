@@ -22,6 +22,7 @@ import com.example.gcs.faster5.util.PrefUtils;
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -36,7 +37,7 @@ public class SearchOpponent extends AppCompatActivity {
     public static final String EXTRA_ID = "topic_id";
     public static final String EXTRA_NAME = "topic_name";
     public static final String EXTRA_ANSWER_RIGHT = "right_answer";
-    public static List<Question> questions;
+    public static List<Question> questions = new ArrayList<>();
     String username2;
     TextView mTextViewCityUser1, mTextViewCityUser2, mTextViewUserName1, mTextViewUserName2, mTextViewMoney1, mTextViewMoney2;
     ImageView mImageViewUserAvatar1, mImageViewUserAvatar2;
@@ -47,10 +48,12 @@ public class SearchOpponent extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
         setContentView(R.layout.search_opponent);
 
         Typeface font = Typeface.createFromAsset(getAssets(),
@@ -140,7 +143,8 @@ public class SearchOpponent extends AppCompatActivity {
         new ServiceMng().api().getQuestion(0).enqueue(new Callback<List<Question>>() {
             @Override
             public void onResponse(Call<List<Question>> call, Response<List<Question>> response) {
-                questions = response.body();
+                questions.clear();
+                questions.addAll(response.body());
                 mButtonPlay.setBackgroundResource(R.drawable.button_play);
             }
 
