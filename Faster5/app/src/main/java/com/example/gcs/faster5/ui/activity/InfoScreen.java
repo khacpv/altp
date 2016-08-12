@@ -57,7 +57,7 @@ public class InfoScreen extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
         setContentView(R.layout.info_screen);
-
+        
         /**
          * RecyclerView
          */

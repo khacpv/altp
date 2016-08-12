@@ -71,6 +71,7 @@ public class LoginScreen extends AppCompatActivity {
         public void onEvent(String event, Object... args) {
             switch (event) {
                 case Socket.EVENT_CONNECT:  // auto call on connect to server
+
                     // send login
                     try {
                         JSONObject data = new JSONObject("{user: {name:\"khac\"," +
@@ -149,9 +150,9 @@ public class LoginScreen extends AppCompatActivity {
         setContentView(R.layout.login_screen);
 
         mSocketAltp = MainApplication.sockAltp();
-        if(!mSocketAltp.isConnected()){
-            mSocketAltp.connect();
-        }
+//        if(!mSocketAltp.isConnected()){
+//            mSocketAltp.connect();
+//        }
 
         mSocketAltp.addGlobalEvent(globalCallback);
         mSocketAltp.addEvent("login", loginCallback);

@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -27,11 +28,11 @@ public class GameOver extends AppCompatActivity {
 
     public static final String EXTRA_SCORE = "score";
 
-    ImageView mImageViewUserAvatar1, mImageViewUserAvatar2;
-    TextView mTextViewNameUser1, mTextViewNameUser2, mResult, mUserScore1, mUserScore2;
-    RelativeLayout mRelativeLayoutBg;
-    ImageButton mImageButtonOk;
-    Integer mScore1 = 0, mScore2 = 0, mMoney;
+    ImageView mImageViewUserAvatarWin;
+    TextView mTextViewNameUserWin, mUserScoreWin;
+
+    Button ButtonBack;
+    Integer mScore = 0, mMoney;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,69 +44,53 @@ public class GameOver extends AppCompatActivity {
         setContentView(R.layout.game_over);
 
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/roboto.ttf");
-        mRelativeLayoutBg = (RelativeLayout) findViewById(R.id.background);
-        mRelativeLayoutBg.setBackgroundResource(R.drawable.background);
 
-        mImageViewUserAvatar1 = (ImageView) findViewById(R.id.image_useravatar1);
+        mImageViewUserAvatarWin = (ImageView) findViewById(R.id.imageview_useravatarwin);
 
-        mTextViewNameUser1 = (TextView) findViewById(R.id.text_username1);
-        mTextViewNameUser2 = (TextView) findViewById(R.id.text_username2);
-        mTextViewNameUser1.setTypeface(font);
-        mTextViewNameUser2.setTypeface(font);
+        mTextViewNameUserWin = (TextView) findViewById(R.id.textview_usernnamewin);
+        mTextViewNameUserWin.setTypeface(font);
 
-        mResult = (TextView) findViewById(R.id.text_result);
-        mResult.setTypeface(font);
+        mUserScoreWin = (TextView) findViewById(R.id.textview_money_win);
+        mUserScoreWin.setTypeface(font);
 
-        mUserScore1 = (TextView) findViewById(R.id.text_userscore1);
-        mUserScore1.setTypeface(font);
-        mUserScore2 = (TextView) findViewById(R.id.text_userscore2);
-        mUserScore2.setTypeface(font);
 
         FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
             @Override
             public void onInitialized() {
                 AccessToken accessToken = AccessToken.getCurrentAccessToken();
                 if (accessToken != null) {
-                    mTextViewNameUser1.setText(InfoScreen.sFullNameFb);
+                    mTextViewNameUserWin.setText(InfoScreen.sFullNameFb);
                     Glide.with(getApplicationContext())
-                            .load("https://graph.facebook.com/" + InfoScreen.sUserFbId + "/picture?width=500&height=500").into(mImageViewUserAvatar1);
+                            .load("https://graph.facebook.com/" + InfoScreen.sUserFbId +
+                                    "/picture?width=500&height=500").into(mImageViewUserAvatarWin);
                 } else {
-                    mTextViewNameUser1.setText(InfoScreen.sFullNameFb);
-                    mImageViewUserAvatar1.setImageResource(R.drawable.avatar);
+                    mTextViewNameUserWin.setText(InfoScreen.sFullNameFb);
+                    mImageViewUserAvatarWin.setImageResource(R.drawable.avatar);
                 }
             }
         });
         SearchOpponent.questions.clear();
+
+        buttonBackPressed();
         Score();
-        buttonOkPressed();
     }
 
     public void Score() {
         Bundle extrasName = getIntent().getExtras();
         if (extrasName != null) {
-            mScore1 = extrasName.getInt(EXTRA_SCORE);
-            if (mScore1 > mScore2) {
-                mResult.setText("YOU WIN");
-            } else if (mScore1 < mScore2) {
-                mResult.setText("YOU LOSE");
-            } else if (mScore1 == mScore2) {
-                mResult.setText("DRAW");
-            }
-            mUserScore1.setText(Integer.toString(mScore1));
-            mUserScore2.setText(Integer.toString(mScore2));
-
+            mScore = extrasName.getInt(EXTRA_SCORE);
+            mUserScoreWin.setText(Integer.toString(mScore));
         }
     }
 
-    public void buttonOkPressed() {
-        mImageButtonOk = (ImageButton) findViewById(R.id.button_ok);
-        mImageButtonOk.setImageResource(R.drawable.okbutton);
-        mImageButtonOk.setOnClickListener(new View.OnClickListener() {
+    public void buttonBackPressed() {
+        ButtonBack = (Button) findViewById(R.id.button_backhome);
+        ButtonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), InfoScreen.class);
                 mMoney = PrefUtils.getInstance(GameOver.this).get(PrefUtils.KEY_MONEY, 0);
-                mMoney = mMoney + mScore1;
+                mMoney = mMoney + mScore;
                 PrefUtils.getInstance(GameOver.this).set(PrefUtils.KEY_MONEY, mMoney);
                 startActivity(intent);
                 overridePendingTransition(R.animator.in_from_left, R.animator.out_to_right);

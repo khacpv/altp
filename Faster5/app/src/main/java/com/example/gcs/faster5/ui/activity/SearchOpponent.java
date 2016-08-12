@@ -40,6 +40,7 @@ public class SearchOpponent extends AppCompatActivity {
     String username2;
     TextView mTextViewCityUser1, mTextViewCityUser2, mTextViewUserName1, mTextViewUserName2, mTextViewMoney1, mTextViewMoney2;
     ImageView mImageViewUserAvatar1, mImageViewUserAvatar2;
+    public static RelativeLayout mRelativeLayoutPlay;
     public static Button mButtonPlay, mButtonSeach;
     String URL;
     int idUser2;
@@ -52,6 +53,9 @@ public class SearchOpponent extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
         setContentView(R.layout.search_opponent);
+
+        mRelativeLayoutPlay = (RelativeLayout) findViewById(R.id.relative_layout_play);
+        mRelativeLayoutPlay.setVisibility(View.GONE);
 
         Typeface font = Typeface.createFromAsset(getAssets(),
                 "fonts/roboto.ttf");
@@ -103,6 +107,7 @@ public class SearchOpponent extends AppCompatActivity {
         mTextViewMoney2.setTypeface(font);
         mTextViewMoney2.setText(String.valueOf(PrefUtils.getInstance(this).get(PrefUtils.KEY_MONEY, 0)));
         mButtonPlay = (Button) findViewById(R.id.button_play);
+        mButtonPlay.setTypeface(font);
         mButtonPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -141,7 +146,7 @@ public class SearchOpponent extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<Question>> call, Response<List<Question>> response) {
                 questions = response.body();
-                mButtonPlay.setBackgroundResource(R.drawable.button_play);
+                mRelativeLayoutPlay.setVisibility(View.VISIBLE);
             }
 
             @Override
