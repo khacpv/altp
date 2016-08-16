@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -39,7 +40,7 @@ public class InfoScreen extends AppCompatActivity {
     TextView mTextViewNameUser, mTextViewMoney, mTextViewCity,
             mTextViewPlayer1, mTextViewPlayer2, mTextViewPlayer3, mTextViewPlayer4,
             mTextViewPlayer5, mTextViewPlayer6, mTextViewPlayer7, mTextViewPlayer8;
-    ImageView mImageViewFbAvatar, logoutButtonImgV;
+    ImageView mImageViewAvatar, logoutButtonImgV;
     Button[] mButtonPlayer;
     Button mButtonSearch;
     Intent mIntentSearchOpponent;
@@ -52,12 +53,14 @@ public class InfoScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
         setContentView(R.layout.info_screen);
-        
+
         /**
          * RecyclerView
          */
@@ -84,7 +87,7 @@ public class InfoScreen extends AppCompatActivity {
             mTextViewCity.setText("VIETNAM");
         }
 
-        mImageViewFbAvatar = (ImageView) findViewById(R.id.imageview_useravatar);
+        mImageViewAvatar = (ImageView) findViewById(R.id.imageview_useravatar);
 
         mTextViewMoney = (TextView) findViewById(R.id.textview_money);
         mTextViewMoney.setTypeface(font);
@@ -188,9 +191,7 @@ public class InfoScreen extends AppCompatActivity {
                                          }
         );
 
-        FacebookSdk.sdkInitialize(
-                getApplicationContext(),
-                new FacebookSdk.InitializeCallback() {
+        FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
                     @Override
                     public void onInitialized() {
                         //AccessToken is for us to check whether we have previously logged in into
@@ -199,9 +200,13 @@ public class InfoScreen extends AppCompatActivity {
                         if (accessToken == null) {
                             sManualName = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_NAME, "");
                             mTextViewNameUser.setText(sManualName);
+                            Glide.with(getApplicationContext())
+                                    .load(PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_URL_AVATAR, ""))
+                                    .into(mImageViewAvatar);
+                            Log.e("URL", PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_URL_AVATAR, ""));
                         } else {
                             if (NetworkUtils.checkInternetConnection(InfoScreen.this)) {
-                                GetUserInfo();
+                                getUserInfoFromFb();
                             }
                         }
                     }
@@ -222,30 +227,28 @@ public class InfoScreen extends AppCompatActivity {
     }*/
     }
 
-    private void GetUserInfo() {
-        GraphRequest request = GraphRequest.newMeRequest(
-                AccessToken.getCurrentAccessToken(),
-                new GraphRequest.GraphJSONObjectCallback() {
-                    @Override
-                    public void onCompleted(
-                            JSONObject object,
-                            GraphResponse response) {
-                        // Application code
-                        try {
-                            sUserFbId = object.getString("id");
-                            if (sUserFbId == null) {
-                                mImageViewFbAvatar.setImageResource(R.drawable.avatar);
-                            } else {
-                                sFullNameFb = object.getString("name");
-                                mTextViewNameUser.setText(sFullNameFb);
-                                Glide.with(getApplicationContext())
-                                        .load("https://graph.facebook.com/" + sUserFbId + "/picture?width=500&height=500").into(mImageViewFbAvatar);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+    private void getUserInfoFromFb() {
+        GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+            @Override
+            public void onCompleted(
+                    JSONObject object, GraphResponse response) {
+                // Application code
+                try {
+                    sUserFbId = object.getString("id");
+                    if (sUserFbId == null) {
+                        mImageViewAvatar.setImageResource(R.drawable.avatar);
+                    } else {
+                        sFullNameFb = object.getString("name");
+                        mTextViewNameUser.setText(sFullNameFb);
+                        Glide.with(getApplicationContext())
+                                .load("https://graph.facebook.com/" + sUserFbId + "/picture?width=500&height=500")
+                                .into(mImageViewAvatar);
                     }
-                });
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         Bundle parameters = new Bundle();
         parameters.putString("fields", "id,gender,name,birthday,picture.type(large)");
         request.setParameters(parameters);

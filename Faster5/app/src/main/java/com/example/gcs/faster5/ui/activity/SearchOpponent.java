@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -22,6 +23,7 @@ import com.example.gcs.faster5.util.PrefUtils;
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -36,7 +38,7 @@ public class SearchOpponent extends AppCompatActivity {
     public static final String EXTRA_ID = "topic_id";
     public static final String EXTRA_NAME = "topic_name";
     public static final String EXTRA_ANSWER_RIGHT = "right_answer";
-    public static List<Question> questions;
+    public static List<Question> questions = new ArrayList<>();
     String username2;
     TextView mTextViewCityUser1, mTextViewCityUser2, mTextViewUserName1, mTextViewUserName2, mTextViewMoney1, mTextViewMoney2;
     ImageView mImageViewUserAvatar1, mImageViewUserAvatar2;
@@ -48,10 +50,12 @@ public class SearchOpponent extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
         setContentView(R.layout.search_opponent);
 
         mRelativeLayoutPlay = (RelativeLayout) findViewById(R.id.relative_layout_play);
@@ -132,10 +136,13 @@ public class SearchOpponent extends AppCompatActivity {
                 if (accessToken != null) {
                     mTextViewUserName1.setText(InfoScreen.sFullNameFb);
                     Glide.with(getApplicationContext())
-                            .load("https://graph.facebook.com/" + InfoScreen.sUserFbId + "/picture?width=500&height=500").into(mImageViewUserAvatar1);
+                            .load("https://graph.facebook.com/" + InfoScreen.sUserFbId + "/picture?width=500&height=500")
+                            .into(mImageViewUserAvatar1);
                 } else {
                     mTextViewUserName1.setText(InfoScreen.sManualName);
-                    mImageViewUserAvatar1.setImageResource(R.drawable.avatar);
+                    Glide.with(getApplicationContext())
+                            .load(PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_URL_AVATAR, ""))
+                            .into(mImageViewUserAvatar1);
                 }
             }
         });
@@ -147,6 +154,9 @@ public class SearchOpponent extends AppCompatActivity {
             public void onResponse(Call<List<Question>> call, Response<List<Question>> response) {
                 questions = response.body();
                 mRelativeLayoutPlay.setVisibility(View.VISIBLE);
+                questions.clear();
+                questions.addAll(response.body());
+                Log.e("QUESTION", "" + questions.size());
             }
 
             @Override

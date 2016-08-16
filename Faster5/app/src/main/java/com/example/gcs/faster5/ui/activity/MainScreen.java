@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.gcs.faster5.R;
 import com.example.gcs.faster5.logic.QuestionMng;
+import com.example.gcs.faster5.util.PrefUtils;
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 
@@ -50,10 +51,12 @@ public class MainScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
         setContentView(R.layout.main_screen);
 
         mTimeLeft = new CountDownTimer(12000, 1000) {
@@ -319,10 +322,14 @@ public class MainScreen extends AppCompatActivity {
                         AccessToken accessToken = AccessToken.getCurrentAccessToken();
                         if (accessToken == null) {
                             mTextViewUserName1.setText(InfoScreen.sManualName);
+                            Glide.with(getApplicationContext())
+                                    .load(PrefUtils.getInstance(MainScreen.this).get(PrefUtils.KEY_URL_AVATAR, ""))
+                                    .into(mImageViewUserAvatar1);
                         } else {
                             mTextViewUserName1.setText(InfoScreen.sFullNameFb);
                             Glide.with(getApplicationContext())
-                                    .load("https://graph.facebook.com/" + InfoScreen.sUserFbId + "/picture?width=500&height=500").into(mImageViewUserAvatar1);
+                                    .load("https://graph.facebook.com/" + InfoScreen.sUserFbId + "/picture?width=500&height=500")
+                                    .into(mImageViewUserAvatar1);
                         }
                     }
                 }
