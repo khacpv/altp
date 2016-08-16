@@ -87,17 +87,20 @@
             android:layout_marginTop="17dp"
             android:background="@android:color/transparent"
             android:duplicateParentState="true"
-            android:ellipsize="end"
             android:ems="1"
             android:foregroundGravity="left"
+            android:ellipsize="start"
+            android:maxLines="1"
             android:gravity="center"
             android:inputType="none"
             android:maxLength="16"
             android:paddingBottom="5dp"
             android:singleLine="true"
             android:textColor="#ffffff"
-            android:textColorHint="#ffffff"
-            android:textSize="20sp" />/>
+            android:textColorHint="#85ffffff"
+            android:hint="Choose username"
+            android:focusableInTouchMode="false"
+            android:textSize="20sp" />
 
     </RelativeLayout>
 
@@ -159,6 +162,4 @@
             android:textSize="15sp"
             android:textStyle="bold" />
     </RelativeLayout>
-
-
 </RelativeLayout>

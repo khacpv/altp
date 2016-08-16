@@ -3,6 +3,7 @@ package com.example.gcs.faster5.ui.activity;
 
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
@@ -12,10 +13,12 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.gcs.faster5.R;
+import com.example.gcs.faster5.ui.widget.HexagonDrawable;
 import com.example.gcs.faster5.util.NetworkUtils;
 import com.example.gcs.faster5.util.PrefUtils;
 import com.facebook.AccessToken;
@@ -41,7 +44,7 @@ public class InfoScreen extends AppCompatActivity {
             mTextViewPlayer5, mTextViewPlayer6, mTextViewPlayer7, mTextViewPlayer8;
     ImageView mImageViewFbAvatar, logoutButtonImgV;
     Button[] mButtonPlayer;
-    Button mButtonSearch;
+    RelativeLayout mButtonSearch;
     Intent mIntentSearchOpponent;
     List<String> names;
     int x;
@@ -135,11 +138,19 @@ public class InfoScreen extends AppCompatActivity {
         x = random.nextInt(8 + 0);
 
 
-        mButtonSearch = (Button) findViewById(R.id.button_search);
+        mButtonSearch = (RelativeLayout) findViewById(R.id.button_search);
+        final HexagonDrawable searchBg = new HexagonDrawable();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            mButtonSearch.setBackground(searchBg);
+        }else{
+            mButtonSearch.setBackgroundDrawable(new HexagonDrawable());
+        }
         mButtonSearch.setClickable(true);
         mButtonSearch.setOnClickListener(new View.OnClickListener() {
                                              @Override
                                              public void onClick(View v) {
+                                                 searchBg.start();
                                                  mButtonSearch.setClickable(false);
                                                  names = new ArrayList<String>();
                                                  names.add("Ngọc Trinh");
@@ -179,6 +190,7 @@ public class InfoScreen extends AppCompatActivity {
 
                                                      @Override
                                                      public void onFinish() {
+                                                         searchBg.stop();
                                                          mButtonPlayer[x].setBackgroundResource(R.drawable.answer3);
                                                          mNext.start();
                                                      }

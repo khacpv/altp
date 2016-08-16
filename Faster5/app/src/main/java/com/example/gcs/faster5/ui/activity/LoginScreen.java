@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -25,8 +27,9 @@ import com.example.gcs.faster5.MainApplication;
 import com.example.gcs.faster5.R;
 import com.example.gcs.faster5.model.Room;
 import com.example.gcs.faster5.model.User;
-import com.example.gcs.faster5.sock.SockAltp;
 import com.example.gcs.faster5.sock.AltpHelper;
+import com.example.gcs.faster5.sock.SockAltp;
+import com.example.gcs.faster5.ui.widget.HexagonDrawable;
 import com.example.gcs.faster5.util.JSONParser;
 import com.example.gcs.faster5.util.NetworkUtils;
 import com.example.gcs.faster5.util.PrefUtils;
@@ -39,10 +42,11 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.socket.client.Socket;
 
@@ -157,8 +161,6 @@ public class LoginScreen extends AppCompatActivity {
 
     public void editTexConfig() {
         mEditText.setTypeface(font);
-        mEditText.setHint("Choose username");
-        mEditText.setFocusableInTouchMode(false);
         mEditText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
