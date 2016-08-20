@@ -101,7 +101,7 @@ public class AltpHelper {
 
         try {
             Room room = new Gson().fromJson(data.getString("room"), Room.class);
-
+            Log.e("TAG", "searchCallback: " + room.roomId);
             ArrayList<User> dummyUserList = new ArrayList<>();
             JSONArray dummyUsers = data.getJSONArray("dummyUsers");
             for (int i = 0; i < dummyUsers.length(); i++) {
@@ -127,15 +127,15 @@ public class AltpHelper {
             Gson gson = new Gson();
             String json =
                     String.format("{user:%s, room: %s}", gson.toJson(user), gson.toJson(room));
-            Log.e("TAG", "play: " + json );
+            Log.e("TAG", "play: " + json);
             JSONObject data = new JSONObject(json);
+            mSockAltp.send("play", data);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
     public Question playCallback(Object... args) {
-        Log.e("TAG", "playcallback");
         Question question = new Question();
         JSONObject data = (JSONObject) args[0];
         if (data.optBoolean("notReady", false)) {
@@ -156,6 +156,7 @@ public class AltpHelper {
 
         return question;
     }
+
 
     public void answer(User user, Room room, int answerIndex) {
         try {
@@ -209,8 +210,7 @@ public class AltpHelper {
         Question question = new Question();
         JSONObject data = (JSONObject) args[0];
         try {
-            question =
-                    new Gson().fromJson(data.getJSONObject("question").toString(), Question.class);
+            question = new Gson().fromJson(data.getJSONObject("question").toString(), Question.class);
         } catch (JSONException e) {
             e.printStackTrace();
         }

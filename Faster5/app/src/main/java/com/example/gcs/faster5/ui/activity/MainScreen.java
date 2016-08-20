@@ -164,12 +164,12 @@ public class MainScreen extends AppCompatActivity {
 
     public void setQA(int stt) {
         this.mStt = stt;
-        mQuestion = SearchOpponent.questions.get(stt).getQuestion();
-        mAns1 = SearchOpponent.questions.get(stt).getmAns().get(0);
-        mAns2 = SearchOpponent.questions.get(stt).getmAns().get(1);
-        mAns3 = SearchOpponent.questions.get(stt).getmAns().get(2);
-        mAns4 = SearchOpponent.questions.get(stt).getmAns().get(3);
-        mCorrectAnsId = SearchOpponent.questions.get(stt).getIdAnsCorrect();
+//        mQuestion = SearchOpponent.questions.get(stt).getQuestion();
+//        mAns1 = SearchOpponent.questions.get(stt).getmAns().get(0);
+//        mAns2 = SearchOpponent.questions.get(stt).getmAns().get(1);
+//        mAns3 = SearchOpponent.questions.get(stt).getmAns().get(2);
+//        mAns4 = SearchOpponent.questions.get(stt).getmAns().get(3);
+//        mCorrectAnsId = SearchOpponent.questions.get(stt).getIdAnsCorrect();
         mTextViewQuestion.setText(mQuestion);
         mTextViewAns1.setText("A: " + mAns1);
         mTextViewAns2.setText("B: " + mAns2);

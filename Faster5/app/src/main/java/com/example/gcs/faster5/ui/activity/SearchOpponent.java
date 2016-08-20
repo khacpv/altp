@@ -22,7 +22,9 @@ import com.example.gcs.faster5.sock.AltpHelper;
 import com.example.gcs.faster5.sock.SockAltp;
 import com.example.gcs.faster5.util.NetworkUtils;
 import com.example.gcs.faster5.util.PrefUtils;
+import com.google.gson.Gson;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -54,11 +56,11 @@ public class SearchOpponent extends AppCompatActivity {
         public void onEvent(String event, Object... args) {
             switch (event) {
                 case Socket.EVENT_CONNECT:  // auto call on connect to server
-                    Log.e("TAG", "connect");
+                    Log.e("TAG_SEARCH", "connect");
                     break;
                 case Socket.EVENT_CONNECT_ERROR:
                 case Socket.EVENT_CONNECT_TIMEOUT:
-                    Log.e("TAG", "disconnect");
+                    Log.e("TAG_SEARCH", "disconnect");
                     if (!mSocketAltp.isConnected()) {
                         mSocketAltp.connect();
                     }
@@ -72,11 +74,13 @@ public class SearchOpponent extends AppCompatActivity {
         public void onEvent(String event, Object... args) {
             Question question = mAltpHelper.playCallback(args);
             JSONObject data = (JSONObject) args[0];
-            boolean ready = data.optBoolean("notReady");
-            if (ready) {
-                Log.e("TAG", "onEvent: " + "Ready");
+            boolean checkReady = data.optBoolean("notReady");
+            if (!checkReady) {
+                if (data.optInt("count") == 0) {
+                    Log.e("TAG", "onEvent: BAT DAU");
+                    Log.e("QUESTION", "question: " + question.mStt + " " + question.mQuestion + " " + question.mCorrectAnsId);
+                }
             } else {
-                Log.e("TAG", "onEvent: " + "Not Ready");
             }
         }
     };
@@ -171,19 +175,10 @@ public class SearchOpponent extends AppCompatActivity {
         mUser.avatar = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_URL_AVATAR, "");
         mUser.id = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_USER_ID, Long.valueOf(0));
 
-        // enemyUser.name = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_ENEMY_NAME, "");
-        //enemyUser.address = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_ENEMY_LOCATION, "");
-        //enemyUser.avatar = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_ENEMY_AVATAR, "");
-
-//        List<User> listUser = new ArrayList<>();
-//        listUser.add(mUser);
-//        listUser.add(enemyUser);
-//
-//        mRoom.users = listUser;
+        mRoom.questionIndex = 0;
         mRoom.roomId = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_ROOM_ID, "");
 
         play(mUser, mRoom);
-
     }
 
     public void moveMainScreen() {

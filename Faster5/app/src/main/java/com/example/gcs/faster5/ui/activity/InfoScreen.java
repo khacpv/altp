@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -27,17 +26,10 @@ import com.example.gcs.faster5.model.User;
 import com.example.gcs.faster5.sock.AltpHelper;
 import com.example.gcs.faster5.sock.SockAltp;
 import com.example.gcs.faster5.ui.widget.HexagonDrawable;
-import com.example.gcs.faster5.util.NetworkUtils;
 import com.example.gcs.faster5.util.PrefUtils;
-import com.facebook.AccessToken;
-import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,11 +68,11 @@ public class InfoScreen extends AppCompatActivity {
         public void onEvent(String event, Object... args) {
             switch (event) {
                 case Socket.EVENT_CONNECT:  // auto call on connect to server
-                    Log.e("TAG", "connect");
+                    Log.e("TAG_INFO", "connect");
                     break;
                 case Socket.EVENT_CONNECT_ERROR:
                 case Socket.EVENT_CONNECT_TIMEOUT:
-                    Log.e("TAG", "disconnect");
+                    Log.e("TAG_INFO", "disconnect");
                     if (!mSocketAltp.isConnected()) {
                         mSocketAltp.connect();
                     }

@@ -97,7 +97,6 @@ public class LoginScreen extends AppCompatActivity {
     private UploadPhotoUtils uploadPhotoUtils = new UploadPhotoUtils();
     int uploadFail = 0;
 
-
     /**
      * global events
      */
@@ -113,7 +112,7 @@ public class LoginScreen extends AppCompatActivity {
                     break;
                 case Socket.EVENT_CONNECT_ERROR:
                 case Socket.EVENT_CONNECT_TIMEOUT:
-                    Log.e("TAG", "disconnect");
+                    Log.e("TAG_LOGIN", "disconnect");
                     if (!mSocketAltp.isConnected()) {
                         mSocketAltp.connect();
                     }
