@@ -21,7 +21,7 @@ import cz.msebera.android.httpclient.util.TextUtils;
  */
 public class UploadPhotoUtils {
 
-    public static final String HOST = "http://www.ailatrieuphu.96.lt/imgupload/upload_image.php";
+    public static final String HOST = "http://www.ailatrieuphu.esy.es/imgupload/upload_image.php";
 
     String imgPath = "";
     public static boolean isUploading = false;

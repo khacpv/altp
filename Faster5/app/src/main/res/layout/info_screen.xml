@@ -26,7 +26,10 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="30dp"
-                android:src="@drawable/avatar" />
+                android:src="@drawable/avatar"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                app:civ_border_color="#fff"
+                app:civ_border_width="2dp"/>
 
             <TextView
                 android:id="@+id/textview_usernname"
@@ -59,7 +62,6 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-
             <TextView
                 android:id="@+id/textview_money"
                 android:layout_width="220dp"
@@ -78,16 +80,23 @@
 
         </RelativeLayout>
 
-
-        <Button
+        <RelativeLayout
             android:id="@+id/button_search"
-            android:layout_width="120dp"
+            android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_alignParentRight="true"
             android:layout_marginRight="5dp"
-            android:layout_marginTop="40dp"
-            android:background="@drawable/button_search"
-            android:clickable="false" />
+            android:layout_marginTop="40dp">
+
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="25dp"
+                android:background="@drawable/icon_search"
+                android:layout_gravity="center"
+                android:layout_centerInParent="true"
+                android:scaleType="fitXY"/>
+        </RelativeLayout>
+
     </LinearLayout>
 
     <ImageView

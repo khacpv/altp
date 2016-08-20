@@ -16,7 +16,6 @@
     </style>
 
     <style name="ButtonAnswerStyle">
-        <item name="android:background">@drawable/opt</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">70dp</item>
         <item name="android:layout_centerHorizontal">true</item>
@@ -25,6 +24,17 @@
         <item name="android:layout_marginBottom">10dp</item>
     </style>
 
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@android:anim/slide_in_left</item>
+        <item name="android:windowExitAnimation">@android:anim/slide_out_right</item>
+    </style>
+    <style name="FullyTranslucent" parent="android:Theme.Translucent.NoTitleBar">
+        <item name="android:progressBarStyle">@style/InvisibleProgress</item>
+    </style>
+
+    <style name="InvisibleProgress">
+        <item name="android:visibility">gone</item>
+    </style>
 
 
     <style name="AppTheme.CustomTheme">

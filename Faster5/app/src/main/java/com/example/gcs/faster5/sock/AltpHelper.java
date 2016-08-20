@@ -2,12 +2,15 @@ package com.example.gcs.faster5.sock;
 
 import android.util.Log;
 import android.util.Pair;
+
 import com.example.gcs.faster5.model.Question;
 import com.example.gcs.faster5.model.Room;
 import com.example.gcs.faster5.model.User;
 import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,7 +28,7 @@ public class AltpHelper {
 
     /**
      * login user
-     * */
+     */
     public void login(User user) {
         try {
             Gson gson = new Gson();
@@ -39,8 +42,9 @@ public class AltpHelper {
 
     /**
      * login success
+     *
      * @return empty user object if login failed
-     * */
+     */
     public User loginCallback(Object... args) {
         User result = new User();
         if (args.length == 0) {
@@ -112,7 +116,6 @@ public class AltpHelper {
 
             result = new Pair<>(room, dummyUserList);
 
-            Log.e("TAG", "join room: " + room);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -124,14 +127,15 @@ public class AltpHelper {
             Gson gson = new Gson();
             String json =
                     String.format("{user:%s, room: %s}", gson.toJson(user), gson.toJson(room));
+            Log.e("TAG", "play: " + json );
             JSONObject data = new JSONObject(json);
-            mSockAltp.send("play", data);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
     public Question playCallback(Object... args) {
+        Log.e("TAG", "playcallback");
         Question question = new Question();
         JSONObject data = (JSONObject) args[0];
         if (data.optBoolean("notReady", false)) {

@@ -27,4 +27,6 @@ public class User {
 
     @SerializedName("answerIndex")
     public int answerIndex;
+
+    public boolean isDummy = true;
 }

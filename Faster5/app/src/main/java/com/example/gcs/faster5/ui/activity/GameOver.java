@@ -56,24 +56,6 @@ public class GameOver extends AppCompatActivity {
         mUserScoreWin = (TextView) findViewById(R.id.textview_money_win);
         mUserScoreWin.setTypeface(font);
 
-
-        FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
-            @Override
-            public void onInitialized() {
-                AccessToken accessToken = AccessToken.getCurrentAccessToken();
-                if (accessToken != null) {
-                    mTextViewNameUserWin.setText(InfoScreen.sFullNameFb);
-                    Glide.with(getApplicationContext())
-                            .load("https://graph.facebook.com/" + InfoScreen.sUserFbId +
-                                    "/picture?width=500&height=500").into(mImageViewUserAvatarWin);
-                } else {
-                    mTextViewNameUserWin.setText(InfoScreen.sFullNameFb);
-                    Glide.with(getApplicationContext())
-                            .load(PrefUtils.getInstance(GameOver.this).get(PrefUtils.KEY_URL_AVATAR, ""))
-                            .into(mImageViewUserAvatarWin);
-                }
-            }
-        });
         SearchOpponent.questions.clear();
 
         buttonBackPressed();

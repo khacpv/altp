@@ -141,7 +141,6 @@ public class MainScreen extends AppCompatActivity {
 
         mTextViewMoneyQuestion = (TextView) findViewById(R.id.textview_moneyquestion);
 
-        setInfo();
 
         for (int i = 0; i < 4; i++) {
             if (i == 0) {
@@ -315,26 +314,7 @@ public class MainScreen extends AppCompatActivity {
         finish();
     }
 
-    public void setInfo() {
-        FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
-                    @Override
-                    public void onInitialized() {
-                        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-                        if (accessToken == null) {
-                            mTextViewUserName1.setText(InfoScreen.sManualName);
-                            Glide.with(getApplicationContext())
-                                    .load(PrefUtils.getInstance(MainScreen.this).get(PrefUtils.KEY_URL_AVATAR, ""))
-                                    .into(mImageViewUserAvatar1);
-                        } else {
-                            mTextViewUserName1.setText(InfoScreen.sFullNameFb);
-                            Glide.with(getApplicationContext())
-                                    .load("https://graph.facebook.com/" + InfoScreen.sUserFbId + "/picture?width=500&height=500")
-                                    .into(mImageViewUserAvatar1);
-                        }
-                    }
-                }
-        );
-    }
+
 
     public void linkAvatarUser2(int x) {
         switch (x) {

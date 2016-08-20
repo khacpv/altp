@@ -17,7 +17,10 @@
             android:layout_marginLeft="20dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="30dp"
-            android:src="@drawable/avatar" />
+            android:src="@drawable/avatar"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            app:civ_border_width="2dp"
+            app:civ_border_color="#fff"/>
 
         <TextView
             android:id="@+id/textview_username1"
@@ -56,7 +59,7 @@
             android:layout_marginTop="10dp"
             android:background="@drawable/button_money"
             android:gravity="center_horizontal"
-            android:paddingTop="8dp"
+            android:paddingTop="6dp"
             android:text="000.000.000"
             android:textColor="#000000"
             android:textSize="20sp"
@@ -82,7 +85,10 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_marginRight="20dp"
-            android:src="@drawable/avatar" />
+            android:src="@drawable/avatar"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            app:civ_border_width="2dp"
+            app:civ_border_color="#fff"/>
 
         <TextView
             android:id="@+id/textview_username2"
@@ -117,7 +123,7 @@
             android:layout_marginTop="10dp"
             android:background="@drawable/button_money2"
             android:gravity="center_horizontal"
-            android:paddingTop="8dp"
+            android:paddingTop="6dp"
             android:text="000.000.000"
             android:textColor="#000000"
             android:textSize="20sp"
@@ -147,9 +153,11 @@
             android:gravity="center"
             android:paddingBottom="10dp"
             android:text="Tìm kiếm"
+            android:textStyle="bold"
             android:textAllCaps="false"
             android:textColor="#ffffff"
-            android:textSize="20sp"/>
+            android:textSize="20sp"
+            android:onClick="btnSearch"/>
     </RelativeLayout>
     <RelativeLayout
         android:id="@+id/relative_layout_play"
@@ -179,7 +187,8 @@
             android:textAllCaps="false"
             android:textColor="#ffffff"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:onClick="btnPlay"/>
     </RelativeLayout>
 
 

@@ -22,7 +22,7 @@ public class TopicMng {
 
 
         List<Topic> allItems = new ArrayList<Topic>();
-       allItems.add(new Topic(1, "FootBall", R.drawable.football));
+      // allItems.add(new Topic(1, "FootBall", R.drawable.football));
 //        allItems.add(new Topic(2, "Art", R.drawable.art));
 //        allItems.add(new Topic(3, "Basic Math", R.drawable.math));
 //        allItems.add(new Topic(4, "Fruits", R.drawable.fruit));
