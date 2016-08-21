@@ -1,5 +1,6 @@
 package com.example.gcs.faster5.ui.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -21,11 +22,6 @@ import com.example.gcs.faster5.model.User;
 import com.example.gcs.faster5.sock.AltpHelper;
 import com.example.gcs.faster5.sock.SockAltp;
 import com.example.gcs.faster5.util.NetworkUtils;
-import com.example.gcs.faster5.util.PrefUtils;
-import com.google.gson.Gson;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +36,13 @@ public class SearchOpponent extends AppCompatActivity {
     public static final String EXTRA_ID = "topic_id";
     public static final String EXTRA_NAME = "topic_name";
     public static final String EXTRA_ANSWER_RIGHT = "right_answer";
+
+    private static final String EXTRA_USER = "user";
+    private static final String EXTRA_ENEMY = "enemy";
+    private static final String EXTRA_ROOM = "room";
+    private static final String EXTRA_QUESTION = "question";
+
+
     public static List<Question> questions = new ArrayList<>();
     private SockAltp mSocketAltp;
     private AltpHelper mAltpHelper;
@@ -72,18 +75,37 @@ public class SearchOpponent extends AppCompatActivity {
     private SockAltp.OnSocketEvent playCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
-            Question question = mAltpHelper.playCallback(args);
-            JSONObject data = (JSONObject) args[0];
-            boolean checkReady = data.optBoolean("notReady");
-            if (!checkReady) {
-                if (data.optInt("count") == 0) {
-                    Log.e("TAG", "onEvent: BAT DAU");
-                    Log.e("QUESTION", "question: " + question.mStt + " " + question.mQuestion + " " + question.mCorrectAnsId);
-                }
-            } else {
+            boolean ready = mAltpHelper.playCallbackReady(args);
+
+            if(!ready){
+                // show popup: 'wait for other players ready'
+                Log.e("TAG","waiting for other players ready.");
+                return;
             }
+
+            int count = mAltpHelper.playCallbackCount(args);
+            if(count > -1){
+                // show dialog counting
+                Log.e("TAG","start counting: "+count);
+                return;
+            }
+
+            // start playing screen
+            Question question = mAltpHelper.playCallback(args);
+            Intent mainScrnIntent = MainScreen.createIntent(SearchOpponent.this,mUser,enemyUser,
+                    mRoom,
+                    question);
+            startActivity(mainScrnIntent);
         }
     };
+
+    public static Intent createIntent(Context context,User user, User enemy, Room room){
+        Intent intent = new Intent(context, SearchOpponent.class);
+        intent.putExtra(EXTRA_USER, user);
+        intent.putExtra(EXTRA_ENEMY, enemy);
+        intent.putExtra(EXTRA_ROOM, room);
+        return intent;
+    }
 
 
     public void play(User user, Room room) {
@@ -103,6 +125,8 @@ public class SearchOpponent extends AppCompatActivity {
         }
         setContentView(R.layout.search_opponent);
 
+        getBundle();
+
         mSocketAltp = MainApplication.sockAltp();
         mAltpHelper = new AltpHelper(mSocketAltp);
         if (!mSocketAltp.isConnected()) {
@@ -116,17 +140,25 @@ public class SearchOpponent extends AppCompatActivity {
 
     }
 
+    /**
+     * get data from previous activity
+     */
+    private void getBundle() {
+        mUser = (User) getIntent().getSerializableExtra(EXTRA_USER);
+        enemyUser = (User) getIntent().getSerializableExtra(EXTRA_ENEMY);
+        mRoom = (Room) getIntent().getSerializableExtra(EXTRA_ROOM);
+    }
+
     public void setInfoUser() {
-        mTextViewUserName1.setText(PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_NAME, ""));
-        Glide.with(getApplicationContext()).load(PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_URL_AVATAR, ""))
-                .into(mImageViewUserAvatar1);
-        mTextViewCityUser1.setText(PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_LOCATION, ""));
+        // my info
+        mTextViewUserName1.setText(mUser.name);
+        Glide.with(getApplicationContext()).load(mUser.avatar).into(mImageViewUserAvatar1);
+        mTextViewCityUser1.setText(mUser.address);
 
-
-        mTextViewUserName2.setText(PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_ENEMY_NAME, ""));
-        Glide.with(getApplicationContext()).load(PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_ENEMY_AVATAR, ""))
-                .into(mImageViewUserAvatar2);
-        mTextViewCityUser2.setText(PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_ENEMY_LOCATION, ""));
+        // enemy user
+        mTextViewUserName2.setText(enemyUser.name);
+        Glide.with(getApplicationContext()).load(enemyUser.avatar).into(mImageViewUserAvatar2);
+        mTextViewCityUser2.setText(enemyUser.address);
 
     }
 
@@ -170,14 +202,6 @@ public class SearchOpponent extends AppCompatActivity {
     }
 
     public void btnPlay(View view) {
-        mUser.name = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_NAME, "");
-        mUser.address = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_LOCATION, "");
-        mUser.avatar = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_URL_AVATAR, "");
-        mUser.id = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_USER_ID, Long.valueOf(0));
-
-        mRoom.questionIndex = 0;
-        mRoom.roomId = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_ROOM_ID, "");
-
         play(mUser, mRoom);
     }
 

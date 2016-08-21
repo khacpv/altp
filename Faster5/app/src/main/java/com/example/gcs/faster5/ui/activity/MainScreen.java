@@ -1,10 +1,9 @@
 package com.example.gcs.faster5.ui.activity;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -14,15 +13,13 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.gcs.faster5.R;
-import com.example.gcs.faster5.logic.QuestionMng;
-import com.example.gcs.faster5.util.PrefUtils;
-import com.facebook.AccessToken;
-import com.facebook.FacebookSdk;
+import com.example.gcs.faster5.model.Question;
+import com.example.gcs.faster5.model.Room;
+import com.example.gcs.faster5.model.User;
 
 /**
  * Created by Kien on 07/05/2016.
@@ -32,20 +29,57 @@ public class MainScreen extends AppCompatActivity {
 
     private final String TXT_TIME_OUT = "TIME\nOUT";
 
-    ImageView mImageViewUserAvatar1, mImageViewUserAvatar2;
-    TextView mTextViewScore1, mTextViewScore2, mTextViewRound, mTextViewQuestion,
-            mTextViewAns1, mTextViewAns2, mTextViewAns3, mTextViewAns4, mTextViewTimer,
-            mTextViewUserName1, mTextViewUserName2,
-            mTextViewCityUser1, mTextViewCityUser2, mTextViewMoneyQuestion;
-    String mQuestion, mAns1, mAns2, mAns3, mAns4, username2;
-    Integer mCorrectAnsId, mStt = 1, mUserScore1 = 0, mUserScore2 = 0;
+    private static final String EXTRA_USER = "user";
+    private static final String EXTRA_ENEMY = "enemy";
+    private static final String EXTRA_ROOM = "room";
+    private static final String EXTRA_QUESTION = "question";
+
+    ImageView mImageViewUserAvatar1;
+    ImageView mImageViewUserAvatar2;
+    TextView mTextViewScore1;
+    TextView mTextViewScore2;
+    TextView mTextViewRound;
+    TextView mTextViewQuestion;
+    TextView mTextViewAns1;
+    TextView mTextViewAns2;
+    TextView mTextViewAns3;
+    TextView mTextViewAns4;
+    TextView mTextViewTimer;
+    TextView mTextViewUserName1;
+    TextView mTextViewUserName2;
+    TextView mTextViewCityUser1;
+    TextView mTextViewCityUser2;
+    TextView mTextViewMoneyQuestion;
+
+    int mCorrectAnsId;
+    int mStt = 1;
+    int mUserScore1 = 0;
+    int mUserScore2 = 0;
+
     Button[] mButtonAns;
-    CountDownTimer mTimeLeft, mWaitTimeNextQues, mWaitTime;
+
+    CountDownTimer mTimeLeft;
+    CountDownTimer mWaitTimeNextQues;
+    CountDownTimer mWaitTime;
+
     boolean clickable = true;
     long timeLeft;
     int mMoney = 0;
-    public String URL;
-    int idUser2;
+
+    User mUser;
+    User mEnemy;
+    Room mRoom;
+    Question mQuestion;
+
+    public static Intent createIntent(Context context, User user, User enemy, Room room, Question
+            question) {
+        Intent intent = new Intent(context, MainScreen.class);
+        intent.putExtra(EXTRA_USER, user);
+        intent.putExtra(EXTRA_ENEMY, enemy);
+        intent.putExtra(EXTRA_ROOM, room);
+        intent.putExtra(EXTRA_QUESTION, question);
+        return intent;
+    }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -58,6 +92,8 @@ public class MainScreen extends AppCompatActivity {
             getSupportActionBar().hide();
         }
         setContentView(R.layout.main_screen);
+
+        getBundle();
 
         mTimeLeft = new CountDownTimer(12000, 1000) {
             public void onTick(long millisUntilFinished) {
@@ -80,23 +116,14 @@ public class MainScreen extends AppCompatActivity {
 
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/roboto.ttf");
 
-
         mTextViewTimer = (TextView) findViewById(R.id.textview_timer);
-        mTextViewTimer.setTypeface(font);
         mTextViewTimer.setBackgroundResource(R.drawable.clock);
 
-      /*  Bitmap mBitmap = null;
-        BitmapDrawable mDrawable = new BitmapDrawable(mBitmap);
-        mTextViewTimer.setBackground(mDrawable);*/
-
         mTextViewRound = (TextView) findViewById(R.id.textview_numberquestion);
-        mTextViewRound.setTypeface(font);
 
         mTextViewScore1 = (TextView) findViewById(R.id.textview_money1);
-        mTextViewScore1.setTypeface(font);
         mTextViewScore1.setText(String.valueOf(mUserScore1));
         mTextViewScore2 = (TextView) findViewById(R.id.textview_money2);
-        mTextViewScore2.setTypeface(font);
         mTextViewScore2.setText(String.valueOf(mUserScore2));
 
         mTextViewQuestion = (TextView) findViewById(R.id.textview_tablequestion);
@@ -105,42 +132,22 @@ public class MainScreen extends AppCompatActivity {
         mTextViewAns3 = (TextView) findViewById(R.id.button_ans3);
         mTextViewAns4 = (TextView) findViewById(R.id.button_ans4);
 
-        mTextViewQuestion.setTypeface(font);
-        mTextViewAns1.setTypeface(font);
-        mTextViewAns2.setTypeface(font);
-        mTextViewAns3.setTypeface(font);
-        mTextViewAns4.setTypeface(font);
-
         mTextViewUserName1 = (TextView) findViewById(R.id.textview_username1);
-        mTextViewUserName1.setTypeface(font);
+
         mTextViewUserName2 = (TextView) findViewById(R.id.textview_username2);
-        mTextViewUserName2.setTypeface(font);
 
         mImageViewUserAvatar1 = (ImageView) findViewById(R.id.imageview_useravatar1);
         mImageViewUserAvatar2 = (ImageView) findViewById(R.id.imageview_useravatar2);
 
         mTextViewCityUser1 = (TextView) findViewById(R.id.textview_city_user1);
+
         mTextViewCityUser2 = (TextView) findViewById(R.id.textview_city_user2);
-        mTextViewCityUser1.setTypeface(font);
-        mTextViewCityUser2.setTypeface(font);
-
-        if (mTextViewCityUser1 != null) {
-            mTextViewCityUser1.setText(LoginScreen.city.toUpperCase());
-        } else {
-            mTextViewCityUser1.setText("VIETNAM");
-        }
-        mTextViewCityUser2.setText("VIETNAM");
-
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            username2 = extras.getString("NAMEUSER2");
-            idUser2 = extras.getInt("IDUSER2");
-            linkAvatarUser2(idUser2);
-            mTextViewUserName2.setText(username2);
-        }
 
         mTextViewMoneyQuestion = (TextView) findViewById(R.id.textview_moneyquestion);
 
+        setTypeface(font, mTextViewTimer, mTextViewRound, mTextViewScore1, mTextViewScore2,
+                mTextViewQuestion, mTextViewAns1, mTextViewAns2, mTextViewAns3, mTextViewAns4,
+                mTextViewUserName1, mTextViewUserName2, mTextViewCityUser1, mTextViewCityUser2);
 
         for (int i = 0; i < 4; i++) {
             if (i == 0) {
@@ -158,23 +165,44 @@ public class MainScreen extends AppCompatActivity {
             mButtonAns[i].setBackgroundResource(R.drawable.answer0);
         }
 
+        fillData();
+
         setQA(0);
         setTxtRound(mStt + 1);
+
+
+    }
+
+    /**
+     * get data from previous activity
+     */
+    private void getBundle() {
+        mUser = (User) getIntent().getSerializableExtra(EXTRA_USER);
+        mEnemy = (User) getIntent().getSerializableExtra(EXTRA_ENEMY);
+        mRoom = (Room) getIntent().getSerializableExtra(EXTRA_ROOM);
+        mQuestion = (Question) getIntent().getSerializableExtra(EXTRA_QUESTION);
+    }
+
+    private void fillData() {
+        // my info
+        mTextViewUserName1.setText(mUser.name);
+        mTextViewCityUser1.setText(mUser.address);
+
+        // question info
+        mTextViewQuestion.setText(mQuestion.mQuestion);
+        mTextViewAns1.setText("A: " + mQuestion.mAns.get(0));
+        mTextViewAns2.setText("B: " + mQuestion.mAns.get(1));
+        mTextViewAns3.setText("C: " + mQuestion.mAns.get(2));
+        mTextViewAns4.setText("D: " + mQuestion.mAns.get(3));
+
+        // enemy info
+        Glide.with(getApplicationContext()).load(mEnemy.avatar).into(mImageViewUserAvatar2);
+        mTextViewUserName2.setText(mEnemy.name);
+        mTextViewCityUser2.setText(mEnemy.address);
     }
 
     public void setQA(int stt) {
         this.mStt = stt;
-//        mQuestion = SearchOpponent.questions.get(stt).getQuestion();
-//        mAns1 = SearchOpponent.questions.get(stt).getmAns().get(0);
-//        mAns2 = SearchOpponent.questions.get(stt).getmAns().get(1);
-//        mAns3 = SearchOpponent.questions.get(stt).getmAns().get(2);
-//        mAns4 = SearchOpponent.questions.get(stt).getmAns().get(3);
-//        mCorrectAnsId = SearchOpponent.questions.get(stt).getIdAnsCorrect();
-        mTextViewQuestion.setText(mQuestion);
-        mTextViewAns1.setText("A: " + mAns1);
-        mTextViewAns2.setText("B: " + mAns2);
-        mTextViewAns3.setText("C: " + mAns3);
-        mTextViewAns4.setText("D: " + mAns4);
         mTimeLeft.start();
     }
 
@@ -314,56 +342,9 @@ public class MainScreen extends AppCompatActivity {
         finish();
     }
 
-
-
-    public void linkAvatarUser2(int x) {
-        switch (x) {
-            case 0:
-                URL = "http://img.saobiz.net/d/2016/05/ngoc-trinh-giaoduc999-01084727_03.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 1:
-                URL = "http://media.doisongphapluat.com/2015/07/27/angela_2_dspl.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 2:
-                URL = "http://congly.com.vn/data/news/2016/3/8/83/hoahaukyduyen.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 3:
-                URL = "http://media.hotbirthdays.com/upload/2015/05/24/nguyen-ngoc-ngan.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 4:
-                URL = "http://img.saobiz.net/d/2015/10/nhung2-1443749932505-56-0-362-600-crop-1443750244536.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 5:
-                URL = "http://www.phunuvagiadinh.vn/uploads/2016/03/24/1385548239736_500-20160324-00031574.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 6:
-                URL = "http://media.tinmoi.vn/2015/07/23/ho-ngoc-ha-tm1.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 7:
-                URL = "http://phunutoday.vn/upload_images/images/2016/07/20/lai-van-sam-phunutoday_vn.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
+    public static void setTypeface(Typeface font, TextView... textviews) {
+        for (TextView textView : textviews) {
+            textView.setTypeface(font);
         }
-
     }
-
-    public void onBackPressed() {
-
-    }
-
 }

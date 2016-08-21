@@ -117,7 +117,7 @@
             android:layout_centerVertical="true"
             android:background="#FFF" />
 
-        <TextView
+        <EditText
             android:id="@+id/textview_city_login"
             android:layout_width="280dp"
             android:layout_height="40dp"

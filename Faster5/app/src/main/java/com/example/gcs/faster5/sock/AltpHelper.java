@@ -8,12 +8,11 @@ import com.example.gcs.faster5.model.Room;
 import com.example.gcs.faster5.model.User;
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by FRAMGIA\pham.van.khac on 8/11/16.
@@ -138,12 +137,12 @@ public class AltpHelper {
     public Question playCallback(Object... args) {
         Question question = new Question();
         JSONObject data = (JSONObject) args[0];
-        if (data.optBoolean("notReady", false)) {
+        if (!playCallbackReady(args)) {
             Log.e("TAG", "waiting for other ready");
             return question;
         }
 
-        if (data.optInt("count", 0) > -1) {
+        if (data.optInt("count", -1) > -1) {
             Log.e("TAG", "Start count: " + data.optInt("count"));
             return question;
         }
@@ -157,6 +156,34 @@ public class AltpHelper {
         return question;
     }
 
+    /**
+     * @return null if user is not ready
+     * */
+    public Question playCallbackQuestion(Object... args){
+        JSONObject data = (JSONObject) args[0];
+        try {
+            return new Gson().fromJson(data.getString("question"), Question.class);
+        } catch (JSONException e) {
+            Log.e("TAG","user has not ready");
+        }
+        return null;
+    }
+
+    /**
+     * @return all players are ready
+     * */
+    public boolean playCallbackReady(Object... args){
+        JSONObject data = (JSONObject)args[0];
+        return data.optBoolean("notReady", true);
+    }
+
+    /**
+     * @return 3,2,1,0 or -1
+     * */
+    public int playCallbackCount(Object... args){
+        JSONObject data = (JSONObject) args[0];
+        return data.optInt("count", -1);
+    }
 
     public void answer(User user, Room room, int answerIndex) {
         try {

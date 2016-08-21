@@ -1,7 +1,6 @@
 package com.example.gcs.faster5.ui.activity;
 
 
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -50,6 +49,7 @@ public class InfoScreen extends AppCompatActivity {
     private SockAltp mSocketAltp;
     private AltpHelper mAltpHelper;
     private User mUser = new User();
+    private User mEnemy = new User();
     String username, linkAvatar, location, money;
     long userId;
     final HexagonDrawable searchBg = new HexagonDrawable();
@@ -107,6 +107,7 @@ public class InfoScreen extends AppCompatActivity {
     }
 
     private void updateEnemy(User enemy) {
+        this.mEnemy = enemy;
         PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_ENEMY_ID, enemy.id);
         PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_ENEMY_NAME, enemy.name);
         PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_ENEMY_LOCATION, enemy.address);
@@ -260,7 +261,7 @@ public class InfoScreen extends AppCompatActivity {
     @Subscribe
     public void onEventMainThread(OnSearCallbackEvent event) {
         Pair<Room, ArrayList<User>> result = event.result;
-        Room room = result.first;
+        final Room room = result.first;
         final List<User> dummyUsers = result.second;
 
         searchTimes = 1;
@@ -305,7 +306,7 @@ public class InfoScreen extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    moveSearchOpponent();
+                    moveSearchOpponent(room);
                 }
             }, 4000);
             Log.e("TAG", "join room: " + room.roomId);
@@ -313,10 +314,8 @@ public class InfoScreen extends AppCompatActivity {
         }
     }
 
-    public void moveSearchOpponent() {
-
-        Intent intent = new Intent(InfoScreen.this, SearchOpponent.class);
-        startActivity(intent);
+    public void moveSearchOpponent(Room room) {
+        startActivity(SearchOpponent.createIntent(InfoScreen.this, mUser, mEnemy, room));
         overridePendingTransition(R.animator.right_in, R.animator.left_out);
         finish();
     }
