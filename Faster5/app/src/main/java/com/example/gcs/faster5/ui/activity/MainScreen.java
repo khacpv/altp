@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.gcs.faster5.R;
 import com.example.gcs.faster5.logic.QuestionMng;
+import com.example.gcs.faster5.util.PrefUtils;
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 
@@ -140,7 +141,6 @@ public class MainScreen extends AppCompatActivity {
 
         mTextViewMoneyQuestion = (TextView) findViewById(R.id.textview_moneyquestion);
 
-        setInfo();
 
         for (int i = 0; i < 4; i++) {
             if (i == 0) {
@@ -164,12 +164,12 @@ public class MainScreen extends AppCompatActivity {
 
     public void setQA(int stt) {
         this.mStt = stt;
-        mQuestion = SearchOpponent.questions.get(stt).getQuestion();
-        mAns1 = SearchOpponent.questions.get(stt).getmAns().get(0);
-        mAns2 = SearchOpponent.questions.get(stt).getmAns().get(1);
-        mAns3 = SearchOpponent.questions.get(stt).getmAns().get(2);
-        mAns4 = SearchOpponent.questions.get(stt).getmAns().get(3);
-        mCorrectAnsId = SearchOpponent.questions.get(stt).getIdAnsCorrect();
+//        mQuestion = SearchOpponent.questions.get(stt).getQuestion();
+//        mAns1 = SearchOpponent.questions.get(stt).getmAns().get(0);
+//        mAns2 = SearchOpponent.questions.get(stt).getmAns().get(1);
+//        mAns3 = SearchOpponent.questions.get(stt).getmAns().get(2);
+//        mAns4 = SearchOpponent.questions.get(stt).getmAns().get(3);
+//        mCorrectAnsId = SearchOpponent.questions.get(stt).getIdAnsCorrect();
         mTextViewQuestion.setText(mQuestion);
         mTextViewAns1.setText("A: " + mAns1);
         mTextViewAns2.setText("B: " + mAns2);
@@ -314,22 +314,7 @@ public class MainScreen extends AppCompatActivity {
         finish();
     }
 
-    public void setInfo() {
-        FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
-                    @Override
-                    public void onInitialized() {
-                        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-                        if (accessToken == null) {
-                            mTextViewUserName1.setText(InfoScreen.sManualName);
-                        } else {
-                            mTextViewUserName1.setText(InfoScreen.sFullNameFb);
-                            Glide.with(getApplicationContext())
-                                    .load("https://graph.facebook.com/" + InfoScreen.sUserFbId + "/picture?width=500&height=500").into(mImageViewUserAvatar1);
-                        }
-                    }
-                }
-        );
-    }
+
 
     public void linkAvatarUser2(int x) {
         switch (x) {

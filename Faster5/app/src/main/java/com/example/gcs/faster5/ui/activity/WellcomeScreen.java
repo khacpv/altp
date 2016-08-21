@@ -32,7 +32,7 @@ public class WellcomeScreen extends AppCompatActivity {
         mRelativeLayoutBg.setBackgroundResource(R.drawable.background);
 
         mImageButtonPlayNormal = (ImageButton) findViewById(R.id.button_play);
-        mImageButtonPlayNormal.setImageResource(R.drawable.play_normal);
+        //  mImageButtonPlayNormal.setImageResource(R.drawable.play_normal);
         playButtonPressed();
     }
 
@@ -40,10 +40,10 @@ public class WellcomeScreen extends AppCompatActivity {
         View.OnClickListener buttonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isPressed)
-                    mImageButtonPlayNormal.setImageResource(R.drawable.play_normal);
-                else
-                    mImageButtonPlayNormal.setImageResource(R.drawable.play_pressed);
+//                if (isPressed)
+//                    mImageButtonPlayNormal.setImageResource(R.drawable.play_normal);
+//                else
+//                    mImageButtonPlayNormal.setImageResource(R.drawable.play_pressed);
                 isPressed = !isPressed;
                 Intent moveMainScreen = new Intent(getApplicationContext(), LoginScreen.class);
                 moveMainScreen.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

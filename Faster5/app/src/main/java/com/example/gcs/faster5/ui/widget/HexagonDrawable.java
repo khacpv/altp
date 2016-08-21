@@ -25,7 +25,7 @@ public class HexagonDrawable extends Drawable {
     private int color2 = Color.parseColor("#2780D3");
     private int colorStroke = Color.WHITE;
     float angle = -90.0f;
-    Rect bounds = null;
+    Rect bounds = new Rect();
     SweepGradient bgColor;
     boolean animating = false;
     Handler mHandler = new Handler();
@@ -33,11 +33,9 @@ public class HexagonDrawable extends Drawable {
     private Runnable mAnimatingRunnable = new Runnable() {
         @Override
         public void run() {
-            if (bounds == null || bounds.width() <= 0) {
-                animating = false;
+            if (bounds == null || bounds.width() <= 0 || !animating) {
                 return;
             }
-            animating = true;
             angle = angle + 1f;
             if (angle > 360f) {
                 angle = 0.0f;
@@ -73,20 +71,20 @@ public class HexagonDrawable extends Drawable {
 
         paint.setStyle(Paint.Style.FILL);
         hexagon.setFillType(Path.FillType.WINDING);
+
     }
 
     public void start() {
-        mAnimatingRunnable.run();
-        mHandler.postDelayed(mAnimatingRunnable, 1);
         animating = true;
+        mHandler.postDelayed(mAnimatingRunnable, 1);
     }
 
     public void stop() {
         animating = false;
-        mHandler.removeCallbacks(mAnimatingRunnable);
     }
 
     public void reset() {
+        animating = false;
         rotateTo(-90);
     }
 
@@ -138,7 +136,7 @@ public class HexagonDrawable extends Drawable {
     protected void onBoundsChange(Rect bounds) {
         super.onBoundsChange(bounds);
         computeHex(bounds);
-        invalidateSelf();
+        reset();
     }
 
     public void computeHex(Rect bounds) {

@@ -2,12 +2,15 @@ package com.example.gcs.faster5.sock;
 
 import android.util.Log;
 import android.util.Pair;
+
 import com.example.gcs.faster5.model.Question;
 import com.example.gcs.faster5.model.Room;
 import com.example.gcs.faster5.model.User;
 import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,7 +28,7 @@ public class AltpHelper {
 
     /**
      * login user
-     * */
+     */
     public void login(User user) {
         try {
             Gson gson = new Gson();
@@ -39,8 +42,9 @@ public class AltpHelper {
 
     /**
      * login success
+     *
      * @return empty user object if login failed
-     * */
+     */
     public User loginCallback(Object... args) {
         User result = new User();
         if (args.length == 0) {
@@ -54,6 +58,8 @@ public class AltpHelper {
                 Log.e("TAG", "login failed");
                 return null;
             }
+            Log.e("TAG", "login success");
+
             JSONObject user = data.getJSONObject("user");
             long userId = user.getLong("id");
             String name = user.getString("name");
@@ -95,7 +101,7 @@ public class AltpHelper {
 
         try {
             Room room = new Gson().fromJson(data.getString("room"), Room.class);
-
+            Log.e("TAG", "searchCallback: " + room.roomId);
             ArrayList<User> dummyUserList = new ArrayList<>();
             JSONArray dummyUsers = data.getJSONArray("dummyUsers");
             for (int i = 0; i < dummyUsers.length(); i++) {
@@ -110,7 +116,6 @@ public class AltpHelper {
 
             result = new Pair<>(room, dummyUserList);
 
-            Log.e("TAG", "join room: " + room);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -122,6 +127,7 @@ public class AltpHelper {
             Gson gson = new Gson();
             String json =
                     String.format("{user:%s, room: %s}", gson.toJson(user), gson.toJson(room));
+            Log.e("TAG", "play: " + json);
             JSONObject data = new JSONObject(json);
             mSockAltp.send("play", data);
         } catch (JSONException e) {
@@ -150,6 +156,7 @@ public class AltpHelper {
 
         return question;
     }
+
 
     public void answer(User user, Room room, int answerIndex) {
         try {
@@ -203,8 +210,7 @@ public class AltpHelper {
         Question question = new Question();
         JSONObject data = (JSONObject) args[0];
         try {
-            question =
-                    new Gson().fromJson(data.getJSONObject("question").toString(), Question.class);
+            question = new Gson().fromJson(data.getJSONObject("question").toString(), Question.class);
         } catch (JSONException e) {
             e.printStackTrace();
         }

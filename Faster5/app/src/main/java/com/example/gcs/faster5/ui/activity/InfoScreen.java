@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -17,51 +19,122 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.gcs.faster5.MainApplication;
 import com.example.gcs.faster5.R;
+import com.example.gcs.faster5.model.Room;
+import com.example.gcs.faster5.model.User;
+import com.example.gcs.faster5.sock.AltpHelper;
+import com.example.gcs.faster5.sock.SockAltp;
 import com.example.gcs.faster5.ui.widget.HexagonDrawable;
-import com.example.gcs.faster5.util.NetworkUtils;
 import com.example.gcs.faster5.util.PrefUtils;
-import com.facebook.AccessToken;
-import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Random;
+
+import io.socket.client.Socket;
 
 /**
  * Created by Kien on 07/05/2016.
  */
 public class InfoScreen extends AppCompatActivity {
-    public static String sUserFbId, sFullNameFb, sManualName;
-    public static int sMoney;
     TextView mTextViewNameUser, mTextViewMoney, mTextViewCity,
             mTextViewPlayer1, mTextViewPlayer2, mTextViewPlayer3, mTextViewPlayer4,
             mTextViewPlayer5, mTextViewPlayer6, mTextViewPlayer7, mTextViewPlayer8;
-    ImageView mImageViewFbAvatar, logoutButtonImgV;
+    ImageView mImageViewAvatar;
     Button[] mButtonPlayer;
     RelativeLayout mButtonSearch;
-    Intent mIntentSearchOpponent;
-    List<String> names;
-    int x;
+    private SockAltp mSocketAltp;
+    private AltpHelper mAltpHelper;
+    private User mUser = new User();
+    String username, linkAvatar, location, money;
+    long userId;
+    final HexagonDrawable searchBg = new HexagonDrawable();
+    int searchTimes = 0, enemyNumberInList;
+    boolean isEnemy = false;
+    Handler handler = new Handler();
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+
+    /**
+     * global events
+     */
+    private SockAltp.OnSocketEvent globalCallback = new SockAltp.OnSocketEvent() {
+        @Override
+        public void onEvent(String event, Object... args) {
+            switch (event) {
+                case Socket.EVENT_CONNECT:  // auto call on connect to server
+                    Log.e("TAG_INFO", "connect");
+                    break;
+                case Socket.EVENT_CONNECT_ERROR:
+                case Socket.EVENT_CONNECT_TIMEOUT:
+                    Log.e("TAG_INFO", "disconnect");
+                    if (!mSocketAltp.isConnected()) {
+                        mSocketAltp.connect();
+                    }
+                    searchBg.stop();
+                    mButtonSearch.setClickable(true);
+                    break;
+            }
+        }
+    };
+
+    private SockAltp.OnSocketEvent searchCallback = new SockAltp.OnSocketEvent() {
+        @Override
+        public void onEvent(String event, Object... args) {
+            Pair<Room, ArrayList<User>> result = mAltpHelper.searchCallback(args);
+            OnSearCallbackEvent eventBus = new OnSearCallbackEvent();
+            eventBus.result = result;
+            EventBus.getDefault().post(eventBus);
+        }
+    };
+
+    public void sendSearchRequest(User user) {
+        if (searchTimes > 0) {
+            for (int i = 0; i < 8; i++) {
+                mButtonPlayer[i].setText("NGƯỜI CHƠI");
+                mButtonPlayer[i].setBackgroundResource(R.drawable.button_player);
+            }
+        }
+        this.mUser = user;
+        mAltpHelper.search(mUser);
+
+        Log.e("TAG", "searchRequest: " + mUser.id + " " + mUser.name + " " + mUser.address + "\n" + mUser.avatar);
+    }
+
+    private void updateEnemy(User enemy) {
+        PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_ENEMY_ID, enemy.id);
+        PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_ENEMY_NAME, enemy.name);
+        PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_ENEMY_LOCATION, enemy.address);
+        PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_ENEMY_AVATAR, enemy.avatar);
+        PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_ROOM_ID, enemy.room);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        if(getSupportActionBar() != null) {
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
         setContentView(R.layout.info_screen);
+        EventBus.getDefault().register(this);
+
+        mSocketAltp = MainApplication.sockAltp();
+        mAltpHelper = new AltpHelper(mSocketAltp);
+        if (!mSocketAltp.isConnected()) {
+            mSocketAltp.connect();
+        }
+
+        mSocketAltp.addGlobalEvent(globalCallback);
+        mSocketAltp.addEvent("search", searchCallback);
+
+        getUserInfo();
 
         /**
          * RecyclerView
@@ -74,6 +147,32 @@ public class InfoScreen extends AppCompatActivity {
         mAdapter = new TopicAdapter(rowListItem);
         mRecyclerView.setAdapter(mAdapter);*/
 
+        findViewById();
+        setView();
+        buttonPlayer();
+
+        mButtonSearch = (RelativeLayout) findViewById(R.id.button_search);
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            mButtonSearch.setBackground(searchBg);
+        } else {
+            mButtonSearch.setBackgroundDrawable(new HexagonDrawable());
+        }
+        mButtonSearch.setClickable(true);
+        mButtonSearch.setOnClickListener(new View.OnClickListener() {
+                                             @Override
+                                             public void onClick(View v) {
+                                                 setUserInfo();
+                                                 sendSearchRequest(mUser);
+                                                 searchBg.start();
+                                                 mButtonSearch.setClickable(false);
+                                             }
+                                         }
+        );
+    }
+
+    public void findViewById() {
         Typeface font = Typeface.createFromAsset(getAssets(),
                 "fonts/roboto.ttf");
 
@@ -83,19 +182,36 @@ public class InfoScreen extends AppCompatActivity {
         mTextViewCity = (TextView) findViewById(R.id.textview_city_info);
         mTextViewCity.setTypeface(font);
 
-        if (LoginScreen.city != null) {
-            mTextViewCity.setText(LoginScreen.city.toUpperCase());
-        } else {
-            mTextViewCity.setText("VIETNAM");
-        }
-
-        mImageViewFbAvatar = (ImageView) findViewById(R.id.imageview_useravatar);
+        mImageViewAvatar = (ImageView) findViewById(R.id.imageview_useravatar);
 
         mTextViewMoney = (TextView) findViewById(R.id.textview_money);
         mTextViewMoney.setTypeface(font);
-        sMoney = PrefUtils.getInstance(this).get(PrefUtils.KEY_MONEY, 0);
-        mTextViewMoney.setText(Integer.toString(sMoney));
 
+    }
+
+    public void getUserInfo() {
+        username = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_NAME, "");
+        location = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_LOCATION, "");
+        linkAvatar = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_URL_AVATAR, "");
+        money = Integer.toString(PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_MONEY, 0));
+        userId = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_USER_ID, Long.valueOf(0));
+    }
+
+    public void setUserInfo() {
+        mUser.id = userId;
+        mUser.name = username;
+        mUser.address = location;
+        mUser.avatar = linkAvatar;
+    }
+
+    public void setView() {
+        mTextViewNameUser.setText(username);
+        mTextViewCity.setText(location);
+        Glide.with(getApplicationContext()).load(linkAvatar).into(mImageViewAvatar);
+        mTextViewMoney.setText(money);
+    }
+
+    public void buttonPlayer() {
         mButtonPlayer = new Button[8];
         mTextViewPlayer1 = (TextView) findViewById(R.id.button_player1).findViewById(R.id.button_player);
         mTextViewPlayer2 = (TextView) findViewById(R.id.button_player2).findViewById(R.id.button_player);
@@ -132,145 +248,96 @@ public class InfoScreen extends AppCompatActivity {
                 mButtonPlayer[i] = (Button) mTextViewPlayer8;
             }
             mButtonPlayer[i].setBackgroundResource(R.drawable.button_player);
-        }
-
-        Random random = new Random();
-        x = random.nextInt(8 + 0);
-
-
-        mButtonSearch = (RelativeLayout) findViewById(R.id.button_search);
-        final HexagonDrawable searchBg = new HexagonDrawable();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            mButtonSearch.setBackground(searchBg);
-        }else{
-            mButtonSearch.setBackgroundDrawable(new HexagonDrawable());
-        }
-        mButtonSearch.setClickable(true);
-        mButtonSearch.setOnClickListener(new View.OnClickListener() {
-                                             @Override
-                                             public void onClick(View v) {
-                                                 searchBg.start();
-                                                 mButtonSearch.setClickable(false);
-                                                 names = new ArrayList<String>();
-                                                 names.add("Ngọc Trinh");
-                                                 names.add("Angela Phương Trinh");
-                                                 names.add("Kỳ Duyên");
-                                                 names.add("Nguyễn Ngọc Ngạn");
-                                                 names.add("Phi Nhung");
-                                                 names.add("Mạnh Quỳnh");
-                                                 names.add("Hồ Ngọc Hà");
-                                                 names.add("Lại Văn Sâm");
-                                                 for (int i = 0; i < names.size(); i++) {
-                                                     mButtonPlayer[i].setText(names.get(i));
-
-                                                 }
-                                                 final CountDownTimer mNext = new CountDownTimer(2000, 100) {
-
-                                                     @Override
-                                                     public void onTick(long l) {
-
-                                                     }
-
-                                                     @Override
-                                                     public void onFinish() {
-                                                         mIntentSearchOpponent = new Intent(InfoScreen.this, SearchOpponent.class);
-                                                         mIntentSearchOpponent.putExtra("NAMEUSER2", names.get(x));
-                                                         mIntentSearchOpponent.putExtra("IDUSER2", x);
-                                                         startActivity(mIntentSearchOpponent);
-                                                         overridePendingTransition(R.animator.right_in, R.animator.left_out);
-                                                         finish();
-                                                     }
-                                                 };
-
-                                                 CountDownTimer mWaitTime = new CountDownTimer(2000, 100) {
-                                                     @Override
-                                                     public void onTick(long l) {
-                                                     }
-
-                                                     @Override
-                                                     public void onFinish() {
-                                                         searchBg.stop();
-                                                         mButtonPlayer[x].setBackgroundResource(R.drawable.answer3);
-                                                         mNext.start();
-                                                     }
-                                                 };
-                                                 mWaitTime.start();
-
-
-                                             }
-                                         }
-        );
-
-        FacebookSdk.sdkInitialize(
-                getApplicationContext(),
-                new FacebookSdk.InitializeCallback() {
-                    @Override
-                    public void onInitialized() {
-                        //AccessToken is for us to check whether we have previously logged in into
-                        //this app, and this information is save in shared preferences and sets it during SDK initialization
-                        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-                        if (accessToken == null) {
-                            sManualName = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_NAME, "");
-                            mTextViewNameUser.setText(sManualName);
-                        } else {
-                            if (NetworkUtils.checkInternetConnection(InfoScreen.this)) {
-                                GetUserInfo();
-                            }
-                        }
-                    }
+            mButtonPlayer[i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
                 }
-        );
-       /* logoutButtonImgV = (ImageView) findViewById(R.id.fblogout_button);
-        logoutButtonImgV.setImageResource(R.drawable.logout);
-        logoutButtonImgV.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View v) {
-                                                    LoginManager.getInstance().logOut();
-                                                    Intent intent = new Intent(InfoScreen.this, LoginScreen.class);
-                                                    startActivity(intent);
-                                                    finish();
-                                                }
-                                            }
-        );
-    }*/
+            });
+        }
+
     }
 
-    private void GetUserInfo() {
-        GraphRequest request = GraphRequest.newMeRequest(
-                AccessToken.getCurrentAccessToken(),
-                new GraphRequest.GraphJSONObjectCallback() {
-                    @Override
-                    public void onCompleted(
-                            JSONObject object,
-                            GraphResponse response) {
-                        // Application code
-                        try {
-                            sUserFbId = object.getString("id");
-                            if (sUserFbId == null) {
-                                mImageViewFbAvatar.setImageResource(R.drawable.avatar);
-                            } else {
-                                sFullNameFb = object.getString("name");
-                                mTextViewNameUser.setText(sFullNameFb);
-                                Glide.with(getApplicationContext())
-                                        .load("https://graph.facebook.com/" + sUserFbId + "/picture?width=500&height=500").into(mImageViewFbAvatar);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+    @Subscribe
+    public void onEventMainThread(OnSearCallbackEvent event) {
+        Pair<Room, ArrayList<User>> result = event.result;
+        Room room = result.first;
+        final List<User> dummyUsers = result.second;
+
+        searchTimes = 1;
+        isEnemy = false;
+
+        for (User user : room.users) {
+            if (user.id != mUser.id) {
+                user.isDummy = false;
+                isEnemy = true;
+                updateEnemy(user);
+                dummyUsers.add(user);
+                break;
+            }
+        }
+
+        Collections.shuffle(dummyUsers);
+
+        if (isEnemy) {
+            searchBg.stop();
+
+            for (int i = 0; i < dummyUsers.size(); i++) {
+                final int _i = i;
+                if (!dummyUsers.get(_i).isDummy) {
+                    enemyNumberInList = _i;
+                    mButtonPlayer[enemyNumberInList].postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mButtonPlayer[enemyNumberInList].setBackgroundResource(R.drawable.answer3);
+                            mButtonSearch.setClickable(true);
                         }
+                    }, 2000);
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mButtonPlayer[_i].setText(dummyUsers.get(_i).name);
                     }
                 });
-        Bundle parameters = new Bundle();
-        parameters.putString("fields", "id,gender,name,birthday,picture.type(large)");
-        request.setParameters(parameters);
-        request.executeAsync();
+                Log.e("TAG", "dummy user: " + dummyUsers.get(i).name);
+            }
+
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    moveSearchOpponent();
+                }
+            }, 4000);
+            Log.e("TAG", "join room: " + room.roomId);
+            Log.e("TAG", "dummy user: " + dummyUsers.size());
+        }
+    }
+
+    public void moveSearchOpponent() {
+
+        Intent intent = new Intent(InfoScreen.this, SearchOpponent.class);
+        startActivity(intent);
+        overridePendingTransition(R.animator.right_in, R.animator.left_out);
+        finish();
     }
 
     @Override
-    public void onResume() {
-        if (!NetworkUtils.checkInternetConnection(this)) {
-            NetworkUtils.movePopupConnection(this);
-        }
-        super.onResume();
+    public void onPause() {
+        super.onPause();
+//        handler.removeCallbacksAndMessages(null);
+//        handler.removeCallbacks(insertName);
+//        handler.removeCallbacks(painter);
+//        handler.removeCallbacks(moveScreen);
+    }
+
+    @Override
+    protected void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
+    }
+
+    public static class OnSearCallbackEvent {
+        Pair<Room, ArrayList<User>> result;
+
     }
 }

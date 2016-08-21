@@ -4,30 +4,33 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.gcs.faster5.MainApplication;
 import com.example.gcs.faster5.R;
 import com.example.gcs.faster5.model.Question;
-import com.example.gcs.faster5.network.ServiceMng;
+import com.example.gcs.faster5.model.Room;
+import com.example.gcs.faster5.model.User;
+import com.example.gcs.faster5.sock.AltpHelper;
+import com.example.gcs.faster5.sock.SockAltp;
 import com.example.gcs.faster5.util.NetworkUtils;
 import com.example.gcs.faster5.util.PrefUtils;
-import com.facebook.AccessToken;
-import com.facebook.FacebookSdk;
+import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.socket.client.Socket;
 
 /**
  * Created by Kien on 07/12/2016.
@@ -38,12 +41,56 @@ public class SearchOpponent extends AppCompatActivity {
     public static final String EXTRA_NAME = "topic_name";
     public static final String EXTRA_ANSWER_RIGHT = "right_answer";
     public static List<Question> questions = new ArrayList<>();
-    String username2;
+    private SockAltp mSocketAltp;
+    private AltpHelper mAltpHelper;
+    private User mUser = new User();
+    private User enemyUser = new User();
+    private Room mRoom = new Room();
+
     TextView mTextViewCityUser1, mTextViewCityUser2, mTextViewUserName1, mTextViewUserName2, mTextViewMoney1, mTextViewMoney2;
     ImageView mImageViewUserAvatar1, mImageViewUserAvatar2;
     public static Button mButtonPlay, mButtonSeach;
-    String URL;
-    int idUser2;
+
+    private SockAltp.OnSocketEvent globalCallback = new SockAltp.OnSocketEvent() {
+        @Override
+        public void onEvent(String event, Object... args) {
+            switch (event) {
+                case Socket.EVENT_CONNECT:  // auto call on connect to server
+                    Log.e("TAG_SEARCH", "connect");
+                    break;
+                case Socket.EVENT_CONNECT_ERROR:
+                case Socket.EVENT_CONNECT_TIMEOUT:
+                    Log.e("TAG_SEARCH", "disconnect");
+                    if (!mSocketAltp.isConnected()) {
+                        mSocketAltp.connect();
+                    }
+                    break;
+            }
+        }
+    };
+
+    private SockAltp.OnSocketEvent playCallback = new SockAltp.OnSocketEvent() {
+        @Override
+        public void onEvent(String event, Object... args) {
+            Question question = mAltpHelper.playCallback(args);
+            JSONObject data = (JSONObject) args[0];
+            boolean checkReady = data.optBoolean("notReady");
+            if (!checkReady) {
+                if (data.optInt("count") == 0) {
+                    Log.e("TAG", "onEvent: BAT DAU");
+                    Log.e("QUESTION", "question: " + question.mStt + " " + question.mQuestion + " " + question.mCorrectAnsId);
+                }
+            } else {
+            }
+        }
+    };
+
+
+    public void play(User user, Room room) {
+        this.mUser = user;
+        this.mRoom = room;
+        mAltpHelper.play(mUser, mRoom);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,155 +98,96 @@ public class SearchOpponent extends AppCompatActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        if(getSupportActionBar() != null) {
+        if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
         setContentView(R.layout.search_opponent);
 
+        mSocketAltp = MainApplication.sockAltp();
+        mAltpHelper = new AltpHelper(mSocketAltp);
+        if (!mSocketAltp.isConnected()) {
+            mSocketAltp.connect();
+        }
+
+        mSocketAltp.addEvent("play", playCallback);
+        mSocketAltp.addGlobalEvent(globalCallback);
+        findViewById();
+        setInfoUser();
+
+    }
+
+    public void setInfoUser() {
+        mTextViewUserName1.setText(PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_NAME, ""));
+        Glide.with(getApplicationContext()).load(PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_URL_AVATAR, ""))
+                .into(mImageViewUserAvatar1);
+        mTextViewCityUser1.setText(PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_LOCATION, ""));
+
+
+        mTextViewUserName2.setText(PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_ENEMY_NAME, ""));
+        Glide.with(getApplicationContext()).load(PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_ENEMY_AVATAR, ""))
+                .into(mImageViewUserAvatar2);
+        mTextViewCityUser2.setText(PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_ENEMY_LOCATION, ""));
+
+    }
+
+    public void findViewById() {
+
         Typeface font = Typeface.createFromAsset(getAssets(),
                 "fonts/roboto.ttf");
-        getQuestion();
-
-        mTextViewCityUser1 = (TextView) findViewById(R.id.textview_city_user1);
-        mTextViewCityUser2 = (TextView) findViewById(R.id.textview_city_user2);
-        mTextViewCityUser1.setTypeface(font);
-        mTextViewCityUser2.setTypeface(font);
-        if (mTextViewCityUser1 != null) {
-            mTextViewCityUser1.setText(LoginScreen.city.toUpperCase());
-        } else {
-            mTextViewCityUser1.setText("VIETNAM");
-        }
-        mTextViewCityUser2.setText("VIETNAM");
-
-        mButtonSeach = (Button) findViewById(R.id.button_search_again);
-        mButtonSeach.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), InfoScreen.class);
-                startActivity(intent);
-                overridePendingTransition(R.animator.in_from_left, R.animator.out_to_right);
-                finish();
-            }
-        });
-
-
-        mImageViewUserAvatar1 = (ImageView) findViewById(R.id.imageview_useravatar1);
-        mImageViewUserAvatar2 = (ImageView) findViewById(R.id.imageview_useravatar2);
 
         mTextViewUserName1 = (TextView) findViewById(R.id.textview_username1);
-        mTextViewUserName2 = (TextView) findViewById(R.id.textview_username2);
         mTextViewUserName1.setTypeface(font);
-        mTextViewUserName2.setTypeface(font);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            username2 = extras.getString("NAMEUSER2");
-            idUser2 = extras.getInt("IDUSER2");
-            linkAvatarUser2(idUser2);
-            mTextViewUserName2.setText(username2);
-        }
+        mImageViewUserAvatar1 = (ImageView) findViewById(R.id.imageview_useravatar1);
+
+        mTextViewCityUser1 = (TextView) findViewById(R.id.textview_city_user1);
+        mTextViewCityUser1.setTypeface(font);
 
         mTextViewMoney1 = (TextView) findViewById(R.id.textview_money1);
         mTextViewMoney1.setTypeface(font);
-        mTextViewMoney1.setText(String.valueOf(PrefUtils.getInstance(this).get(PrefUtils.KEY_MONEY, 0)));
+
+        mTextViewUserName2 = (TextView) findViewById(R.id.textview_username2);
+        mTextViewUserName2.setTypeface(font);
+
+        mImageViewUserAvatar2 = (ImageView) findViewById(R.id.imageview_useravatar2);
+
+        mTextViewCityUser2 = (TextView) findViewById(R.id.textview_city_user2);
+        mTextViewCityUser2.setTypeface(font);
+
         mTextViewMoney2 = (TextView) findViewById(R.id.textview_money2);
         mTextViewMoney2.setTypeface(font);
-        mTextViewMoney2.setText(String.valueOf(PrefUtils.getInstance(this).get(PrefUtils.KEY_MONEY, 0)));
+
+        mButtonSeach = (Button) findViewById(R.id.button_search_again);
         mButtonPlay = (Button) findViewById(R.id.button_play);
-        mButtonPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), MainScreen.class);
-                intent.putExtra("NAMEUSER2", username2);
-                intent.putExtra("IDUSER2", idUser2);
-                startActivity(intent);
-                overridePendingTransition(R.animator.right_in, R.animator.left_out);
-                finish();
-            }
-        });
-
-        setInfo();
-
     }
 
-    public void setInfo() {
-        FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
-            @Override
-            public void onInitialized() {
-                AccessToken accessToken = AccessToken.getCurrentAccessToken();
-                if (accessToken != null) {
-                    mTextViewUserName1.setText(InfoScreen.sFullNameFb);
-                    Glide.with(getApplicationContext())
-                            .load("https://graph.facebook.com/" + InfoScreen.sUserFbId + "/picture?width=500&height=500").into(mImageViewUserAvatar1);
-                } else {
-                    mTextViewUserName1.setText(InfoScreen.sManualName);
-                    mImageViewUserAvatar1.setImageResource(R.drawable.avatar);
-                }
-            }
-        });
+
+    public void btnSearch(View view) {
+        Intent intent = new Intent(SearchOpponent.this, InfoScreen.class);
+        startActivity(intent);
+        overridePendingTransition(R.animator.in_from_left, R.animator.out_to_right);
+        finish();
     }
 
-    public static void getQuestion() {
-        new ServiceMng().api().getQuestion(0).enqueue(new Callback<List<Question>>() {
-            @Override
-            public void onResponse(Call<List<Question>> call, Response<List<Question>> response) {
-                questions.clear();
-                questions.addAll(response.body());
-                mButtonPlay.setBackgroundResource(R.drawable.button_play);
-            }
+    public void btnPlay(View view) {
+        mUser.name = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_NAME, "");
+        mUser.address = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_LOCATION, "");
+        mUser.avatar = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_URL_AVATAR, "");
+        mUser.id = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_USER_ID, Long.valueOf(0));
 
-            @Override
-            public void onFailure(Call<List<Question>> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
+        mRoom.questionIndex = 0;
+        mRoom.roomId = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_ROOM_ID, "");
+
+        play(mUser, mRoom);
     }
 
-    public void linkAvatarUser2(int x) {
-        switch (x) {
-            case 0:
-                URL = "http://img.saobiz.net/d/2016/05/ngoc-trinh-giaoduc999-01084727_03.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 1:
-                URL = "http://media.doisongphapluat.com/2015/07/27/angela_2_dspl.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 2:
-                URL = "http://congly.com.vn/data/news/2016/3/8/83/hoahaukyduyen.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 3:
-                URL = "http://media.hotbirthdays.com/upload/2015/05/24/nguyen-ngoc-ngan.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 4:
-                URL = "http://img.saobiz.net/d/2015/10/nhung2-1443749932505-56-0-362-600-crop-1443750244536.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 5:
-                URL = "http://www.phunuvagiadinh.vn/uploads/2016/03/24/1385548239736_500-20160324-00031574.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 6:
-                URL = "http://media.tinmoi.vn/2015/07/23/ho-ngoc-ha-tm1.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 7:
-                URL = "http://phunutoday.vn/upload_images/images/2016/07/20/lai-van-sam-phunutoday_vn.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-        }
-
+    public void moveMainScreen() {
+        Intent intent = new Intent(SearchOpponent.this, MainScreen.class);
+        startActivity(intent);
+        overridePendingTransition(R.animator.right_in, R.animator.left_out);
+        finish();
     }
+
 
     @Override
     public void onResume() {
