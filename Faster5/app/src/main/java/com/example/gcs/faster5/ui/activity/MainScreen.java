@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -24,6 +25,8 @@ import com.example.gcs.faster5.util.PrefUtils;
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 
+import java.util.List;
+
 /**
  * Created by Kien on 07/05/2016.
  * test
@@ -37,15 +40,14 @@ public class MainScreen extends AppCompatActivity {
             mTextViewAns1, mTextViewAns2, mTextViewAns3, mTextViewAns4, mTextViewTimer,
             mTextViewUserName1, mTextViewUserName2,
             mTextViewCityUser1, mTextViewCityUser2, mTextViewMoneyQuestion;
-    String mQuestion, mAns1, mAns2, mAns3, mAns4, username2;
-    Integer mCorrectAnsId, mStt = 1, mUserScore1 = 0, mUserScore2 = 0;
+    String mQuestion, mAns1, mAns2, mAns3, mAns4;
+    int mCorrectAnsId, mStt = 1, mUserScore1 = 0, mUserScore2 = 0;
     Button[] mButtonAns;
     CountDownTimer mTimeLeft, mWaitTimeNextQues, mWaitTime;
     boolean clickable = true;
     long timeLeft;
     int mMoney = 0;
     public String URL;
-    int idUser2;
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -54,7 +56,7 @@ public class MainScreen extends AppCompatActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        if(getSupportActionBar() != null) {
+        if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
         setContentView(R.layout.main_screen);
@@ -67,7 +69,7 @@ public class MainScreen extends AppCompatActivity {
                 } else {
                     mTextViewTimer.setText(TXT_TIME_OUT);
                     clickable = false;
-                    gameOver();
+                    //gameOver();
                 }
             }
 
@@ -76,18 +78,22 @@ public class MainScreen extends AppCompatActivity {
                 clickable = false;
             }
         };
-        mButtonAns = new Button[4];
+
+        findViewById();
+        setUserInfo();
+
+        setQA(0);
+        setTxtRound(mStt + 1);
+    }
+
+    public void findViewById() {
 
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/roboto.ttf");
-
+        mButtonAns = new Button[4];
 
         mTextViewTimer = (TextView) findViewById(R.id.textview_timer);
         mTextViewTimer.setTypeface(font);
         mTextViewTimer.setBackgroundResource(R.drawable.clock);
-
-      /*  Bitmap mBitmap = null;
-        BitmapDrawable mDrawable = new BitmapDrawable(mBitmap);
-        mTextViewTimer.setBackground(mDrawable);*/
 
         mTextViewRound = (TextView) findViewById(R.id.textview_numberquestion);
         mTextViewRound.setTypeface(font);
@@ -124,21 +130,6 @@ public class MainScreen extends AppCompatActivity {
         mTextViewCityUser1.setTypeface(font);
         mTextViewCityUser2.setTypeface(font);
 
-        if (mTextViewCityUser1 != null) {
-            mTextViewCityUser1.setText(LoginScreen.city.toUpperCase());
-        } else {
-            mTextViewCityUser1.setText("VIETNAM");
-        }
-        mTextViewCityUser2.setText("VIETNAM");
-
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            username2 = extras.getString("NAMEUSER2");
-            idUser2 = extras.getInt("IDUSER2");
-            linkAvatarUser2(idUser2);
-            mTextViewUserName2.setText(username2);
-        }
-
         mTextViewMoneyQuestion = (TextView) findViewById(R.id.textview_moneyquestion);
 
 
@@ -157,26 +148,42 @@ public class MainScreen extends AppCompatActivity {
             }
             mButtonAns[i].setBackgroundResource(R.drawable.answer0);
         }
+    }
 
-        setQA(0);
-        setTxtRound(mStt + 1);
+    public void setUserInfo() {
+        mTextViewUserName1.setText(PrefUtils.getInstance(MainScreen.this).get(PrefUtils.KEY_NAME, ""));
+        Glide.with(getApplicationContext()).load(PrefUtils.getInstance(MainScreen.this).get(PrefUtils.KEY_URL_AVATAR, ""))
+                .into(mImageViewUserAvatar1);
+        mTextViewCityUser1.setText(PrefUtils.getInstance(MainScreen.this).get(PrefUtils.KEY_LOCATION, ""));
+
+
+        mTextViewUserName2.setText(PrefUtils.getInstance(MainScreen.this).get(PrefUtils.KEY_ENEMY_NAME, ""));
+        Glide.with(getApplicationContext()).load(PrefUtils.getInstance(MainScreen.this).get(PrefUtils.KEY_ENEMY_AVATAR, ""))
+                .into(mImageViewUserAvatar2);
+        mTextViewCityUser2.setText(PrefUtils.getInstance(MainScreen.this).get(PrefUtils.KEY_ENEMY_LOCATION, ""));
     }
 
     public void setQA(int stt) {
         this.mStt = stt;
-//        mQuestion = SearchOpponent.questions.get(stt).getQuestion();
-//        mAns1 = SearchOpponent.questions.get(stt).getmAns().get(0);
-//        mAns2 = SearchOpponent.questions.get(stt).getmAns().get(1);
-//        mAns3 = SearchOpponent.questions.get(stt).getmAns().get(2);
-//        mAns4 = SearchOpponent.questions.get(stt).getmAns().get(3);
-//        mCorrectAnsId = SearchOpponent.questions.get(stt).getIdAnsCorrect();
+
+  /*      if (mStt == 0) {
+            mQuestion = getIntent().getExtras().getString("mQuestion");
+            mAns1 = getIntent().getExtras().getString("mAns1");
+            mAns2 = getIntent().getExtras().getString("mAns2");
+            mAns3 = getIntent().getExtras().getString("mAns3");
+            mAns4 = getIntent().getExtras().getString("mAns4");
+            mCorrectAnsId = getIntent().getExtras().getInt("mCorrectAnsId");
+        }*/
         mTextViewQuestion.setText(mQuestion);
         mTextViewAns1.setText("A: " + mAns1);
         mTextViewAns2.setText("B: " + mAns2);
         mTextViewAns3.setText("C: " + mAns3);
         mTextViewAns4.setText("D: " + mAns4);
+
+
         mTimeLeft.start();
     }
+
 
     public boolean checkAns(int answerIndex) {
         return answerIndex == mCorrectAnsId;
@@ -209,7 +216,7 @@ public class MainScreen extends AppCompatActivity {
                         isBlue = !isBlue;
                         clickable = false;
                     }
-                    btnAnswer.setBackgroundResource(isBlue ? R.drawable.answer1 : R.drawable.answer3);
+                    btnAnswer.setBackgroundResource(isBlue ? R.drawable.answer1 : R.drawable.answer_right);
                 }
 
                 public void onFinish() {
@@ -221,7 +228,7 @@ public class MainScreen extends AppCompatActivity {
 
                     } else {
                         clickable = false;
-                        btnAnswer.setBackgroundResource(R.drawable.answer3);
+                        btnAnswer.setBackgroundResource(R.drawable.answer_wrong);
                         inCorrect();
                     }
                 }
@@ -236,7 +243,7 @@ public class MainScreen extends AppCompatActivity {
             }
 
             public void onFinish() {
-                setNewQuestion();
+                //  setNewQuestion();
                 mWaitTime.cancel();
                 mWaitTimeNextQues.cancel();
             }
@@ -247,13 +254,13 @@ public class MainScreen extends AppCompatActivity {
     public void inCorrect() {
         mWaitTimeNextQues = new CountDownTimer(2000, 100) {
             public void onTick(long millisUntilFinished) {
-                mButtonAns[mCorrectAnsId].setBackgroundResource(R.drawable.answer1);
+                mButtonAns[mCorrectAnsId].setBackgroundResource(R.drawable.answer_right);
             }
 
             public void onFinish() {
                 mWaitTime.cancel();
                 mWaitTimeNextQues.cancel();
-                gameOver();
+                //gameOver();
             }
         };
         mWaitTimeNextQues.start();
@@ -273,7 +280,7 @@ public class MainScreen extends AppCompatActivity {
             setTxtRound(mStt + 1);
         }
         if (mStt == (SearchOpponent.questions.size())) {
-            gameOver();
+          //  gameOver();
         } else {
             setQA(mStt);
             for (int i = 0; i < 4; i++) {
@@ -310,56 +317,8 @@ public class MainScreen extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), GameOver.class);
         intent.putExtra(GameOver.EXTRA_SCORE, mUserScore1);
         startActivity(intent);
-        overridePendingTransition(R.animator.right_in, R.animator.left_out);
         finish();
-    }
-
-
-
-    public void linkAvatarUser2(int x) {
-        switch (x) {
-            case 0:
-                URL = "http://img.saobiz.net/d/2016/05/ngoc-trinh-giaoduc999-01084727_03.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 1:
-                URL = "http://media.doisongphapluat.com/2015/07/27/angela_2_dspl.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 2:
-                URL = "http://congly.com.vn/data/news/2016/3/8/83/hoahaukyduyen.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 3:
-                URL = "http://media.hotbirthdays.com/upload/2015/05/24/nguyen-ngoc-ngan.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 4:
-                URL = "http://img.saobiz.net/d/2015/10/nhung2-1443749932505-56-0-362-600-crop-1443750244536.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 5:
-                URL = "http://www.phunuvagiadinh.vn/uploads/2016/03/24/1385548239736_500-20160324-00031574.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 6:
-                URL = "http://media.tinmoi.vn/2015/07/23/ho-ngoc-ha-tm1.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-            case 7:
-                URL = "http://phunutoday.vn/upload_images/images/2016/07/20/lai-van-sam-phunutoday_vn.jpg";
-                Glide.with(getApplicationContext())
-                        .load(URL).into(mImageViewUserAvatar2);
-                break;
-        }
-
+        overridePendingTransition(R.animator.right_in, R.animator.left_out);
     }
 
     public void onBackPressed() {

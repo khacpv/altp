@@ -156,7 +156,7 @@
         android:paddingRight="2dp"
         android:text="TIME OUT"
         android:textColor="#FFF"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textStyle="bold" />
 
     <RelativeLayout

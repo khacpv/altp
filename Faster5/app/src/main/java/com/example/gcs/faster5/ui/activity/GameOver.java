@@ -40,7 +40,7 @@ public class GameOver extends AppCompatActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        if(getSupportActionBar() !=null) {
+        if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
 
@@ -80,12 +80,13 @@ public class GameOver extends AppCompatActivity {
                 mMoney = mMoney + mScore;
                 PrefUtils.getInstance(GameOver.this).set(PrefUtils.KEY_MONEY, mMoney);
                 startActivity(intent);
-                overridePendingTransition(R.animator.in_from_left, R.animator.out_to_right);
                 finish();
+                overridePendingTransition(R.animator.in_from_left, R.animator.out_to_right);
             }
         });
     }
 
     public void onBackPressed() {
     }
+
 }

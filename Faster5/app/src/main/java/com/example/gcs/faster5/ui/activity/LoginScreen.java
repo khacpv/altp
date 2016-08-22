@@ -262,7 +262,9 @@ public class LoginScreen extends AppCompatActivity {
     public void checkLogin() {
         if (NetworkUtils.checkInternetConnection(LoginScreen.this)) {
             if (mAccessToken != null || PrefUtils.getInstance(LoginScreen.this).get(PrefUtils.KEY_LOGGED_IN, false)) {
-                loginDialog.show();
+                if (!loginDialog.isShowing()) {
+                    loginDialog.show();
+                }
                 mUser.name = PrefUtils.getInstance(LoginScreen.this).get(PrefUtils.KEY_NAME, "");
                 mUser.avatar = PrefUtils.getInstance(LoginScreen.this).get(PrefUtils.KEY_URL_AVATAR, "");
                 mUser.address = city;
@@ -283,6 +285,7 @@ public class LoginScreen extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
 
                 //mLoginButtonFb.setVisibility(View.INVISIBLE);
+                loginDialog.show();
                 if (NetworkUtils.checkInternetConnection(LoginScreen.this)) {
                     mAccessTokenTracker = new AccessTokenTracker() {
                         @Override
@@ -299,7 +302,6 @@ public class LoginScreen extends AppCompatActivity {
                                     AccessToken mAccessToken = loginResult.getAccessToken();
                                     PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_ACCESS_TOKEN_FB, mAccessToken.getToken());
                                     getUserInfoFromFb();
-                                    loginDialog.show();
                                 }
 
                                 @Override
@@ -308,6 +310,7 @@ public class LoginScreen extends AppCompatActivity {
 
                                 @Override
                                 public void onError(FacebookException exception) {
+                                    loginDialog.hide();
                                 }
                             });
                             return;
@@ -432,6 +435,9 @@ public class LoginScreen extends AppCompatActivity {
         ImageView loading = (ImageView) loginDialog.findViewById(R.id.imgView_loading);
 
         Glide.with(this).load(R.drawable.loading).asGif().into(loading);
+
+        Glide.with(this).load(R.drawable.loading);
+
 
     }
 
@@ -597,12 +603,9 @@ public class LoginScreen extends AppCompatActivity {
     }
 
     public void loggedAndMoveInfoScreen() {
-        edittexDialog.dismiss();
-        avatarDialog.dismiss();
         Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
         startActivity(intent);
         overridePendingTransition(R.animator.right_in, R.animator.left_out);
-        loginDialog.dismiss();
         finish();
     }
 
@@ -612,5 +615,8 @@ public class LoginScreen extends AppCompatActivity {
         if (prgDialog != null) {
             prgDialog.dismiss();
         }
+        loginDialog.dismiss();
+        edittexDialog.dismiss();
+        avatarDialog.dismiss();
     }
 }

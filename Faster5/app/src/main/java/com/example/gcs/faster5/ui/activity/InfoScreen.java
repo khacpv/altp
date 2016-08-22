@@ -87,7 +87,7 @@ public class InfoScreen extends AppCompatActivity {
         @Override
         public void onEvent(String event, Object... args) {
             Pair<Room, ArrayList<User>> result = mAltpHelper.searchCallback(args);
-            OnSearCallbackEvent eventBus = new OnSearCallbackEvent();
+            OnSearhCallbackEvent eventBus = new OnSearhCallbackEvent();
             eventBus.result = result;
             EventBus.getDefault().post(eventBus);
         }
@@ -109,7 +109,7 @@ public class InfoScreen extends AppCompatActivity {
     private void updateEnemy(User enemy) {
         PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_ENEMY_ID, enemy.id);
         PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_ENEMY_NAME, enemy.name);
-        PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_ENEMY_LOCATION, enemy.address);
+        PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_ENEMY_LOCATION, enemy.address.toUpperCase());
         PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_ENEMY_AVATAR, enemy.avatar);
         PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_ROOM_ID, enemy.room);
     }
@@ -258,7 +258,7 @@ public class InfoScreen extends AppCompatActivity {
     }
 
     @Subscribe
-    public void onEventMainThread(OnSearCallbackEvent event) {
+    public void onEventMainThread(OnSearhCallbackEvent event) {
         Pair<Room, ArrayList<User>> result = event.result;
         Room room = result.first;
         final List<User> dummyUsers = result.second;
@@ -267,7 +267,7 @@ public class InfoScreen extends AppCompatActivity {
         isEnemy = false;
 
         for (User user : room.users) {
-            if (user.id != mUser.id) {
+            if (user.id != mUser.id && user.name != mUser.name) {
                 user.isDummy = false;
                 isEnemy = true;
                 updateEnemy(user);
@@ -314,7 +314,6 @@ public class InfoScreen extends AppCompatActivity {
     }
 
     public void moveSearchOpponent() {
-
         Intent intent = new Intent(InfoScreen.this, SearchOpponent.class);
         startActivity(intent);
         overridePendingTransition(R.animator.right_in, R.animator.left_out);
@@ -336,7 +335,7 @@ public class InfoScreen extends AppCompatActivity {
         super.onDestroy();
     }
 
-    public static class OnSearCallbackEvent {
+    public static class OnSearhCallbackEvent {
         Pair<Room, ArrayList<User>> result;
 
     }

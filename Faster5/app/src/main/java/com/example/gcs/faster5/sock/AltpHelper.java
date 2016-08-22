@@ -143,7 +143,7 @@ public class AltpHelper {
             return question;
         }
 
-        if (data.optInt("count", 0) > -1) {
+        if (data.optInt("count", 0) > 0) {
             Log.e("TAG", "Start count: " + data.optInt("count"));
             return question;
         }
