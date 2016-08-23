@@ -22,4 +22,7 @@ public class Question implements Serializable{
     @SerializedName("answerRight")
     public Integer mCorrectAnsId;
 
+    @SerializedName("questionIndex")
+    public int questionIndex = -1;
+
 }

@@ -87,7 +87,7 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/layout_city_win"
@@ -96,18 +96,18 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="2dp"
             android:background="#FFF" />
 
         <Button
             android:id="@+id/button_backhome"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
-            android:layout_centerHorizontal="true"
             android:layout_marginLeft="100dp"
             android:layout_marginRight="100dp"
             android:layout_marginTop="5dp"
-            android:background="@drawable/button_login"
+            android:background="@drawable/answer0"
             android:gravity="center"
             android:paddingBottom="10dp"
             android:text="TIẾP TỤC"
@@ -115,7 +115,7 @@
             android:textColor="#ffffff"
             android:textSize="20sp"
             android:textStyle="bold" />
-    </RelativeLayout>
+    </FrameLayout>
 
 
 </LinearLayout>

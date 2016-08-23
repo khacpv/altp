@@ -134,53 +134,31 @@ public class AltpHelper {
         }
     }
 
-    public Question playCallback(Object... args) {
-        Question question = new Question();
-        JSONObject data = (JSONObject) args[0];
-        if (!playCallbackReady(args)) {
-            Log.e("TAG", "waiting for other ready");
-            return question;
-        }
-
-        if (data.optInt("count", -1) > -1) {
-            Log.e("TAG", "Start count: " + data.optInt("count"));
-            return question;
-        }
-
-        try {
-            question = new Gson().fromJson(data.getString("question"), Question.class);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return question;
-    }
-
     /**
      * @return null if user is not ready
-     * */
-    public Question playCallbackQuestion(Object... args){
+     */
+    public Question playCallbackQuestion(Object... args) {
         JSONObject data = (JSONObject) args[0];
         try {
             return new Gson().fromJson(data.getString("question"), Question.class);
         } catch (JSONException e) {
-            Log.e("TAG","user has not ready");
+            Log.e("TAG", "user has not ready");
         }
         return null;
     }
 
     /**
      * @return all players are ready
-     * */
-    public boolean playCallbackReady(Object... args){
-        JSONObject data = (JSONObject)args[0];
-        return data.optBoolean("notReady", true);
+     */
+    public boolean playCallbackReady(Object... args) {
+        JSONObject data = (JSONObject) args[0];
+        return data.optBoolean("notReady", false);
     }
 
     /**
-     * @return 3,2,1,0 or -1
-     * */
-    public int playCallbackCount(Object... args){
+     * @return 3, 2, 1, 0 or -1
+     */
+    public int playCallbackCount(Object... args) {
         JSONObject data = (JSONObject) args[0];
         return data.optInt("count", -1);
     }
@@ -247,4 +225,6 @@ public class AltpHelper {
     public void gameOverCallback(Object... args) {
 
     }
+
+
 }

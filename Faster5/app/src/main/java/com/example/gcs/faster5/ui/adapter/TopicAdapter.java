@@ -69,8 +69,8 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.ViewHolder> 
         @Override
         public void onClick(View view) {
             Intent intent = new Intent(view.getContext(), SearchOpponent.class);
-            intent.putExtra(SearchOpponent.EXTRA_ID, topicId);
-            intent.putExtra(SearchOpponent.EXTRA_NAME, topicName);
+        //    intent.putExtra(SearchOpponent.EXTRA_ID, topicId);
+          //  intent.putExtra(SearchOpponent.EXTRA_NAME, topicName);
             if (topicId != 0) {
                 view.getContext().startActivity(intent);
             }

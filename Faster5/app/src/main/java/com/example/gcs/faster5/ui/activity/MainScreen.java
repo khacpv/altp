@@ -7,19 +7,37 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.gcs.faster5.MainApplication;
 import com.example.gcs.faster5.R;
 import com.example.gcs.faster5.model.Question;
 import com.example.gcs.faster5.model.Room;
 import com.example.gcs.faster5.model.User;
+import com.example.gcs.faster5.sock.AltpHelper;
+import com.example.gcs.faster5.sock.SockAltp;
+import com.example.gcs.faster5.util.PrefUtils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Kien on 07/05/2016.
@@ -28,12 +46,10 @@ import com.example.gcs.faster5.model.User;
 public class MainScreen extends AppCompatActivity {
 
     private final String TXT_TIME_OUT = "TIME\nOUT";
-
     private static final String EXTRA_USER = "user";
     private static final String EXTRA_ENEMY = "enemy";
     private static final String EXTRA_ROOM = "room";
     private static final String EXTRA_QUESTION = "question";
-
     ImageView mImageViewUserAvatar1;
     ImageView mImageViewUserAvatar2;
     TextView mTextViewScore1;
@@ -50,29 +66,120 @@ public class MainScreen extends AppCompatActivity {
     TextView mTextViewCityUser1;
     TextView mTextViewCityUser2;
     TextView mTextViewMoneyQuestion;
-
-    int mCorrectAnsId;
     int mStt = 1;
     int mUserScore1 = 0;
     int mUserScore2 = 0;
-
+    int answerRight;
+    int myAnswerIndex = 0;
+    int enemyAnswerIndex = 0;
     Button[] mButtonAns;
-
     CountDownTimer mTimeLeft;
     CountDownTimer mWaitTimeNextQues;
     CountDownTimer mWaitTime;
-
     boolean clickable = true;
     long timeLeft;
     int mMoney = 0;
-
+    private SockAltp mSocketAltp;
+    private AltpHelper mAltpHelper;
     User mUser;
     User mEnemy;
     Room mRoom;
     Question mQuestion;
+    Handler handler = new Handler();
 
-    public static Intent createIntent(Context context, User user, User enemy, Room room, Question
-            question) {
+    Button btnMy;
+
+    private SockAltp.OnSocketEvent answerNextCallback = new SockAltp.OnSocketEvent() {
+        @Override
+        public void onEvent(String event, Object... args) {
+
+            mQuestion = mAltpHelper.answerNextCallback(args);
+            Log.e("TAG", "mQuestion: " + mQuestion.mQuestion);
+        }
+    };
+
+
+    private SockAltp.OnSocketEvent answerCallback = new SockAltp.OnSocketEvent() {
+        @Override
+        public void onEvent(String event, Object... args) {
+            OnAnsCallbackEvent eventBus = new OnAnsCallbackEvent();
+            Pair<Integer, ArrayList<User>> result = mAltpHelper.answerCallback(args);
+            eventBus.result = result;
+            EventBus.getDefault().post(eventBus);
+        }
+    };
+
+    public static class OnAnsCallbackEvent {
+        Pair<Integer, ArrayList<User>> result;
+    }
+
+
+    @Subscribe
+    public void onEventMainThread(OnAnsCallbackEvent event) {
+        Pair<Integer, ArrayList<User>> result = event.result;
+        if (result.first < 0) {
+            return;
+        }
+
+        final Animation mAnimation = new AlphaAnimation(1, 0);
+        mAnimation.setDuration(250);
+        mAnimation.setInterpolator(new LinearInterpolator());
+        mAnimation.setRepeatCount(Animation.INFINITE);
+        mAnimation.setRepeatMode(Animation.REVERSE);
+
+
+        answerRight = result.first;
+        List<User> answerUserList = result.second;
+
+        for (User user : answerUserList) {
+            if (user.id != mUser.id) {
+                Log.e("TAG", "mEnemyanswer: " + mEnemy.answerIndex);
+                enemyAnswerIndex = mEnemy.answerIndex = user.answerIndex;
+
+                mAltpHelper.getNextQuestion(mUser, mRoom);
+
+                mButtonAns[mEnemy.answerIndex].post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mButtonAns[mEnemy.answerIndex].setBackgroundResource(
+                                checkEnemyAns(mEnemy.answerIndex) ? R.drawable.answer4 : R.drawable.answer2);
+                    }
+                });
+            }
+        }
+
+        mButtonAns[myAnswerIndex].postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!checkAns(enemyAnswerIndex)) {
+                    mButtonAns[enemyAnswerIndex].setBackgroundResource(R.drawable.answer_wrong);
+                }
+
+                if (checkAns(myAnswerIndex)) {
+                    mButtonAns[myAnswerIndex].setBackgroundResource(R.drawable.answer_right);
+                    mButtonAns[myAnswerIndex].startAnimation(mAnimation);
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (int i = 0; i < 4; i++) {
+                                mButtonAns[i].clearAnimation();
+                                mButtonAns[i].setBackgroundResource(R.drawable.answer0);
+                            }
+                            setQA(1);
+                            clickable = true;
+                        }
+                    }, 2000);
+                } else {
+                    mButtonAns[myAnswerIndex].setBackgroundResource(R.drawable.answer_wrong);
+                    mButtonAns[answerRight].setBackgroundResource(R.drawable.answer_right);
+                    mButtonAns[answerRight].startAnimation(mAnimation);
+                }
+            }
+        }, 3000);
+
+    }
+
+    public static Intent createIntent(Context context, User user, User enemy, Room room, Question question) {
         Intent intent = new Intent(context, MainScreen.class);
         intent.putExtra(EXTRA_USER, user);
         intent.putExtra(EXTRA_ENEMY, enemy);
@@ -88,14 +195,23 @@ public class MainScreen extends AppCompatActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        if(getSupportActionBar() != null) {
+        if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
         setContentView(R.layout.main_screen);
-
+        EventBus.getDefault().register(this);
         getBundle();
 
-        mTimeLeft = new CountDownTimer(12000, 1000) {
+        mSocketAltp = MainApplication.sockAltp();
+        mAltpHelper = new AltpHelper(mSocketAltp);
+        if (!mSocketAltp.isConnected()) {
+            mSocketAltp.connect();
+        }
+
+        mSocketAltp.addEvent("answer", answerCallback);
+        mSocketAltp.addEvent("answerNext", answerNextCallback);
+
+        mTimeLeft = new CountDownTimer(11000, 1000) {
             public void onTick(long millisUntilFinished) {
                 timeLeft = (millisUntilFinished / 1000) - 1;
                 if (timeLeft > 0) {
@@ -103,7 +219,7 @@ public class MainScreen extends AppCompatActivity {
                 } else {
                     mTextViewTimer.setText(TXT_TIME_OUT);
                     clickable = false;
-                    gameOver();
+                    //gameOver();
                 }
             }
 
@@ -112,9 +228,18 @@ public class MainScreen extends AppCompatActivity {
                 clickable = false;
             }
         };
-        mButtonAns = new Button[4];
+
+        findViewById();
+        setUserInfo();
+
+        setQA(0);
+        setTxtRound(mStt + 1);
+    }
+
+    public void findViewById() {
 
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/roboto.ttf");
+        mButtonAns = new Button[4];
 
         mTextViewTimer = (TextView) findViewById(R.id.textview_timer);
         mTextViewTimer.setBackgroundResource(R.drawable.clock);
@@ -140,7 +265,6 @@ public class MainScreen extends AppCompatActivity {
         mImageViewUserAvatar2 = (ImageView) findViewById(R.id.imageview_useravatar2);
 
         mTextViewCityUser1 = (TextView) findViewById(R.id.textview_city_user1);
-
         mTextViewCityUser2 = (TextView) findViewById(R.id.textview_city_user2);
 
         mTextViewMoneyQuestion = (TextView) findViewById(R.id.textview_moneyquestion);
@@ -164,13 +288,12 @@ public class MainScreen extends AppCompatActivity {
             }
             mButtonAns[i].setBackgroundResource(R.drawable.answer0);
         }
+    }
 
+    public void setUserInfo() {
         fillData();
-
         setQA(0);
         setTxtRound(mStt + 1);
-
-
     }
 
     /**
@@ -187,13 +310,7 @@ public class MainScreen extends AppCompatActivity {
         // my info
         mTextViewUserName1.setText(mUser.name);
         mTextViewCityUser1.setText(mUser.address);
-
-        // question info
-        mTextViewQuestion.setText(mQuestion.mQuestion);
-        mTextViewAns1.setText("A: " + mQuestion.mAns.get(0));
-        mTextViewAns2.setText("B: " + mQuestion.mAns.get(1));
-        mTextViewAns3.setText("C: " + mQuestion.mAns.get(2));
-        mTextViewAns4.setText("D: " + mQuestion.mAns.get(3));
+        Glide.with(getApplicationContext()).load(mUser.avatar).into(mImageViewUserAvatar1);
 
         // enemy info
         Glide.with(getApplicationContext()).load(mEnemy.avatar).into(mImageViewUserAvatar2);
@@ -203,113 +320,73 @@ public class MainScreen extends AppCompatActivity {
 
     public void setQA(int stt) {
         this.mStt = stt;
+        mTextViewQuestion.setText(mQuestion.mQuestion);
+        mTextViewAns1.setText("A: " + mQuestion.mAns.get(0));
+        mTextViewAns2.setText("B: " + mQuestion.mAns.get(1));
+        mTextViewAns3.setText("C: " + mQuestion.mAns.get(2));
+        mTextViewAns4.setText("D: " + mQuestion.mAns.get(3));
         mTimeLeft.start();
     }
 
     public boolean checkAns(int answerIndex) {
-        return answerIndex == mCorrectAnsId;
+        return answerIndex == answerRight;
+    }
+
+    public boolean checkEnemyAns(int enemyAnswerIndex) {
+        return enemyAnswerIndex == myAnswerIndex;
     }
 
     public void btnAnswerClick(final View btnAnswer) {
+        btnMy = (Button) btnAnswer;
         if (clickable) {
+            clickable = false;
             mTimeLeft.cancel();
-            int answerIndex = 0;
+
             switch (btnAnswer.getId()) {
                 case R.id.button_ans1:
-                    answerIndex = 0;
+                    myAnswerIndex = 0;
                     break;
                 case R.id.button_ans2:
-                    answerIndex = 1;
+                    myAnswerIndex = 1;
                     break;
                 case R.id.button_ans3:
-                    answerIndex = 2;
+                    myAnswerIndex = 2;
                     break;
                 case R.id.button_ans4:
-                    answerIndex = 3;
+                    myAnswerIndex = 3;
                     break;
             }
-            final int _answerIndex = answerIndex;
-            mWaitTime = new CountDownTimer(3000, 100) {
-                boolean isBlue = true;
+            mAltpHelper.answer(mUser, mRoom, myAnswerIndex);
 
-                public void onTick(long millisUntilFinished) {
-                    if ((millisUntilFinished / 100) % 5 == 0) {
-                        isBlue = !isBlue;
-                        clickable = false;
-                    }
-                    btnAnswer.setBackgroundResource(isBlue ? R.drawable.answer1 : R.drawable.answer3);
-                }
+            btnAnswer.setBackgroundResource(R.drawable.answer1);
 
-                public void onFinish() {
-                    if (checkAns(_answerIndex)) {
-                        clickable = false;
-                        btnAnswer.setBackgroundResource(R.drawable.answer1);
-                        plusPoint();
-                        correct(btnAnswer);
-
-                    } else {
-                        clickable = false;
-                        btnAnswer.setBackgroundResource(R.drawable.answer3);
-                        inCorrect();
-                    }
-                }
-            };
-            mWaitTime.start();
+//              mWaitTime = new CountDownTimer(10000, 100) {
+//                boolean isBlue = true;
+//
+//                public void onTick(long millisUntilFinished) {
+//                    if ((millisUntilFinished / 100) % 5 == 0) {
+//                        isBlue = !isBlue;
+//                    }
+//                    btnAnswer.setBackgroundResource(isBlue ? R.drawable.answer1 : R.drawable.answer_right);
+//                }
+//
+//                           public void onFinish() {
+//                    if (checkAns(answerRight)) {
+//                        btnAnswer.setBackgroundResource(R.drawable.answer_right);
+//
+//                    } else {
+//                        btnAnswer.setBackgroundResource(R.drawable.answer_wrong);
+//                    }
+//              }
+//             };
+//              mWaitTime.start();
         }
     }
 
-    public void correct(final View btnAnswer) {
-        mWaitTimeNextQues = new CountDownTimer(2000, 100) {
-            public void onTick(long millisUntilFinished) {
-            }
-
-            public void onFinish() {
-                setNewQuestion();
-                mWaitTime.cancel();
-                mWaitTimeNextQues.cancel();
-            }
-        };
-        mWaitTimeNextQues.start();
-    }
-
-    public void inCorrect() {
-        mWaitTimeNextQues = new CountDownTimer(2000, 100) {
-            public void onTick(long millisUntilFinished) {
-                mButtonAns[mCorrectAnsId].setBackgroundResource(R.drawable.answer1);
-            }
-
-            public void onFinish() {
-                mWaitTime.cancel();
-                mWaitTimeNextQues.cancel();
-                gameOver();
-            }
-        };
-        mWaitTimeNextQues.start();
-    }
-
-    public void plusPoint() {
-        mUserScore1 = mUserScore1 + mMoney;
-        mTextViewScore1.setText(String.valueOf(mUserScore1));
-    }
-
-    public void setNewQuestion() {
-        mStt = mStt + 1;
-        clickable = true;
-        if (mStt == SearchOpponent.questions.size()) {
-            setTxtRound(mStt);
-        } else {
-            setTxtRound(mStt + 1);
-        }
-        if (mStt == (SearchOpponent.questions.size())) {
-            gameOver();
-        } else {
-            setQA(mStt);
-            for (int i = 0; i < 4; i++) {
-                mButtonAns[i].setBackgroundResource(R.drawable.answer0);
-            }
-            mTimeLeft.start();
-        }
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        gameOver();
     }
 
     private void setTxtRound(int round) {
@@ -336,7 +413,6 @@ public class MainScreen extends AppCompatActivity {
 
     public void gameOver() {
         Intent intent = new Intent(getApplicationContext(), GameOver.class);
-        intent.putExtra(GameOver.EXTRA_SCORE, mUserScore1);
         startActivity(intent);
         overridePendingTransition(R.animator.right_in, R.animator.left_out);
         finish();

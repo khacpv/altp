@@ -57,7 +57,7 @@
         android:src="@drawable/avatar" />
 
 
-    <RelativeLayout
+    <FrameLayout
         android:id="@+id/layout_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -67,16 +67,17 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="2dp"
             android:background="#FFF" />
 
         <ImageView
             android:id="@+id/imageview_name"
             android:layout_width="280dp"
             android:layout_height="65dp"
-            android:layout_centerInParent="true"
+            android:layout_gravity="center_horizontal"
             android:paddingTop="5dp"
-            android:src="@drawable/roundrec_login" />
+            android:src="@drawable/answer0" />
 
         <EditText
             android:id="@+id/text_edit"
@@ -87,25 +88,25 @@
             android:layout_marginTop="17dp"
             android:background="@android:color/transparent"
             android:duplicateParentState="true"
-            android:ems="1"
-            android:foregroundGravity="left"
             android:ellipsize="start"
-            android:maxLines="1"
+            android:ems="1"
+            android:focusableInTouchMode="false"
+            android:foregroundGravity="left"
             android:gravity="center"
+            android:hint="Choose username"
             android:inputType="none"
             android:maxLength="16"
+            android:maxLines="1"
             android:paddingBottom="5dp"
             android:singleLine="true"
             android:textColor="#ffffff"
             android:textColorHint="#85ffffff"
-            android:hint="Choose username"
-            android:focusableInTouchMode="false"
             android:textSize="20sp" />
 
-    </RelativeLayout>
+    </FrameLayout>
 
 
-    <RelativeLayout
+    <FrameLayout
         android:id="@+id/layout_city"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -114,24 +115,24 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="2dp"
             android:background="#FFF" />
 
-        <EditText
+        <Button
             android:id="@+id/textview_city_login"
             android:layout_width="280dp"
-            android:layout_height="40dp"
-            android:layout_centerHorizontal="true"
+            android:layout_height="58dp"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="5dp"
-            android:background="@drawable/roundrec_login"
-            android:gravity="center_horizontal"
-            android:paddingTop="2dp"
+            android:background="@drawable/answer0"
+            android:paddingBottom="10dp"
             android:text="VIETNAM"
             android:textColor="#ffffff"
             android:textSize="20sp" />
 
 
-    </RelativeLayout>
+    </FrameLayout>
 
 
     <RelativeLayout
@@ -150,13 +151,12 @@
         <Button
             android:id="@+id/button_login"
             android:layout_width="wrap_content"
-            android:layout_marginRight="110dp"
-            android:layout_marginLeft="110dp"
             android:layout_height="40dp"
             android:layout_centerHorizontal="true"
+            android:layout_marginLeft="110dp"
+            android:layout_marginRight="110dp"
             android:layout_marginTop="5dp"
-            android:background="@drawable/button_login"
-            android:gravity="center"
+            android:background="@drawable/answer0"
             android:paddingBottom="7dp"
             android:text="Đăng nhập"
             android:textAllCaps="false"

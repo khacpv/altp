@@ -1,8 +1,10 @@
 package com.example.gcs.faster5.ui.activity;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,7 +14,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.example.gcs.faster5.MainApplication;
 import com.example.gcs.faster5.R;
@@ -23,8 +24,8 @@ import com.example.gcs.faster5.sock.AltpHelper;
 import com.example.gcs.faster5.sock.SockAltp;
 import com.example.gcs.faster5.util.NetworkUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import io.socket.client.Socket;
 
@@ -33,23 +34,17 @@ import io.socket.client.Socket;
  */
 public class SearchOpponent extends AppCompatActivity {
 
-    public static final String EXTRA_ID = "topic_id";
-    public static final String EXTRA_NAME = "topic_name";
-    public static final String EXTRA_ANSWER_RIGHT = "right_answer";
-
     private static final String EXTRA_USER = "user";
     private static final String EXTRA_ENEMY = "enemy";
     private static final String EXTRA_ROOM = "room";
-    private static final String EXTRA_QUESTION = "question";
 
-
-    public static List<Question> questions = new ArrayList<>();
     private SockAltp mSocketAltp;
     private AltpHelper mAltpHelper;
     private User mUser = new User();
     private User enemyUser = new User();
     private Room mRoom = new Room();
-
+    private Dialog waitDialog;
+    Intent intent;
     TextView mTextViewCityUser1, mTextViewCityUser2, mTextViewUserName1, mTextViewUserName2, mTextViewMoney1, mTextViewMoney2;
     ImageView mImageViewUserAvatar1, mImageViewUserAvatar2;
     public static Button mButtonPlay, mButtonSeach;
@@ -63,7 +58,7 @@ public class SearchOpponent extends AppCompatActivity {
                     break;
                 case Socket.EVENT_CONNECT_ERROR:
                 case Socket.EVENT_CONNECT_TIMEOUT:
-                    Log.e("TAG_SEARCH", "disconnect");
+                    //     Log.e("TAG_SEARCH", "disconnect");
                     if (!mSocketAltp.isConnected()) {
                         mSocketAltp.connect();
                     }
@@ -75,43 +70,35 @@ public class SearchOpponent extends AppCompatActivity {
     private SockAltp.OnSocketEvent playCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
-            boolean ready = mAltpHelper.playCallbackReady(args);
+            OnPlayCallbackEvent eventBus = new OnPlayCallbackEvent();
 
-            if(!ready){
-                // show popup: 'wait for other players ready'
-                Log.e("TAG","waiting for other players ready.");
-                return;
-            }
+            boolean notReady = mAltpHelper.playCallbackReady(args);
 
             int count = mAltpHelper.playCallbackCount(args);
-            if(count > -1){
-                // show dialog counting
-                Log.e("TAG","start counting: "+count);
-                return;
-            }
 
-            // start playing screen
-            Question question = mAltpHelper.playCallback(args);
-            Intent mainScrnIntent = MainScreen.createIntent(SearchOpponent.this,mUser,enemyUser,
-                    mRoom,
-                    question);
-            startActivity(mainScrnIntent);
+            Question mQuestion = mAltpHelper.playCallbackQuestion(args);
+
+            eventBus.notReady = notReady;
+            eventBus.count = count;
+            eventBus.mQuestion = mQuestion;
+            EventBus.getDefault().post(eventBus);
+
         }
     };
 
-    public static Intent createIntent(Context context,User user, User enemy, Room room){
+    public static class OnPlayCallbackEvent {
+
+        boolean notReady;
+        int count;
+        Question mQuestion;
+    }
+
+    public static Intent createIntent(Context context, User user, User enemy, Room room) {
         Intent intent = new Intent(context, SearchOpponent.class);
         intent.putExtra(EXTRA_USER, user);
         intent.putExtra(EXTRA_ENEMY, enemy);
         intent.putExtra(EXTRA_ROOM, room);
         return intent;
-    }
-
-
-    public void play(User user, Room room) {
-        this.mUser = user;
-        this.mRoom = room;
-        mAltpHelper.play(mUser, mRoom);
     }
 
     @Override
@@ -124,9 +111,8 @@ public class SearchOpponent extends AppCompatActivity {
             getSupportActionBar().hide();
         }
         setContentView(R.layout.search_opponent);
-
         getBundle();
-
+        EventBus.getDefault().register(this);
         mSocketAltp = MainApplication.sockAltp();
         mAltpHelper = new AltpHelper(mSocketAltp);
         if (!mSocketAltp.isConnected()) {
@@ -136,7 +122,50 @@ public class SearchOpponent extends AppCompatActivity {
         mSocketAltp.addEvent("play", playCallback);
         mSocketAltp.addGlobalEvent(globalCallback);
         findViewById();
+        popupLogin();
         setInfoUser();
+
+    }
+
+
+    @Subscribe
+    public void onEventMainThread(OnPlayCallbackEvent event) {
+        boolean notReady = event.notReady;
+
+        if (notReady) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (!isFinishing()) {
+                        waitDialog.show();
+                    }
+                }
+            });
+            Log.e("TAG", "waiting for other players ready.");
+            return;
+        }
+
+        int count = event.count;
+
+        if (count > -1) {
+            // show dialog counting
+            Log.e("TAG", "start counting: " + count);
+            return;
+        }
+
+        Question mQuestion = event.mQuestion;
+
+        final Intent mainScrnIntent = MainScreen.createIntent(SearchOpponent.this, mUser, enemyUser, mRoom, mQuestion);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                waitDialog.dismiss();
+                startActivity(mainScrnIntent);
+                overridePendingTransition(R.animator.right_in, R.animator.left_out);
+            }
+        });
+        finish();
 
     }
 
@@ -163,6 +192,8 @@ public class SearchOpponent extends AppCompatActivity {
     }
 
     public void findViewById() {
+        intent = new Intent(SearchOpponent.this, MainScreen.class);
+        waitDialog = new Dialog(this);
 
         Typeface font = Typeface.createFromAsset(getAssets(),
                 "fonts/roboto.ttf");
@@ -193,6 +224,27 @@ public class SearchOpponent extends AppCompatActivity {
         mButtonPlay = (Button) findViewById(R.id.button_play);
     }
 
+    public void popupLogin() {
+        waitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        waitDialog.setContentView(R.layout.layout_wait_popup);
+        waitDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        waitDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        waitDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+        ImageView loading = (ImageView) waitDialog.findViewById(R.id.imgView_loading);
+
+        Glide.with(this).load(R.drawable.loading).asGif().into(loading);
+
+        Button btnCancel = (Button) waitDialog.findViewById(R.id.button_cancel);
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                waitDialog.hide();
+            }
+        });
+
+    }
 
     public void btnSearch(View view) {
         Intent intent = new Intent(SearchOpponent.this, InfoScreen.class);
@@ -201,17 +253,24 @@ public class SearchOpponent extends AppCompatActivity {
         finish();
     }
 
+    @Override
+    public void onBackPressed() {
+        btnSearch(getCurrentFocus());
+    }
+
     public void btnPlay(View view) {
-        play(mUser, mRoom);
+        waitDialog.show();
+        mAltpHelper.play(mUser, mRoom);
     }
 
-    public void moveMainScreen() {
-        Intent intent = new Intent(SearchOpponent.this, MainScreen.class);
-        startActivity(intent);
-        overridePendingTransition(R.animator.right_in, R.animator.left_out);
-        finish();
-    }
 
+    @Override
+    protected void onDestroy() {
+        if (waitDialog != null) {
+            waitDialog.dismiss();
+        }
+        super.onDestroy();
+    }
 
     @Override
     public void onResume() {

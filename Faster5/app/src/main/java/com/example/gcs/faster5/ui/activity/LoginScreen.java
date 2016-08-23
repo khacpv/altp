@@ -54,6 +54,8 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -112,7 +114,7 @@ public class LoginScreen extends AppCompatActivity {
                     break;
                 case Socket.EVENT_CONNECT_ERROR:
                 case Socket.EVENT_CONNECT_TIMEOUT:
-                    Log.e("TAG_LOGIN", "disconnect");
+                    //   Log.e("TAG_LOGIN", "disconnect");
                     if (!mSocketAltp.isConnected()) {
                         mSocketAltp.connect();
                     }
@@ -123,21 +125,12 @@ public class LoginScreen extends AppCompatActivity {
     private SockAltp.OnSocketEvent loginCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
-            User user = mAltpHelper.loginCallback(args);
-            if (user == null) {
-                Log.e("Login", "Failed");
-                return;
-            }
 
-            // login success
-            mUser = user;
-            PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_USER_ID, mUser.id);
-            PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_NAME, mUser.name);
-            PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_LOCATION, mUser.address);
-            PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_URL_AVATAR, mUser.avatar);
-            PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_LOGGED_IN, true);
-            Log.e("TAG", "LoginCallback: " + user.fbId + " " + user.id + " " + user.name + " " + user.address + " " + "\n" + user.avatar);
-            loggedAndMoveInfoScreen();
+            OnLoginCallbackEvent eventBus = new OnLoginCallbackEvent();
+            User user = mAltpHelper.loginCallback(args);
+            eventBus.user = user;
+            EventBus.getDefault().post(eventBus);
+
         }
     };
 
@@ -145,6 +138,11 @@ public class LoginScreen extends AppCompatActivity {
         this.mUser = user;
         mAltpHelper.login(mUser);
         Log.e("TAG", "loginRequest: " + mUser.fbId + " " + mUser.name + " " + mUser.address + "\n" + mUser.avatar);
+    }
+
+    public static class OnLoginCallbackEvent {
+
+        User user;
     }
 
 
@@ -156,6 +154,7 @@ public class LoginScreen extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
+        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_FIRST_USE, false);
 
         FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
             @Override
@@ -165,6 +164,9 @@ public class LoginScreen extends AppCompatActivity {
         });
 
         setContentView(R.layout.login_screen);
+
+        EventBus.getDefault().register(this);
+
         mSocketAltp = MainApplication.sockAltp();
 
         mAltpHelper = new AltpHelper(mSocketAltp);
@@ -193,6 +195,31 @@ public class LoginScreen extends AppCompatActivity {
         } else {
             mTextViewCity.setText(city);
         }
+    }
+
+
+    @Subscribe
+    public void onEventMainThread(OnLoginCallbackEvent event) {
+        User user = event.user;
+
+        if (user == null) {
+            Log.e("Login", "Failed");
+            return;
+        }
+        // login success
+        mUser = user;
+        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_USER_ID, mUser.id);
+        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_NAME, mUser.name);
+        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_LOCATION, mUser.address);
+        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_URL_AVATAR, mUser.avatar);
+        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_LOGGED_IN, true);
+        Log.e("TAG", "LoginCallback: " + user.fbId + " " + user.id + " " + user.name + " " + user.address + " " + "\n" + user.avatar);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                loggedAndMoveInfoScreen();
+            }
+        });
     }
 
     public void findViewbyId() {
@@ -260,13 +287,17 @@ public class LoginScreen extends AppCompatActivity {
     }
 
     public void checkLogin() {
-        if (NetworkUtils.checkInternetConnection(LoginScreen.this)) {
-            if (mAccessToken != null || PrefUtils.getInstance(LoginScreen.this).get(PrefUtils.KEY_LOGGED_IN, false)) {
-                loginDialog.show();
+        if (mAccessToken != null || PrefUtils.getInstance(LoginScreen.this).get(PrefUtils.KEY_LOGGED_IN, false)) {
+            if (NetworkUtils.checkInternetConnection(LoginScreen.this)) {
+                if (!loginDialog.isShowing()) {
+                    loginDialog.show();
+                }
                 mUser.name = PrefUtils.getInstance(LoginScreen.this).get(PrefUtils.KEY_NAME, "");
                 mUser.avatar = PrefUtils.getInstance(LoginScreen.this).get(PrefUtils.KEY_URL_AVATAR, "");
                 mUser.address = city;
                 sendLoginRequest(mUser);
+            } else {
+                NetworkUtils.movePopupConnection(LoginScreen.this);
             }
         }
     }
@@ -281,8 +312,7 @@ public class LoginScreen extends AppCompatActivity {
         mLoginButtonFb.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-
-                //mLoginButtonFb.setVisibility(View.INVISIBLE);
+                loginDialog.show();
                 if (NetworkUtils.checkInternetConnection(LoginScreen.this)) {
                     mAccessTokenTracker = new AccessTokenTracker() {
                         @Override
@@ -299,7 +329,6 @@ public class LoginScreen extends AppCompatActivity {
                                     AccessToken mAccessToken = loginResult.getAccessToken();
                                     PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_ACCESS_TOKEN_FB, mAccessToken.getToken());
                                     getUserInfoFromFb();
-                                    loginDialog.show();
                                 }
 
                                 @Override
@@ -308,6 +337,7 @@ public class LoginScreen extends AppCompatActivity {
 
                                 @Override
                                 public void onError(FacebookException exception) {
+                                    loginDialog.hide();
                                 }
                             });
                             return;
@@ -597,20 +627,27 @@ public class LoginScreen extends AppCompatActivity {
     }
 
     public void loggedAndMoveInfoScreen() {
-        edittexDialog.dismiss();
-        avatarDialog.dismiss();
         Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
         startActivity(intent);
         overridePendingTransition(R.animator.right_in, R.animator.left_out);
-        loginDialog.dismiss();
         finish();
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public void onDestroy() {
-        super.onDestroy();
         if (prgDialog != null) {
             prgDialog.dismiss();
         }
+        if (loginDialog != null) {
+            loginDialog.dismiss();
+        }
+        edittexDialog.dismiss();
+        avatarDialog.dismiss();
+        super.onDestroy();
     }
 }
