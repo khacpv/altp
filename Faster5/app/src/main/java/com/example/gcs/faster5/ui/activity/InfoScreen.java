@@ -1,6 +1,7 @@
 package com.example.gcs.faster5.ui.activity;
 
 import android.graphics.Typeface;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,9 +12,6 @@ import android.util.Pair;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -298,19 +296,16 @@ public class InfoScreen extends AppCompatActivity {
                 if (!dummyUsers.get(_i).isDummy) {
                     enemyNumberInList = _i;
 
-                    final Animation mAnimation = new AlphaAnimation(1, 0);
-                    mAnimation.setDuration(250);
-                    mAnimation.setInterpolator(new LinearInterpolator());
-                    mAnimation.setRepeatCount(Animation.INFINITE);
-                    mAnimation.setRepeatMode(Animation.REVERSE);
-
                     mButtonPlayer[enemyNumberInList].postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mViewLine[enemyNumberInList].setVisibility(View.INVISIBLE);
-                            mButtonPlayer[enemyNumberInList].setBackgroundResource(R.drawable.answer_right);
-                            mButtonPlayer[enemyNumberInList].startAnimation(mAnimation);
                             mButtonSearch.setClickable(true);
+
+                            AnimationDrawable btnAnswerDrawable = (AnimationDrawable)
+                                    getResources().getDrawable(R.drawable.xml_btn_anim);
+                            mButtonPlayer[enemyNumberInList].setBackgroundDrawable(btnAnswerDrawable);
+                            btnAnswerDrawable.start();
+
                         }
                     }, 2000);
                 }
