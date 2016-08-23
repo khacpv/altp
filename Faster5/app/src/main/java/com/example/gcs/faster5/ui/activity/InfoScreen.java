@@ -40,9 +40,9 @@ import io.socket.client.Socket;
  * Created by Kien on 07/05/2016.
  */
 public class InfoScreen extends AppCompatActivity {
-    TextView mTextViewNameUser, mTextViewMoney, mTextViewCity,
-            mTextViewPlayer1, mTextViewPlayer2, mTextViewPlayer3, mTextViewPlayer4,
-            mTextViewPlayer5, mTextViewPlayer6, mTextViewPlayer7, mTextViewPlayer8;
+    TextView mTextViewNameUser;
+    TextView mTextViewMoney;
+    TextView mTextViewCity;
     ImageView mImageViewAvatar;
     Button[] mButtonPlayer = new Button[8];
     View[] mViewLine = new View[8];
@@ -215,55 +215,23 @@ public class InfoScreen extends AppCompatActivity {
 
     public void buttonPlayer() {
 
-        mTextViewPlayer1 = (TextView) findViewById(R.id.button_player1).findViewById(R.id.button_player);
-        mTextViewPlayer2 = (TextView) findViewById(R.id.button_player2).findViewById(R.id.button_player);
-        mTextViewPlayer3 = (TextView) findViewById(R.id.button_player3).findViewById(R.id.button_player);
-        mTextViewPlayer4 = (TextView) findViewById(R.id.button_player4).findViewById(R.id.button_player);
-        mTextViewPlayer5 = (TextView) findViewById(R.id.button_player5).findViewById(R.id.button_player);
-        mTextViewPlayer6 = (TextView) findViewById(R.id.button_player6).findViewById(R.id.button_player);
-        mTextViewPlayer7 = (TextView) findViewById(R.id.button_player7).findViewById(R.id.button_player);
-        mTextViewPlayer8 = (TextView) findViewById(R.id.button_player8).findViewById(R.id.button_player);
-
-        for (int i = 0; i < 8; i++) {
-            if (i == 0) {
-                mButtonPlayer[i] = (Button) mTextViewPlayer1;
-                mViewLine[i] = findViewById(R.id.button_player1).findViewById(R.id.viewline_btnplayer);
-            }
-            if (i == 1) {
-                mButtonPlayer[i] = (Button) mTextViewPlayer2;
-                mViewLine[i] = findViewById(R.id.button_player2).findViewById(R.id.viewline_btnplayer);
-            }
-            if (i == 2) {
-                mButtonPlayer[i] = (Button) mTextViewPlayer3;
-                mViewLine[i] = findViewById(R.id.button_player3).findViewById(R.id.viewline_btnplayer);
-            }
-            if (i == 3) {
-                mButtonPlayer[i] = (Button) mTextViewPlayer4;
-                mViewLine[i] = findViewById(R.id.button_player4).findViewById(R.id.viewline_btnplayer);
-            }
-            if (i == 4) {
-                mButtonPlayer[i] = (Button) mTextViewPlayer5;
-                mViewLine[i] = findViewById(R.id.button_player5).findViewById(R.id.viewline_btnplayer);
-            }
-            if (i == 5) {
-                mButtonPlayer[i] = (Button) mTextViewPlayer6;
-                mViewLine[i] = findViewById(R.id.button_player6).findViewById(R.id.viewline_btnplayer);
-            }
-            if (i == 6) {
-                mButtonPlayer[i] = (Button) mTextViewPlayer7;
-                mViewLine[i] = findViewById(R.id.button_player7).findViewById(R.id.viewline_btnplayer);
-            }
-            if (i == 7) {
-                mButtonPlayer[i] = (Button) mTextViewPlayer8;
-                mViewLine[i] = findViewById(R.id.button_player8).findViewById(R.id.viewline_btnplayer);
-            }
-            mButtonPlayer[i].setBackgroundResource(R.drawable.answer0);
-            mButtonPlayer[i].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                }
-            });
-        }
+        int i=0;
+        mButtonPlayer[i++] = (Button) findViewById(R.id.button_player1).findViewById(R.id
+                .button_player);
+        mButtonPlayer[i++] = (Button) findViewById(R.id.button_player2).findViewById(R.id
+                .button_player);
+        mButtonPlayer[i++] = (Button) findViewById(R.id.button_player3).findViewById(R.id
+                .button_player);
+        mButtonPlayer[i++] = (Button) findViewById(R.id.button_player4).findViewById(R.id
+                .button_player);
+        mButtonPlayer[i++] = (Button) findViewById(R.id.button_player5).findViewById(R.id
+                .button_player);
+        mButtonPlayer[i++] = (Button) findViewById(R.id.button_player6).findViewById(R.id
+                .button_player);
+        mButtonPlayer[i++] = (Button) findViewById(R.id.button_player7).findViewById(R.id
+                .button_player);
+        mButtonPlayer[i] = (Button) findViewById(R.id.button_player8).findViewById(R.id
+                .button_player);
 
     }
 
@@ -347,7 +315,9 @@ public class InfoScreen extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        EventBus.getDefault().unregister(this);
+        if(EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
         super.onDestroy();
     }
 

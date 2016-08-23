@@ -33,8 +33,8 @@ import com.example.gcs.faster5.MainApplication;
 import com.example.gcs.faster5.R;
 import com.example.gcs.faster5.model.User;
 import com.example.gcs.faster5.sock.AltpHelper;
-import com.example.gcs.faster5.util.CameraUtils;
 import com.example.gcs.faster5.sock.SockAltp;
+import com.example.gcs.faster5.util.CameraUtils;
 import com.example.gcs.faster5.util.JSONParser;
 import com.example.gcs.faster5.util.NetworkUtils;
 import com.example.gcs.faster5.util.PrefUtils;
@@ -51,13 +51,13 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.File;
+import java.io.UnsupportedEncodingException;
 
 import cz.msebera.android.httpclient.Header;
 import io.socket.client.Socket;
@@ -648,6 +648,9 @@ public class LoginScreen extends AppCompatActivity {
         }
         edittexDialog.dismiss();
         avatarDialog.dismiss();
+        if(EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
         super.onDestroy();
     }
 }
