@@ -2,10 +2,12 @@ package com.example.gcs.faster5.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by FRAMGIA\pham.van.khac on 8/11/16.
  */
-public class User {
+public class User implements Serializable{
 
     @SerializedName("id")
     public long id;

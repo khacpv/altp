@@ -1,6 +1,7 @@
 package com.example.gcs.faster5.ui.activity;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -13,7 +14,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.example.gcs.faster5.MainApplication;
 import com.example.gcs.faster5.R;
@@ -23,14 +23,9 @@ import com.example.gcs.faster5.model.User;
 import com.example.gcs.faster5.sock.AltpHelper;
 import com.example.gcs.faster5.sock.SockAltp;
 import com.example.gcs.faster5.util.NetworkUtils;
-import com.example.gcs.faster5.util.PrefUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import io.socket.client.Socket;
 
@@ -39,10 +34,10 @@ import io.socket.client.Socket;
  */
 public class SearchOpponent extends AppCompatActivity {
 
-    public static final String EXTRA_ID = "topic_id";
-    public static final String EXTRA_NAME = "topic_name";
-    public static final String EXTRA_ANSWER_RIGHT = "right_answer";
-    public static List<Question> questions = new ArrayList<>();
+    private static final String EXTRA_USER = "user";
+    private static final String EXTRA_ENEMY = "enemy";
+    private static final String EXTRA_ROOM = "room";
+
     private SockAltp mSocketAltp;
     private AltpHelper mAltpHelper;
     private User mUser = new User();
@@ -63,7 +58,7 @@ public class SearchOpponent extends AppCompatActivity {
                     break;
                 case Socket.EVENT_CONNECT_ERROR:
                 case Socket.EVENT_CONNECT_TIMEOUT:
-                    Log.e("TAG_SEARCH", "disconnect");
+                    //     Log.e("TAG_SEARCH", "disconnect");
                     if (!mSocketAltp.isConnected()) {
                         mSocketAltp.connect();
                     }
@@ -75,22 +70,35 @@ public class SearchOpponent extends AppCompatActivity {
     private SockAltp.OnSocketEvent playCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
-            Question question = mAltpHelper.playCallback(args);
-            JSONObject data = (JSONObject) args[0];
-
             OnPlayCallbackEvent eventBus = new OnPlayCallbackEvent();
-            eventBus.question = question;
-            eventBus.data = data;
+
+            boolean notReady = mAltpHelper.playCallbackReady(args);
+
+            int count = mAltpHelper.playCallbackCount(args);
+
+            Question mQuestion = mAltpHelper.playCallbackQuestion(args);
+
+            eventBus.notReady = notReady;
+            eventBus.count = count;
+            eventBus.mQuestion = mQuestion;
             EventBus.getDefault().post(eventBus);
 
         }
     };
 
+    public static class OnPlayCallbackEvent {
 
-    public void play(User user, Room room) {
-        this.mUser = user;
-        this.mRoom = room;
-        mAltpHelper.play(mUser, mRoom);
+        boolean notReady;
+        int count;
+        Question mQuestion;
+    }
+
+    public static Intent createIntent(Context context, User user, User enemy, Room room) {
+        Intent intent = new Intent(context, SearchOpponent.class);
+        intent.putExtra(EXTRA_USER, user);
+        intent.putExtra(EXTRA_ENEMY, enemy);
+        intent.putExtra(EXTRA_ROOM, room);
+        return intent;
     }
 
     @Override
@@ -103,9 +111,8 @@ public class SearchOpponent extends AppCompatActivity {
             getSupportActionBar().hide();
         }
         setContentView(R.layout.search_opponent);
-
-        EventBus.getDefault().register(SearchOpponent.this);
-
+        getBundle();
+        EventBus.getDefault().register(this);
         mSocketAltp = MainApplication.sockAltp();
         mAltpHelper = new AltpHelper(mSocketAltp);
         if (!mSocketAltp.isConnected()) {
@@ -123,45 +130,64 @@ public class SearchOpponent extends AppCompatActivity {
 
     @Subscribe
     public void onEventMainThread(OnPlayCallbackEvent event) {
-        Question question = event.question;
-        JSONObject data = event.data;
+        boolean notReady = event.notReady;
 
-        boolean checkReady = data.optBoolean("notReady");
-        if (!checkReady && data.optInt("count") == 0 && question.mQuestion != null) {
-            Log.e("TAG", "READY");
-            Log.e("TAG", "getQuestionFirst: " + question.mAns.get(0));
-            intent.putExtra("mStt", question.mStt);
-            intent.putExtra("mQuestion", question.mQuestion);
-            intent.putExtra("mAns1", question.mAns.get(0));
-            intent.putExtra("mAns2", question.mAns.get(1));
-            intent.putExtra("mAns3", question.mAns.get(2));
-            intent.putExtra("mAns4", question.mAns.get(3));
-            intent.putExtra("mCorrectAnsId", question.mCorrectAnsId);
-            moveMainScreen();
-        } else {
+        if (notReady) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e("TAG", "NOT READY");
-                    if (!waitDialog.isShowing()) {
+                    if (!isFinishing()) {
                         waitDialog.show();
                     }
                 }
             });
+            Log.e("TAG", "waiting for other players ready.");
+            return;
         }
+
+        int count = event.count;
+
+        if (count > -1) {
+            // show dialog counting
+            Log.e("TAG", "start counting: " + count);
+            return;
+        }
+
+        Question mQuestion = event.mQuestion;
+
+        final Intent mainScrnIntent = MainScreen.createIntent(SearchOpponent.this, mUser, enemyUser, mRoom, mQuestion);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                waitDialog.dismiss();
+                startActivity(mainScrnIntent);
+                overridePendingTransition(R.animator.right_in, R.animator.left_out);
+            }
+        });
+        finish();
+
+    }
+
+    /**
+     * get data from previous activity
+     */
+    private void getBundle() {
+        mUser = (User) getIntent().getSerializableExtra(EXTRA_USER);
+        enemyUser = (User) getIntent().getSerializableExtra(EXTRA_ENEMY);
+        mRoom = (Room) getIntent().getSerializableExtra(EXTRA_ROOM);
     }
 
     public void setInfoUser() {
-        mTextViewUserName1.setText(PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_NAME, ""));
-        Glide.with(getApplicationContext()).load(PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_URL_AVATAR, ""))
-                .into(mImageViewUserAvatar1);
-        mTextViewCityUser1.setText(PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_LOCATION, ""));
+        // my info
+        mTextViewUserName1.setText(mUser.name);
+        Glide.with(getApplicationContext()).load(mUser.avatar).into(mImageViewUserAvatar1);
+        mTextViewCityUser1.setText(mUser.address);
 
-
-        mTextViewUserName2.setText(PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_ENEMY_NAME, ""));
-        Glide.with(getApplicationContext()).load(PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_ENEMY_AVATAR, ""))
-                .into(mImageViewUserAvatar2);
-        mTextViewCityUser2.setText(PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_ENEMY_LOCATION, ""));
+        // enemy user
+        mTextViewUserName2.setText(enemyUser.name);
+        Glide.with(getApplicationContext()).load(enemyUser.avatar).into(mImageViewUserAvatar2);
+        mTextViewCityUser2.setText(enemyUser.address);
 
     }
 
@@ -220,44 +246,30 @@ public class SearchOpponent extends AppCompatActivity {
 
     }
 
-
     public void btnSearch(View view) {
-        waitDialog.dismiss();
         Intent intent = new Intent(SearchOpponent.this, InfoScreen.class);
         startActivity(intent);
         overridePendingTransition(R.animator.in_from_left, R.animator.out_to_right);
         finish();
     }
 
+    @Override
+    public void onBackPressed() {
+        btnSearch(getCurrentFocus());
+    }
+
     public void btnPlay(View view) {
-
         waitDialog.show();
-        mUser.name = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_NAME, "");
-        mUser.address = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_LOCATION, "");
-        mUser.avatar = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_URL_AVATAR, "");
-        mUser.id = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_USER_ID, Long.valueOf(0));
-
-        mRoom.questionIndex = 0;
-        mRoom.roomId = PrefUtils.getInstance(SearchOpponent.this).get(PrefUtils.KEY_ROOM_ID, "");
-
-        play(mUser, mRoom);
+        mAltpHelper.play(mUser, mRoom);
     }
 
-    public void moveMainScreen() {
-        startActivity(intent);
-        overridePendingTransition(R.animator.right_in, R.animator.left_out);
-        finish();
-    }
-
-    public static class OnPlayCallbackEvent {
-        Question question;
-        JSONObject data;
-    }
 
     @Override
     protected void onDestroy() {
+        if (waitDialog != null) {
+            waitDialog.dismiss();
+        }
         super.onDestroy();
-        waitDialog.dismiss();
     }
 
     @Override

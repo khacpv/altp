@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1">
 
-            <de.hdodenhof.circleimageview.CircleImageView
+            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/imageview_useravatar"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
@@ -27,9 +27,8 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="30dp"
                 android:src="@drawable/avatar"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
                 app:civ_border_color="#fff"
-                app:civ_border_width="2dp"/>
+                app:civ_border_width="2dp" />
 
             <TextView
                 android:id="@+id/textview_usernname"
@@ -91,30 +90,52 @@
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="25dp"
-                android:background="@drawable/icon_search"
-                android:layout_gravity="center"
                 android:layout_centerInParent="true"
-                android:scaleType="fitXY"/>
+                android:layout_gravity="center"
+                android:background="@drawable/icon_search"
+                android:scaleType="fitXY" />
         </RelativeLayout>
 
     </LinearLayout>
 
-    <ImageView
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/layout_button_dangnhap"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/button_opponent"
-        android:scaleType="centerInside"/>
+        android:layout_below="@+id/layout_city">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_centerVertical="true"
+            android:background="#FFF" />
+
+        <Button
+            android:id="@+id/button_login"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="120dp"
+            android:layout_marginRight="120dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/answer0"
+            android:paddingBottom="7dp"
+            android:text="Đối Thủ"
+            android:textAllCaps="false"
+            android:textColor="#ffffff"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="10dp"
         android:clipToPadding="false"
         android:overScrollMode="never"
+        android:paddingTop="10dp"
         android:scrollbars="none">
 
         <include
-
             layout="@layout/layout_list_player"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

@@ -1,7 +1,5 @@
 package com.example.gcs.faster5.ui.activity;
 
-
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +11,9 @@ import android.util.Pair;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -45,11 +46,13 @@ public class InfoScreen extends AppCompatActivity {
             mTextViewPlayer1, mTextViewPlayer2, mTextViewPlayer3, mTextViewPlayer4,
             mTextViewPlayer5, mTextViewPlayer6, mTextViewPlayer7, mTextViewPlayer8;
     ImageView mImageViewAvatar;
-    Button[] mButtonPlayer;
+    Button[] mButtonPlayer = new Button[8];
+    View[] mViewLine = new View[8];
     RelativeLayout mButtonSearch;
     private SockAltp mSocketAltp;
     private AltpHelper mAltpHelper;
     private User mUser = new User();
+    private User mEnemy = new User();
     String username, linkAvatar, location, money;
     long userId;
     final HexagonDrawable searchBg = new HexagonDrawable();
@@ -72,7 +75,7 @@ public class InfoScreen extends AppCompatActivity {
                     break;
                 case Socket.EVENT_CONNECT_ERROR:
                 case Socket.EVENT_CONNECT_TIMEOUT:
-                    Log.e("TAG_INFO", "disconnect");
+                    //Log.e("TAG_INFO", "disconnect");
                     if (!mSocketAltp.isConnected()) {
                         mSocketAltp.connect();
                     }
@@ -97,7 +100,7 @@ public class InfoScreen extends AppCompatActivity {
         if (searchTimes > 0) {
             for (int i = 0; i < 8; i++) {
                 mButtonPlayer[i].setText("NGƯỜI CHƠI");
-                mButtonPlayer[i].setBackgroundResource(R.drawable.button_player);
+                mButtonPlayer[i].setBackgroundResource(R.drawable.answer0);
             }
         }
         this.mUser = user;
@@ -107,6 +110,7 @@ public class InfoScreen extends AppCompatActivity {
     }
 
     private void updateEnemy(User enemy) {
+        this.mEnemy = enemy;
         PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_ENEMY_ID, enemy.id);
         PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_ENEMY_NAME, enemy.name);
         PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_ENEMY_LOCATION, enemy.address.toUpperCase());
@@ -212,7 +216,7 @@ public class InfoScreen extends AppCompatActivity {
     }
 
     public void buttonPlayer() {
-        mButtonPlayer = new Button[8];
+
         mTextViewPlayer1 = (TextView) findViewById(R.id.button_player1).findViewById(R.id.button_player);
         mTextViewPlayer2 = (TextView) findViewById(R.id.button_player2).findViewById(R.id.button_player);
         mTextViewPlayer3 = (TextView) findViewById(R.id.button_player3).findViewById(R.id.button_player);
@@ -225,29 +229,37 @@ public class InfoScreen extends AppCompatActivity {
         for (int i = 0; i < 8; i++) {
             if (i == 0) {
                 mButtonPlayer[i] = (Button) mTextViewPlayer1;
+                mViewLine[i] = findViewById(R.id.button_player1).findViewById(R.id.viewline_btnplayer);
             }
             if (i == 1) {
                 mButtonPlayer[i] = (Button) mTextViewPlayer2;
+                mViewLine[i] = findViewById(R.id.button_player2).findViewById(R.id.viewline_btnplayer);
             }
             if (i == 2) {
                 mButtonPlayer[i] = (Button) mTextViewPlayer3;
+                mViewLine[i] = findViewById(R.id.button_player3).findViewById(R.id.viewline_btnplayer);
             }
             if (i == 3) {
                 mButtonPlayer[i] = (Button) mTextViewPlayer4;
+                mViewLine[i] = findViewById(R.id.button_player4).findViewById(R.id.viewline_btnplayer);
             }
             if (i == 4) {
                 mButtonPlayer[i] = (Button) mTextViewPlayer5;
+                mViewLine[i] = findViewById(R.id.button_player5).findViewById(R.id.viewline_btnplayer);
             }
             if (i == 5) {
                 mButtonPlayer[i] = (Button) mTextViewPlayer6;
+                mViewLine[i] = findViewById(R.id.button_player6).findViewById(R.id.viewline_btnplayer);
             }
             if (i == 6) {
                 mButtonPlayer[i] = (Button) mTextViewPlayer7;
+                mViewLine[i] = findViewById(R.id.button_player7).findViewById(R.id.viewline_btnplayer);
             }
             if (i == 7) {
                 mButtonPlayer[i] = (Button) mTextViewPlayer8;
+                mViewLine[i] = findViewById(R.id.button_player8).findViewById(R.id.viewline_btnplayer);
             }
-            mButtonPlayer[i].setBackgroundResource(R.drawable.button_player);
+            mButtonPlayer[i].setBackgroundResource(R.drawable.answer0);
             mButtonPlayer[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -260,7 +272,7 @@ public class InfoScreen extends AppCompatActivity {
     @Subscribe
     public void onEventMainThread(OnSearhCallbackEvent event) {
         Pair<Room, ArrayList<User>> result = event.result;
-        Room room = result.first;
+        final Room room = result.first;
         final List<User> dummyUsers = result.second;
 
         searchTimes = 1;
@@ -285,10 +297,19 @@ public class InfoScreen extends AppCompatActivity {
                 final int _i = i;
                 if (!dummyUsers.get(_i).isDummy) {
                     enemyNumberInList = _i;
+
+                    final Animation mAnimation = new AlphaAnimation(1, 0);
+                    mAnimation.setDuration(250);
+                    mAnimation.setInterpolator(new LinearInterpolator());
+                    mAnimation.setRepeatCount(Animation.INFINITE);
+                    mAnimation.setRepeatMode(Animation.REVERSE);
+
                     mButtonPlayer[enemyNumberInList].postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mButtonPlayer[enemyNumberInList].setBackgroundResource(R.drawable.answer3);
+                            mViewLine[enemyNumberInList].setVisibility(View.INVISIBLE);
+                            mButtonPlayer[enemyNumberInList].setBackgroundResource(R.drawable.answer_right);
+                            mButtonPlayer[enemyNumberInList].startAnimation(mAnimation);
                             mButtonSearch.setClickable(true);
                         }
                     }, 2000);
@@ -305,7 +326,8 @@ public class InfoScreen extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    moveSearchOpponent();
+
+                    moveSearchOpponent(room);
                 }
             }, 4000);
             Log.e("TAG", "join room: " + room.roomId);
@@ -313,20 +335,19 @@ public class InfoScreen extends AppCompatActivity {
         }
     }
 
-    public void moveSearchOpponent() {
-        Intent intent = new Intent(InfoScreen.this, SearchOpponent.class);
-        startActivity(intent);
+    public void moveSearchOpponent(Room room) {
+        startActivity(SearchOpponent.createIntent(InfoScreen.this, mUser, mEnemy, room));
         overridePendingTransition(R.animator.right_in, R.animator.left_out);
         finish();
+    }
+
+    public void onBackPressed() {
+
     }
 
     @Override
     public void onPause() {
         super.onPause();
-//        handler.removeCallbacksAndMessages(null);
-//        handler.removeCallbacks(insertName);
-//        handler.removeCallbacks(painter);
-//        handler.removeCallbacks(moveScreen);
     }
 
     @Override

@@ -56,8 +56,6 @@ public class GameOver extends AppCompatActivity {
         mUserScoreWin = (TextView) findViewById(R.id.textview_money_win);
         mUserScoreWin.setTypeface(font);
 
-        SearchOpponent.questions.clear();
-
         buttonBackPressed();
         Score();
     }
@@ -80,8 +78,9 @@ public class GameOver extends AppCompatActivity {
                 mMoney = mMoney + mScore;
                 PrefUtils.getInstance(GameOver.this).set(PrefUtils.KEY_MONEY, mMoney);
                 startActivity(intent);
-                finish();
                 overridePendingTransition(R.animator.in_from_left, R.animator.out_to_right);
+                finish();
+
             }
         });
     }
