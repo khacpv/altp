@@ -4,22 +4,17 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.example.gcs.faster5.R;
-
 import com.example.gcs.faster5.util.PrefUtils;
-import com.facebook.AccessToken;
-import com.facebook.FacebookSdk;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * Created by Kien on 07/14/2016.
@@ -88,4 +83,11 @@ public class GameOver extends AppCompatActivity {
     public void onBackPressed() {
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
+    }
 }

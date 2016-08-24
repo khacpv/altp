@@ -1,7 +1,10 @@
 package com.example.gcs.faster5.ui.activity;
 
+import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +28,7 @@ import com.example.gcs.faster5.model.User;
 import com.example.gcs.faster5.sock.AltpHelper;
 import com.example.gcs.faster5.sock.SockAltp;
 import com.example.gcs.faster5.ui.widget.HexagonDrawable;
+import com.example.gcs.faster5.util.NetworkUtils;
 import com.example.gcs.faster5.util.PrefUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -40,9 +44,9 @@ import io.socket.client.Socket;
  * Created by Kien on 07/05/2016.
  */
 public class InfoScreen extends AppCompatActivity {
-    TextView mTextViewNameUser, mTextViewMoney, mTextViewCity,
-            mTextViewPlayer1, mTextViewPlayer2, mTextViewPlayer3, mTextViewPlayer4,
-            mTextViewPlayer5, mTextViewPlayer6, mTextViewPlayer7, mTextViewPlayer8;
+    TextView mTextViewNameUser;
+    TextView mTextViewMoney;
+    TextView mTextViewCity;
     ImageView mImageViewAvatar;
     Button[] mButtonPlayer = new Button[8];
     RelativeLayout mButtonSearch;
@@ -55,6 +59,7 @@ public class InfoScreen extends AppCompatActivity {
     final HexagonDrawable searchBg = new HexagonDrawable();
     int searchTimes = 0, enemyNumberInList;
     boolean isEnemy = false;
+    Dialog connectionDiaglog;
     Handler handler = new Handler();
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -152,6 +157,8 @@ public class InfoScreen extends AppCompatActivity {
         setView();
         buttonPlayer();
 
+        popupConnection();
+
         mButtonSearch = (RelativeLayout) findViewById(R.id.button_search);
 
 
@@ -164,10 +171,16 @@ public class InfoScreen extends AppCompatActivity {
         mButtonSearch.setOnClickListener(new View.OnClickListener() {
                                              @Override
                                              public void onClick(View v) {
-                                                 setUserInfo();
-                                                 sendSearchRequest(mUser);
-                                                 searchBg.start();
-                                                 mButtonSearch.setClickable(false);
+                                                 if (NetworkUtils.checkInternetConnection(InfoScreen.this)) {
+                                                     setUserInfo();
+                                                     sendSearchRequest(mUser);
+                                                     searchBg.start();
+                                                     mButtonSearch.setClickable(false);
+                                                 }
+                                                 else{
+                                                     connectionDiaglog.show();
+                                                 }
+
                                              }
                                          }
         );
@@ -188,7 +201,33 @@ public class InfoScreen extends AppCompatActivity {
         mTextViewMoney = (TextView) findViewById(R.id.textview_money);
         mTextViewMoney.setTypeface(font);
 
+        connectionDiaglog = new Dialog(this);
+
     }
+
+    public void popupConnection() {
+        connectionDiaglog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        connectionDiaglog.setContentView(R.layout.layout_popup_connection);
+        connectionDiaglog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        connectionDiaglog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        connectionDiaglog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+        Button tryAgain = (Button) connectionDiaglog.findViewById(R.id.btn_tryagain);
+
+        tryAgain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = getIntent();
+                overridePendingTransition(0, 0);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                finish();
+                overridePendingTransition(0, 0);
+                startActivity(intent);
+            }
+        });
+
+    }
+
 
     public void getUserInfo() {
         username = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_NAME, "");
@@ -213,51 +252,23 @@ public class InfoScreen extends AppCompatActivity {
     }
 
     public void buttonPlayer() {
-
-        mTextViewPlayer1 = (TextView) findViewById(R.id.button_player1).findViewById(R.id.button_player);
-        mTextViewPlayer2 = (TextView) findViewById(R.id.button_player2).findViewById(R.id.button_player);
-        mTextViewPlayer3 = (TextView) findViewById(R.id.button_player3).findViewById(R.id.button_player);
-        mTextViewPlayer4 = (TextView) findViewById(R.id.button_player4).findViewById(R.id.button_player);
-        mTextViewPlayer5 = (TextView) findViewById(R.id.button_player5).findViewById(R.id.button_player);
-        mTextViewPlayer6 = (TextView) findViewById(R.id.button_player6).findViewById(R.id.button_player);
-        mTextViewPlayer7 = (TextView) findViewById(R.id.button_player7).findViewById(R.id.button_player);
-        mTextViewPlayer8 = (TextView) findViewById(R.id.button_player8).findViewById(R.id.button_player);
-
-        for (int i = 0; i < 8; i++) {
-            if (i == 0) {
-                mButtonPlayer[i] = (Button) mTextViewPlayer1;
-
-            }
-            if (i == 1) {
-                mButtonPlayer[i] = (Button) mTextViewPlayer2;
-
-            }
-            if (i == 2) {
-                mButtonPlayer[i] = (Button) mTextViewPlayer3;
-
-            }
-            if (i == 3) {
-                mButtonPlayer[i] = (Button) mTextViewPlayer4;
-
-            }
-            if (i == 4) {
-                mButtonPlayer[i] = (Button) mTextViewPlayer5;
-
-            }
-            if (i == 5) {
-                mButtonPlayer[i] = (Button) mTextViewPlayer6;
-
-            }
-            if (i == 6) {
-                mButtonPlayer[i] = (Button) mTextViewPlayer7;
-
-            }
-            if (i == 7) {
-                mButtonPlayer[i] = (Button) mTextViewPlayer8;
-
-            }
-            mButtonPlayer[i].setBackgroundResource(R.drawable.answer0);
-        }
+        int i = 0;
+        mButtonPlayer[i++] = (Button) findViewById(R.id.button_player1).findViewById(R.id
+                .button_player);
+        mButtonPlayer[i++] = (Button) findViewById(R.id.button_player2).findViewById(R.id
+                .button_player);
+        mButtonPlayer[i++] = (Button) findViewById(R.id.button_player3).findViewById(R.id
+                .button_player);
+        mButtonPlayer[i++] = (Button) findViewById(R.id.button_player4).findViewById(R.id
+                .button_player);
+        mButtonPlayer[i++] = (Button) findViewById(R.id.button_player5).findViewById(R.id
+                .button_player);
+        mButtonPlayer[i++] = (Button) findViewById(R.id.button_player6).findViewById(R.id
+                .button_player);
+        mButtonPlayer[i++] = (Button) findViewById(R.id.button_player7).findViewById(R.id
+                .button_player);
+        mButtonPlayer[i] = (Button) findViewById(R.id.button_player8).findViewById(R.id
+                .button_player);
 
     }
 
@@ -341,7 +352,13 @@ public class InfoScreen extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        EventBus.getDefault().unregister(this);
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
+
+        if(connectionDiaglog != null){
+            connectionDiaglog.dismiss();
+        }
         super.onDestroy();
     }
 

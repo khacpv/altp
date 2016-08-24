@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -29,12 +30,9 @@ import com.example.gcs.faster5.model.Room;
 import com.example.gcs.faster5.model.User;
 import com.example.gcs.faster5.sock.AltpHelper;
 import com.example.gcs.faster5.sock.SockAltp;
-import com.example.gcs.faster5.util.PrefUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,9 +90,13 @@ public class MainScreen extends AppCompatActivity {
     private SockAltp.OnSocketEvent answerNextCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
-
-            mQuestion = mAltpHelper.answerNextCallback(args);
+            Question mQuestion = mAltpHelper.answerNextCallback(args);
             Log.e("TAG", "mQuestion: " + mQuestion.mQuestion);
+
+            OnAnsCallbackEvent eventBus = new OnAnsCallbackEvent();
+            eventBus.isFromNextQuestion = true;
+            eventBus.mQuestion = mQuestion;
+            EventBus.getDefault().post(eventBus);
         }
     };
 
@@ -104,28 +106,34 @@ public class MainScreen extends AppCompatActivity {
         public void onEvent(String event, Object... args) {
             OnAnsCallbackEvent eventBus = new OnAnsCallbackEvent();
             Pair<Integer, ArrayList<User>> result = mAltpHelper.answerCallback(args);
+            eventBus.isFromNextQuestion = false;
             eventBus.result = result;
             EventBus.getDefault().post(eventBus);
         }
     };
 
-    public static class OnAnsCallbackEvent {
-        Pair<Integer, ArrayList<User>> result;
-    }
-
 
     @Subscribe
-    public void onEventMainThread(OnAnsCallbackEvent event) {
+    public void onEventMainThread(final OnAnsCallbackEvent event) {
+        if(event.isFromNextQuestion){
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mQuestion = event.mQuestion;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setQA(1);
+                        }
+                    });
+                }
+            },4000);
+            return;
+        }
         Pair<Integer, ArrayList<User>> result = event.result;
         if (result.first < 0) {
             return;
         }
-
-        final Animation mAnimation = new AlphaAnimation(1, 0);
-        mAnimation.setDuration(250);
-        mAnimation.setInterpolator(new LinearInterpolator());
-        mAnimation.setRepeatCount(Animation.INFINITE);
-        mAnimation.setRepeatMode(Animation.REVERSE);
 
 
         answerRight = result.first;
@@ -156,8 +164,11 @@ public class MainScreen extends AppCompatActivity {
                 }
 
                 if (checkAns(myAnswerIndex)) {
-                    mButtonAns[myAnswerIndex].setBackgroundResource(R.drawable.answer_right);
-                    mButtonAns[myAnswerIndex].startAnimation(mAnimation);
+                    AnimationDrawable btnAnswerDrawable = (AnimationDrawable)
+                            getResources().getDrawable(R.drawable.xml_btn_anim);
+                    mButtonAns[myAnswerIndex].setBackgroundDrawable(btnAnswerDrawable);
+                    btnAnswerDrawable.start();
+
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -171,11 +182,15 @@ public class MainScreen extends AppCompatActivity {
                     }, 2000);
                 } else {
                     mButtonAns[myAnswerIndex].setBackgroundResource(R.drawable.answer_wrong);
-                    mButtonAns[answerRight].setBackgroundResource(R.drawable.answer_right);
-                    mButtonAns[answerRight].startAnimation(mAnimation);
+
+                    AnimationDrawable btnAnswerDrawable = (AnimationDrawable)
+                            getResources().getDrawable(R.drawable.xml_btn_anim);
+                    mButtonAns[answerRight].setBackgroundDrawable(btnAnswerDrawable);
+                    btnAnswerDrawable.start();
+
                 }
             }
-        }, 3000);
+        }, 2000);
 
     }
 
@@ -325,7 +340,7 @@ public class MainScreen extends AppCompatActivity {
         mTextViewAns2.setText("B: " + mQuestion.mAns.get(1));
         mTextViewAns3.setText("C: " + mQuestion.mAns.get(2));
         mTextViewAns4.setText("D: " + mQuestion.mAns.get(3));
-        mTimeLeft.start();
+//        mTimeLeft.start();
     }
 
     public boolean checkAns(int answerIndex) {
@@ -421,6 +436,21 @@ public class MainScreen extends AppCompatActivity {
     public static void setTypeface(Typeface font, TextView... textviews) {
         for (TextView textView : textviews) {
             textView.setTypeface(font);
+        }
+    }
+
+    public static class OnAnsCallbackEvent {
+        boolean isFromNextQuestion = false;
+        Pair<Integer, ArrayList<User>> result;
+        Question mQuestion;
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
         }
     }
 }

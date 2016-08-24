@@ -30,13 +30,19 @@
     <com.facebook.login.widget.LoginButton
         android:id="@+id/button_fb"
         style="@style/FacebookLoginButton"
-        android:layout_width="100dp"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/imageview_altp"
-        android:layout_centerHorizontal="true"
+        android:layout_width="1dp"
+        android:layout_height="1dp"
         android:drawableLeft="@null"
         android:paddingBottom="50dp"
         android:paddingTop="50dp" />
+
+    <Button
+        android:id="@+id/btn_fakefb"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_below="@+id/imageview_altp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/fbbutton" />
 
     <ImageView
         android:id="@+id/imageview_or"
@@ -50,8 +56,8 @@
         android:id="@+id/imageview_avatar"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_alignLeft="@+id/button_fb"
-        android:layout_alignStart="@+id/button_fb"
+        android:layout_alignLeft="@+id/btn_fakefb"
+        android:layout_alignStart="@+id/btn_fakefb"
         android:layout_below="@+id/imageview_or"
         android:layout_marginTop="15dp"
         android:src="@drawable/avatar" />

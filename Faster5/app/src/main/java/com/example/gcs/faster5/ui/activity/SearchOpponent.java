@@ -269,6 +269,9 @@ public class SearchOpponent extends AppCompatActivity {
         if (waitDialog != null) {
             waitDialog.dismiss();
         }
+        if(EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
         super.onDestroy();
     }
 
