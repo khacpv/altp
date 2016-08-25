@@ -59,9 +59,7 @@ public class SearchOpponent extends AppCompatActivity {
                 case Socket.EVENT_CONNECT_ERROR:
                 case Socket.EVENT_CONNECT_TIMEOUT:
                     //     Log.e("TAG_SEARCH", "disconnect");
-                    if (!mSocketAltp.isConnected()) {
-                        mSocketAltp.connect();
-                    }
+
                     break;
             }
         }

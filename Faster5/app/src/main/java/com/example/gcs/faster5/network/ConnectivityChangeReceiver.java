@@ -7,6 +7,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
+import com.example.gcs.faster5.MainApplication;
+import com.example.gcs.faster5.sock.SockAltp;
 import com.example.gcs.faster5.ui.activity.PopupConnection;
 
 /**
@@ -28,7 +30,8 @@ public class ConnectivityChangeReceiver extends BroadcastReceiver {
             NetworkInfo networkInfo = connectivityManager
                     .getActiveNetworkInfo();
             if (networkInfo != null && networkInfo.isConnected()) {
-                Log.e("Connection connected", ""+ intent.getAction());
+                Log.e("Connection connected", "" + intent.getAction());
+
             } else {
                 Log.e("Connection disconnect", ""+ intent.getAction());
             }

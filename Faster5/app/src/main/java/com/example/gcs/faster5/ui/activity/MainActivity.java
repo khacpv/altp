@@ -4,11 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.bumptech.glide.Glide;
+import com.example.gcs.faster5.MainApplication;
 import com.example.gcs.faster5.R;
+import com.example.gcs.faster5.sock.SockAltp;
 import com.example.gcs.faster5.util.PrefUtils;
 
 import org.greenrobot.eventbus.EventBus;

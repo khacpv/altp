@@ -78,9 +78,6 @@ public class InfoScreen extends AppCompatActivity {
                 case Socket.EVENT_CONNECT_ERROR:
                 case Socket.EVENT_CONNECT_TIMEOUT:
                     //Log.e("TAG_INFO", "disconnect");
-                    if (!mSocketAltp.isConnected()) {
-                        mSocketAltp.connect();
-                    }
                     searchBg.stop();
                     mButtonSearch.setClickable(true);
                     break;
@@ -133,9 +130,12 @@ public class InfoScreen extends AppCompatActivity {
 
         mSocketAltp = MainApplication.sockAltp();
         mAltpHelper = new AltpHelper(mSocketAltp);
-        if (!mSocketAltp.isConnected()) {
+
+
+        if(!mSocketAltp.isConnected()){
             mSocketAltp.connect();
         }
+
 
         mSocketAltp.addGlobalEvent(globalCallback);
         mSocketAltp.addEvent("search", searchCallback);
@@ -176,8 +176,7 @@ public class InfoScreen extends AppCompatActivity {
                                                      sendSearchRequest(mUser);
                                                      searchBg.start();
                                                      mButtonSearch.setClickable(false);
-                                                 }
-                                                 else{
+                                                 } else {
                                                      connectionDiaglog.show();
                                                  }
 
@@ -356,7 +355,7 @@ public class InfoScreen extends AppCompatActivity {
             EventBus.getDefault().unregister(this);
         }
 
-        if(connectionDiaglog != null){
+        if (connectionDiaglog != null) {
             connectionDiaglog.dismiss();
         }
         super.onDestroy();

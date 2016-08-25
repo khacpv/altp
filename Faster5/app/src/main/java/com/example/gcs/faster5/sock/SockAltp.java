@@ -104,7 +104,7 @@ public class SockAltp {
     public void addEvent(final String eventName, final OnSocketEvent callback) {
         if (eventListeners.containsKey(eventName)) {
             Log.e("TAG",String.format("event with name: %s has been registered!", eventName));
-            return;
+           // return;
         }
         Emitter.Listener listener = new Emitter.Listener() {
             @Override

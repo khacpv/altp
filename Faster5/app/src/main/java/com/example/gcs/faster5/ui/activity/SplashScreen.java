@@ -13,9 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.gcs.faster5.R;
-import com.example.gcs.faster5.logic.QuestionMng;
 import com.example.gcs.faster5.logic.TopicMng;
-import com.example.gcs.faster5.model.Question;
 import com.example.gcs.faster5.model.Topic;
 import com.example.gcs.faster5.network.ServiceMng;
 
@@ -97,10 +95,10 @@ public class SplashScreen extends AppCompatActivity {
             public void onFinish() {
                 mTextViewLoading.setText("100%");
              //   mImageViewStarLoad3.setImageResource(R.drawable.starloaded);
-                Intent mIntent = new Intent(getBaseContext(), WellcomeScreen.class);
-                mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(mIntent);
-                finish();
+             //   Intent mIntent = new Intent(getBaseContext(), BaseActivity.class);
+//                mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                startActivity(mIntent);
+//                finish();
             }
 
             public void onTick(long millisUntilFinished) {

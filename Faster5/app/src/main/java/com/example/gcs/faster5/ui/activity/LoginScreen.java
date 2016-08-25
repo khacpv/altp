@@ -75,8 +75,7 @@ public class LoginScreen extends AppCompatActivity {
     public static final int IMAGE_FROM_GALLERY = 1;
     public static final String prefixHOST = "http://ailatrieuphu.esy.es/imgupload/";
     public static final String DEFAULT_AVATAR = "http://ailatrieuphu.esy.es/imgupload/uploadedimages/avatar.png";
-    final Context context = this;
-    private AccessToken mAccessToken;
+    AccessToken mAccessToken;
     private AccessTokenTracker mAccessTokenTracker;
     private RelativeLayout mRelativeLayoutBg;
     private EditText mEditText;
@@ -97,7 +96,6 @@ public class LoginScreen extends AppCompatActivity {
     private boolean uploadResult,
             isCheckPickImage = false,
             isCheckBtnLater = true;
-    boolean isFbClicked = false;
     private UploadPhotoUtils uploadPhotoUtils = new UploadPhotoUtils();
     int uploadFail = 0;
 
@@ -117,9 +115,6 @@ public class LoginScreen extends AppCompatActivity {
                 case Socket.EVENT_CONNECT_ERROR:
                 case Socket.EVENT_CONNECT_TIMEOUT:
                     //   Log.e("TAG_LOGIN", "disconnect");
-                    if (!mSocketAltp.isConnected()) {
-                        mSocketAltp.connect();
-                    }
                     break;
             }
         }
@@ -171,12 +166,15 @@ public class LoginScreen extends AppCompatActivity {
         mSocketAltp = MainApplication.sockAltp();
 
         mAltpHelper = new AltpHelper(mSocketAltp);
-        if (!mSocketAltp.isConnected()) {
+
+        if(!mSocketAltp.isConnected()){
             mSocketAltp.connect();
         }
 
         mSocketAltp.addGlobalEvent(globalCallback);
         mSocketAltp.addEvent("login", loginCallback);
+
+
 
         strictMode();
         findViewbyId();
@@ -198,7 +196,6 @@ public class LoginScreen extends AppCompatActivity {
             mTextViewCity.setText(city);
         }
     }
-
 
     @Subscribe
     public void onEventMainThread(OnLoginCallbackEvent event) {
@@ -295,7 +292,7 @@ public class LoginScreen extends AppCompatActivity {
         mButtonFakeFb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (NetworkUtils.checkInternetConnection(LoginScreen.this)) {
+                if (NetworkUtils.checkInternetConnection(LoginScreen.this) && mSocketAltp.isConnected()) {
                     mLoginButtonFb.performClick();
                 } else {
                     connectionDiaglog.show();
@@ -307,57 +304,49 @@ public class LoginScreen extends AppCompatActivity {
     public void loginFB() {
         mCallbackManager = CallbackManager.Factory.create();
 
-
         //mLoginButtonFb.setBackgroundResource(R.drawable.fbbutton);
         //mLoginButtonFb.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
         mLoginButtonFb.setVisibility(View.GONE);
-        if (isFbClicked) {
-            return;
-        }
         mLoginButtonFb.setReadPermissions("public_profile");
         mLoginButtonFb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                isFbClicked = true;
+                mLoginButtonFb.setClickable(false);
                 loginDialog.show();
-                if (NetworkUtils.checkInternetConnection(LoginScreen.this)) {
-                    mAccessTokenTracker = new AccessTokenTracker() {
-                        @Override
-                        protected void onCurrentAccessTokenChanged(AccessToken oldToken, AccessToken newToken) {
-                            AccessToken mAccessToken = newToken;
-                        }
-                    };
-                    FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
-                        @Override
-                        public void onInitialized() {
-                            mLoginButtonFb.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-                                @Override
-                                public void onSuccess(LoginResult loginResult) {
-                                    AccessToken mAccessToken = loginResult.getAccessToken();
-                                    PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_ACCESS_TOKEN_FB, mAccessToken.getToken());
-                                    getUserInfoFromFb();
-                                }
+                mAccessTokenTracker = new AccessTokenTracker() {
+                    @Override
+                    protected void onCurrentAccessTokenChanged(AccessToken oldToken, AccessToken newToken) {
+                        AccessToken mAccessToken = newToken;
+                    }
+                };
+                FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
+                    @Override
+                    public void onInitialized() {
+                        mLoginButtonFb.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+                            @Override
+                            public void onSuccess(LoginResult loginResult) {
+                                AccessToken mAccessToken = loginResult.getAccessToken();
+                                PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_ACCESS_TOKEN_FB, mAccessToken.getToken());
+                                getUserInfoFromFb();
+                            }
 
-                                @Override
-                                public void onCancel() {
-                                    isFbClicked = false;
-                                }
+                            @Override
+                            public void onCancel() {
+                                mLoginButtonFb.setClickable(true);
+                            }
 
-                                @Override
-                                public void onError(FacebookException exception) {
-                                    isFbClicked = false;
-                                    loginDialog.hide();
-                                }
-                            });
-                            return;
+                            @Override
+                            public void onError(FacebookException exception) {
+                                mLoginButtonFb.setClickable(true);
+                                loginDialog.hide();
+                            }
+                        });
+                        return;
 
-                        }
-                    });
+                    }
+                });
 
-                    mAccessTokenTracker.startTracking();
-                } else {
-                    NetworkUtils.movePopupConnection(LoginScreen.this);
-                }
+                mAccessTokenTracker.startTracking();
             }
         });
 
@@ -486,12 +475,14 @@ public class LoginScreen extends AppCompatActivity {
         tryAgain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = getIntent();
-                overridePendingTransition(0, 0);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                finish();
-                overridePendingTransition(0, 0);
-                startActivity(intent);
+                connectionDiaglog.hide();
+//                Intent intent = getIntent();
+//                overridePendingTransition(0, 0);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+//                finish();
+//                overridePendingTransition(0, 0);
+//                startActivity(intent);
+                //recreate();
             }
         });
 
