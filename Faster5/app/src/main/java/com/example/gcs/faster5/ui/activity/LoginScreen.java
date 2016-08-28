@@ -68,13 +68,13 @@ import io.socket.client.Socket;
 public class LoginScreen extends AppCompatActivity {
 
     private static final String TAG_CITY = "city";
-    public static String city;
-    private static String url = "http://209.58.180.196/json/"; //URL to get JSON Array
     private static final String photoFileName = "cameraphoto.jpg";
     public static final int IMAGE_FROM_CAMERA = 0;
     public static final int IMAGE_FROM_GALLERY = 1;
     public static final String prefixHOST = "http://ailatrieuphu.esy.es/imgupload/";
     public static final String DEFAULT_AVATAR = "http://ailatrieuphu.esy.es/imgupload/uploadedimages/avatar.png";
+    private static String city;
+    private static String url = "http://209.58.180.196/json/"; //URL to get JSON Array
     AccessToken mAccessToken;
     private AccessTokenTracker mAccessTokenTracker;
     private RelativeLayout mRelativeLayoutBg;
@@ -90,8 +90,14 @@ public class LoginScreen extends AppCompatActivity {
     private AltpHelper mAltpHelper;
     private User mUser = new User();
     private ProgressDialog prgDialog;
-    private Dialog avatarDialog, edittexDialog, loginDialog, connectionDiaglog;
-    private String mStringUserName, imgPath, fileName, imgUrl;
+    private Dialog avatarDialog;
+    private Dialog edittexDialog;
+    private Dialog loginDialog;
+    private Dialog connectionDiaglog;
+    private String mStringUserName;
+    private String imgPath;
+    private String fileName;
+    private String imgUrl;
     private Uri uriPhoto;
     private boolean uploadResult,
             isCheckPickImage = false,
@@ -113,8 +119,10 @@ public class LoginScreen extends AppCompatActivity {
                     Log.e("TAG_LOGIN", "connect");
                     break;
                 case Socket.EVENT_CONNECT_ERROR:
+                    Log.e("TAG_LOGIN", "error");
+                    break;
                 case Socket.EVENT_CONNECT_TIMEOUT:
-                    //   Log.e("TAG_LOGIN", "disconnect");
+                    Log.e("TAG_LOGIN", "timeout");
                     break;
             }
         }
@@ -167,14 +175,12 @@ public class LoginScreen extends AppCompatActivity {
 
         mAltpHelper = new AltpHelper(mSocketAltp);
 
-        if(!mSocketAltp.isConnected()){
+        if (!mSocketAltp.isConnected()) {
             mSocketAltp.connect();
         }
 
         mSocketAltp.addGlobalEvent(globalCallback);
         mSocketAltp.addEvent("login", loginCallback);
-
-
 
         strictMode();
         findViewbyId();
@@ -476,13 +482,6 @@ public class LoginScreen extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 connectionDiaglog.hide();
-//                Intent intent = getIntent();
-//                overridePendingTransition(0, 0);
-//                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-//                finish();
-//                overridePendingTransition(0, 0);
-//                startActivity(intent);
-                //recreate();
             }
         });
 

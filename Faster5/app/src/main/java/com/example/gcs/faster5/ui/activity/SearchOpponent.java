@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
 import com.example.gcs.faster5.MainApplication;
 import com.example.gcs.faster5.R;
@@ -45,21 +46,32 @@ public class SearchOpponent extends AppCompatActivity {
     private Room mRoom = new Room();
     private Dialog waitDialog;
     Intent intent;
-    TextView mTextViewCityUser1, mTextViewCityUser2, mTextViewUserName1, mTextViewUserName2, mTextViewMoney1, mTextViewMoney2;
-    ImageView mImageViewUserAvatar1, mImageViewUserAvatar2;
-    public static Button mButtonPlay, mButtonSeach;
+    private TextView mTextViewCityUser1;
+    private TextView mTextViewCityUser2;
+    private TextView mTextViewUserName1;
+    private TextView mTextViewUserName2;
+    private TextView mTextViewMoney1;
+    private TextView mTextViewMoney2;
+    private ImageView mImageViewUserAvatar1;
+    private ImageView mImageViewUserAvatar2;
+    Button mButtonPlay;
+    Button mButtonSeach;
 
     private SockAltp.OnSocketEvent globalCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
             switch (event) {
+                case Socket.EVENT_CONNECTING:
+                    Log.e("TAG_SeaOppo", "connecting");
+                    break;
                 case Socket.EVENT_CONNECT:  // auto call on connect to server
-                    Log.e("TAG_SEARCH", "connect");
+                    Log.e("TAG_SeaOppo", "connect");
                     break;
                 case Socket.EVENT_CONNECT_ERROR:
+                    Log.e("TAG_SeaOppo", "error");
+                    break;
                 case Socket.EVENT_CONNECT_TIMEOUT:
-                    //     Log.e("TAG_SEARCH", "disconnect");
-
+                    Log.e("TAG_SeaOppo", "timeout");
                     break;
             }
         }
@@ -85,7 +97,6 @@ public class SearchOpponent extends AppCompatActivity {
     };
 
     public static class OnPlayCallbackEvent {
-
         boolean notReady;
         int count;
         Question mQuestion;
@@ -267,7 +278,7 @@ public class SearchOpponent extends AppCompatActivity {
         if (waitDialog != null) {
             waitDialog.dismiss();
         }
-        if(EventBus.getDefault().isRegistered(this)) {
+        if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
         super.onDestroy();

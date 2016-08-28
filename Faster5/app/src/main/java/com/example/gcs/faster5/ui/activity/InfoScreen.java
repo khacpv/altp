@@ -44,23 +44,27 @@ import io.socket.client.Socket;
  * Created by Kien on 07/05/2016.
  */
 public class InfoScreen extends AppCompatActivity {
-    TextView mTextViewNameUser;
-    TextView mTextViewMoney;
-    TextView mTextViewCity;
-    ImageView mImageViewAvatar;
-    Button[] mButtonPlayer = new Button[8];
-    RelativeLayout mButtonSearch;
+    private TextView mTextViewNameUser;
+    private TextView mTextViewMoney;
+    private TextView mTextViewCity;
+    private ImageView mImageViewAvatar;
+    private Button[] mButtonPlayer = new Button[8];
+    private RelativeLayout mButtonSearch;
     private SockAltp mSocketAltp;
     private AltpHelper mAltpHelper;
     private User mUser = new User();
     private User mEnemy = new User();
-    String username, linkAvatar, location, money;
-    long userId;
-    final HexagonDrawable searchBg = new HexagonDrawable();
-    int searchTimes = 0, enemyNumberInList;
-    boolean isEnemy = false;
-    Dialog connectionDiaglog;
-    Handler handler = new Handler();
+    private String username;
+    private String linkAvatar;
+    private String location;
+    private String money;
+    private long userId;
+    private final HexagonDrawable searchBg = new HexagonDrawable();
+    private int searchTimes = 0;
+    private int enemyNumberInList;
+    private boolean isEnemy = false;
+    private Dialog connectionDiaglog;
+    private Handler handler = new Handler();
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -72,19 +76,21 @@ public class InfoScreen extends AppCompatActivity {
         @Override
         public void onEvent(String event, Object... args) {
             switch (event) {
+                case Socket.EVENT_CONNECTING:
+                    Log.e("TAG_INFO", "connecting");
+                    break;
                 case Socket.EVENT_CONNECT:  // auto call on connect to server
                     Log.e("TAG_INFO", "connect");
                     break;
                 case Socket.EVENT_CONNECT_ERROR:
+                    Log.e("TAG_INFO", "error");
+                    break;
                 case Socket.EVENT_CONNECT_TIMEOUT:
-                    //Log.e("TAG_INFO", "disconnect");
-                    searchBg.stop();
-                    mButtonSearch.setClickable(true);
+                    Log.e("TAG_INFO", "timeout");
                     break;
             }
         }
     };
-
     private SockAltp.OnSocketEvent searchCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
@@ -132,7 +138,7 @@ public class InfoScreen extends AppCompatActivity {
         mAltpHelper = new AltpHelper(mSocketAltp);
 
 
-        if(!mSocketAltp.isConnected()){
+        if (!mSocketAltp.isConnected()) {
             mSocketAltp.connect();
         }
 
@@ -216,12 +222,7 @@ public class InfoScreen extends AppCompatActivity {
         tryAgain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = getIntent();
-                overridePendingTransition(0, 0);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                finish();
-                overridePendingTransition(0, 0);
-                startActivity(intent);
+                connectionDiaglog.hide();
             }
         });
 
