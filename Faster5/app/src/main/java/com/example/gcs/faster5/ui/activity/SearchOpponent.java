@@ -153,7 +153,7 @@ public class SearchOpponent extends AppCompatActivity {
 
         Question mQuestion = event.mQuestion;
 
-        final Intent mainScrnIntent = MainScreen.createIntent(SearchOpponent.this, mUser, enemyUser, mRoom, mQuestion);
+        final Intent mainScrnIntent = PlayScreen.createIntent(SearchOpponent.this, mUser, enemyUser, mRoom, mQuestion);
 
         runOnUiThread(new Runnable() {
             @Override
@@ -190,7 +190,7 @@ public class SearchOpponent extends AppCompatActivity {
     }
 
     public void findViewById() {
-        intent = new Intent(SearchOpponent.this, MainScreen.class);
+        intent = new Intent(SearchOpponent.this, PlayScreen.class);
         waitDialog = new Dialog(this);
 
         Typeface font = Typeface.createFromAsset(getAssets(),

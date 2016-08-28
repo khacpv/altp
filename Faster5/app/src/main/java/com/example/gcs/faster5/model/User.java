@@ -25,7 +25,7 @@ public class User implements Serializable{
     public String avatar;
 
     @SerializedName("room")
-    public String room;
+    public String room; // room id
 
     @SerializedName("answerIndex")
     public int answerIndex;

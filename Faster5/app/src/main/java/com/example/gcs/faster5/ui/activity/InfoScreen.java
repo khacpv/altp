@@ -55,7 +55,7 @@ public class InfoScreen extends AppCompatActivity {
     private User mUser = new User();
     private User mEnemy = new User();
     String username, linkAvatar, location, money;
-    long userId;
+    String userId;
     final HexagonDrawable searchBg = new HexagonDrawable();
     int searchTimes = 0, enemyNumberInList;
     boolean isEnemy = false;
@@ -233,7 +233,7 @@ public class InfoScreen extends AppCompatActivity {
         location = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_LOCATION, "");
         linkAvatar = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_URL_AVATAR, "");
         money = Integer.toString(PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_MONEY, 0));
-        userId = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_USER_ID, Long.valueOf(0));
+        userId = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_USER_ID, "");
     }
 
     public void setUserInfo() {
@@ -281,7 +281,8 @@ public class InfoScreen extends AppCompatActivity {
         isEnemy = false;
 
         for (User user : room.users) {
-            if (user.id != mUser.id && user.name != mUser.name) {
+            // DO NOT use: user.id != mUser.id
+            if (!String.valueOf(user.id).equalsIgnoreCase(mUser.id)) {
                 user.isDummy = false;
                 isEnemy = true;
                 updateEnemy(user);
@@ -341,7 +342,7 @@ public class InfoScreen extends AppCompatActivity {
     }
 
     public void onBackPressed() {
-
+        super.onBackPressed();
     }
 
     @Override

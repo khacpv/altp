@@ -9,9 +9,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.bumptech.glide.Glide;
-import com.example.gcs.faster5.MainApplication;
 import com.example.gcs.faster5.R;
-import com.example.gcs.faster5.sock.SockAltp;
 import com.example.gcs.faster5.util.PrefUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -31,11 +29,15 @@ public class MainActivity extends AppCompatActivity {
 
         Glide.with(this).load(R.drawable.loading);
 
+        String userId = PrefUtils.getInstance(this).get(PrefUtils.KEY_USER_ID, "");
         String username = PrefUtils.getInstance(this).get(PrefUtils.KEY_NAME, "");
         String linkAvatar = PrefUtils.getInstance(this).get(PrefUtils.KEY_URL_AVATAR, "");
         String location = PrefUtils.getInstance(this).get(PrefUtils.KEY_LOCATION, "");
 
-        if (TextUtils.isEmpty(username) || TextUtils.isEmpty(linkAvatar) || TextUtils.isEmpty(location)) {
+        Log.e("TAG", String.format("user: {id=%s,name:%s,location:%s}", userId,username,location));
+
+        if (TextUtils.isEmpty(userId) ||TextUtils.isEmpty(username) || TextUtils.isEmpty(linkAvatar)
+                || TextUtils.isEmpty(location)) {
             Intent myIntent = new Intent(getApplicationContext(), LoginScreen.class);
             startActivity(myIntent);
             finish();

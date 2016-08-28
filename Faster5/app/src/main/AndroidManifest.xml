@@ -51,7 +51,7 @@
             android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity android:name=".ui.activity.SplashScreen" />
         <activity android:name=".ui.activity.InfoScreen" />
-        <activity android:name=".ui.activity.MainScreen" />
+        <activity android:name=".ui.activity.PlayScreen" />
         <activity android:name=".ui.activity.WellcomeScreen" />
         <activity android:name=".ui.activity.SearchOpponent" />
         <activity android:name=".ui.activity.GameOver" />

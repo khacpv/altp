@@ -36,6 +36,7 @@ public class AltpHelper {
         try {
             Gson gson = new Gson();
             String json = String.format("{user:%s}", gson.toJson(user));
+            Log.e("TAG", String.format("user JSON: %s", json));
             JSONObject data = new JSONObject(json);
             mSockAltp.send("login", data);
         } catch (JSONException e) {

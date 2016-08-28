@@ -15,9 +15,6 @@ import android.util.Pair;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -41,7 +38,7 @@ import java.util.List;
  * Created by Kien on 07/05/2016.
  * test
  */
-public class MainScreen extends AppCompatActivity {
+public class PlayScreen extends AppCompatActivity {
 
     private final String TXT_TIME_OUT = "TIME\nOUT";
     private static final String EXTRA_USER = "user";
@@ -195,7 +192,7 @@ public class MainScreen extends AppCompatActivity {
     }
 
     public static Intent createIntent(Context context, User user, User enemy, Room room, Question question) {
-        Intent intent = new Intent(context, MainScreen.class);
+        Intent intent = new Intent(context, PlayScreen.class);
         intent.putExtra(EXTRA_USER, user);
         intent.putExtra(EXTRA_ENEMY, enemy);
         intent.putExtra(EXTRA_ROOM, room);
