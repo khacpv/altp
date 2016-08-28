@@ -137,7 +137,7 @@ public class PlayScreen extends AppCompatActivity {
         List<User> answerUserList = result.second;
 
         for (User user : answerUserList) {
-            if (user.id != mUser.id) {
+            if (!String.valueOf(user.id).equalsIgnoreCase(mUser.id)) {
                 Log.e("TAG", "mEnemyanswer: " + mEnemy.answerIndex);
                 enemyAnswerIndex = mEnemy.answerIndex = user.answerIndex;
 
