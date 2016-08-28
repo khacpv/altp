@@ -1,7 +1,10 @@
 package com.example.gcs.faster5.ui.activity;
 
+import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +28,7 @@ import com.example.gcs.faster5.model.User;
 import com.example.gcs.faster5.sock.AltpHelper;
 import com.example.gcs.faster5.sock.SockAltp;
 import com.example.gcs.faster5.ui.widget.HexagonDrawable;
+import com.example.gcs.faster5.util.NetworkUtils;
 import com.example.gcs.faster5.util.PrefUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -45,7 +49,6 @@ public class InfoScreen extends AppCompatActivity {
     TextView mTextViewCity;
     ImageView mImageViewAvatar;
     Button[] mButtonPlayer = new Button[8];
-    View[] mViewLine = new View[8];
     RelativeLayout mButtonSearch;
     private SockAltp mSocketAltp;
     private AltpHelper mAltpHelper;
@@ -56,6 +59,7 @@ public class InfoScreen extends AppCompatActivity {
     final HexagonDrawable searchBg = new HexagonDrawable();
     int searchTimes = 0, enemyNumberInList;
     boolean isEnemy = false;
+    Dialog connectionDiaglog;
     Handler handler = new Handler();
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -74,9 +78,6 @@ public class InfoScreen extends AppCompatActivity {
                 case Socket.EVENT_CONNECT_ERROR:
                 case Socket.EVENT_CONNECT_TIMEOUT:
                     //Log.e("TAG_INFO", "disconnect");
-                    if (!mSocketAltp.isConnected()) {
-                        mSocketAltp.connect();
-                    }
                     searchBg.stop();
                     mButtonSearch.setClickable(true);
                     break;
@@ -129,9 +130,12 @@ public class InfoScreen extends AppCompatActivity {
 
         mSocketAltp = MainApplication.sockAltp();
         mAltpHelper = new AltpHelper(mSocketAltp);
-        if (!mSocketAltp.isConnected()) {
+
+
+        if(!mSocketAltp.isConnected()){
             mSocketAltp.connect();
         }
+
 
         mSocketAltp.addGlobalEvent(globalCallback);
         mSocketAltp.addEvent("search", searchCallback);
@@ -153,6 +157,8 @@ public class InfoScreen extends AppCompatActivity {
         setView();
         buttonPlayer();
 
+        popupConnection();
+
         mButtonSearch = (RelativeLayout) findViewById(R.id.button_search);
 
 
@@ -165,10 +171,15 @@ public class InfoScreen extends AppCompatActivity {
         mButtonSearch.setOnClickListener(new View.OnClickListener() {
                                              @Override
                                              public void onClick(View v) {
-                                                 setUserInfo();
-                                                 sendSearchRequest(mUser);
-                                                 searchBg.start();
-                                                 mButtonSearch.setClickable(false);
+                                                 if (NetworkUtils.checkInternetConnection(InfoScreen.this)) {
+                                                     setUserInfo();
+                                                     sendSearchRequest(mUser);
+                                                     searchBg.start();
+                                                     mButtonSearch.setClickable(false);
+                                                 } else {
+                                                     connectionDiaglog.show();
+                                                 }
+
                                              }
                                          }
         );
@@ -189,7 +200,33 @@ public class InfoScreen extends AppCompatActivity {
         mTextViewMoney = (TextView) findViewById(R.id.textview_money);
         mTextViewMoney.setTypeface(font);
 
+        connectionDiaglog = new Dialog(this);
+
     }
+
+    public void popupConnection() {
+        connectionDiaglog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        connectionDiaglog.setContentView(R.layout.layout_popup_connection);
+        connectionDiaglog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        connectionDiaglog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        connectionDiaglog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+        Button tryAgain = (Button) connectionDiaglog.findViewById(R.id.btn_tryagain);
+
+        tryAgain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = getIntent();
+                overridePendingTransition(0, 0);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                finish();
+                overridePendingTransition(0, 0);
+                startActivity(intent);
+            }
+        });
+
+    }
+
 
     public void getUserInfo() {
         username = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_NAME, "");
@@ -214,8 +251,7 @@ public class InfoScreen extends AppCompatActivity {
     }
 
     public void buttonPlayer() {
-
-        int i=0;
+        int i = 0;
         mButtonPlayer[i++] = (Button) findViewById(R.id.button_player1).findViewById(R.id
                 .button_player);
         mButtonPlayer[i++] = (Button) findViewById(R.id.button_player2).findViewById(R.id
@@ -315,8 +351,12 @@ public class InfoScreen extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if(EventBus.getDefault().isRegistered(this)) {
+        if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
+        }
+
+        if (connectionDiaglog != null) {
+            connectionDiaglog.dismiss();
         }
         super.onDestroy();
     }

@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -111,11 +112,6 @@ public class MainScreen extends AppCompatActivity {
         }
     };
 
-    public static class OnAnsCallbackEvent {
-        boolean isFromNextQuestion = false;
-        Pair<Integer, ArrayList<User>> result;
-        Question mQuestion;
-    }
 
     @Subscribe
     public void onEventMainThread(final OnAnsCallbackEvent event) {
@@ -138,12 +134,6 @@ public class MainScreen extends AppCompatActivity {
         if (result.first < 0) {
             return;
         }
-
-        final Animation mAnimation = new AlphaAnimation(1, 0);
-        mAnimation.setDuration(250);
-        mAnimation.setInterpolator(new LinearInterpolator());
-        mAnimation.setRepeatCount(Animation.INFINITE);
-        mAnimation.setRepeatMode(Animation.REVERSE);
 
 
         answerRight = result.first;
@@ -174,8 +164,11 @@ public class MainScreen extends AppCompatActivity {
                 }
 
                 if (checkAns(myAnswerIndex)) {
-                    mButtonAns[myAnswerIndex].setBackgroundResource(R.drawable.answer_right);
-                    mButtonAns[myAnswerIndex].startAnimation(mAnimation);
+                    AnimationDrawable btnAnswerDrawable = (AnimationDrawable)
+                            getResources().getDrawable(R.drawable.xml_btn_anim);
+                    mButtonAns[myAnswerIndex].setBackgroundDrawable(btnAnswerDrawable);
+                    btnAnswerDrawable.start();
+
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -189,11 +182,15 @@ public class MainScreen extends AppCompatActivity {
                     }, 2000);
                 } else {
                     mButtonAns[myAnswerIndex].setBackgroundResource(R.drawable.answer_wrong);
-                    mButtonAns[answerRight].setBackgroundResource(R.drawable.answer_right);
-                    mButtonAns[answerRight].startAnimation(mAnimation);
+
+                    AnimationDrawable btnAnswerDrawable = (AnimationDrawable)
+                            getResources().getDrawable(R.drawable.xml_btn_anim);
+                    mButtonAns[answerRight].setBackgroundDrawable(btnAnswerDrawable);
+                    btnAnswerDrawable.start();
+
                 }
             }
-        }, 3000);
+        }, 2000);
 
     }
 
@@ -441,6 +438,13 @@ public class MainScreen extends AppCompatActivity {
             textView.setTypeface(font);
         }
     }
+
+    public static class OnAnsCallbackEvent {
+        boolean isFromNextQuestion = false;
+        Pair<Integer, ArrayList<User>> result;
+        Question mQuestion;
+    }
+
 
     @Override
     protected void onDestroy() {

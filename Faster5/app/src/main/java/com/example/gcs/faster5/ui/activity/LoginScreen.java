@@ -75,22 +75,22 @@ public class LoginScreen extends AppCompatActivity {
     public static final int IMAGE_FROM_GALLERY = 1;
     public static final String prefixHOST = "http://ailatrieuphu.esy.es/imgupload/";
     public static final String DEFAULT_AVATAR = "http://ailatrieuphu.esy.es/imgupload/uploadedimages/avatar.png";
-    final Context context = this;
-    private AccessToken mAccessToken;
+    AccessToken mAccessToken;
     private AccessTokenTracker mAccessTokenTracker;
     private RelativeLayout mRelativeLayoutBg;
     private EditText mEditText;
     private Button mImageButtonPlay;
+    private LoginButton mLoginButtonFb;
+    private Button mButtonFakeFb;
     private TextView mTextViewCity;
     private Typeface font;
     private ImageView mImageViewAvatar;
-    private LoginButton mLoginButtonFb;
     private CallbackManager mCallbackManager;
     private SockAltp mSocketAltp;
     private AltpHelper mAltpHelper;
     private User mUser = new User();
     private ProgressDialog prgDialog;
-    private Dialog avatarDialog, edittexDialog, loginDialog;
+    private Dialog avatarDialog, edittexDialog, loginDialog, connectionDiaglog;
     private String mStringUserName, imgPath, fileName, imgUrl;
     private Uri uriPhoto;
     private boolean uploadResult,
@@ -115,9 +115,6 @@ public class LoginScreen extends AppCompatActivity {
                 case Socket.EVENT_CONNECT_ERROR:
                 case Socket.EVENT_CONNECT_TIMEOUT:
                     //   Log.e("TAG_LOGIN", "disconnect");
-                    if (!mSocketAltp.isConnected()) {
-                        mSocketAltp.connect();
-                    }
                     break;
             }
         }
@@ -142,7 +139,6 @@ public class LoginScreen extends AppCompatActivity {
     }
 
     public static class OnLoginCallbackEvent {
-
         User user;
     }
 
@@ -171,12 +167,15 @@ public class LoginScreen extends AppCompatActivity {
         mSocketAltp = MainApplication.sockAltp();
 
         mAltpHelper = new AltpHelper(mSocketAltp);
-        if (!mSocketAltp.isConnected()) {
+
+        if(!mSocketAltp.isConnected()){
             mSocketAltp.connect();
         }
 
         mSocketAltp.addGlobalEvent(globalCallback);
         mSocketAltp.addEvent("login", loginCallback);
+
+
 
         strictMode();
         findViewbyId();
@@ -184,11 +183,12 @@ public class LoginScreen extends AppCompatActivity {
         setAvatar();
         getLocation();
         popupLogin();
-        checkLogin();
         loginFB();
+        fakeBtnFb();
         loginManualClicked();
         popUpPickAvatar();
         popUpEdittex();
+        popupConnection();
 
         if (TextUtils.isEmpty(city)) {
             city = "VIETNAM";
@@ -197,7 +197,6 @@ public class LoginScreen extends AppCompatActivity {
             mTextViewCity.setText(city);
         }
     }
-
 
     @Subscribe
     public void onEventMainThread(OnLoginCallbackEvent event) {
@@ -227,13 +226,16 @@ public class LoginScreen extends AppCompatActivity {
         avatarDialog = new Dialog(this);
         edittexDialog = new Dialog(this);
         loginDialog = new Dialog(this);
+        connectionDiaglog = new Dialog(this);
         prgDialog = new ProgressDialog(this);
         prgDialog.setCancelable(false);
         mImageViewAvatar = (ImageView) findViewById(R.id.imageview_avatar);
         mTextViewCity = (TextView) findViewById(R.id.textview_city_login);
         mRelativeLayoutBg = (RelativeLayout) findViewById(R.id.background);
         mEditText = (EditText) findViewById(R.id.text_edit);
+        mLoginButtonFb = (LoginButton) findViewById(R.id.button_fb);
         mImageButtonPlay = (Button) findViewById(R.id.button_login);
+        mButtonFakeFb = (Button) findViewById(R.id.btn_fakefb);
         font = Typeface.createFromAsset(getAssets(), "fonts/roboto.ttf");
     }
 
@@ -287,72 +289,68 @@ public class LoginScreen extends AppCompatActivity {
         }
     }
 
-    public void checkLogin() {
-        if (mAccessToken != null || PrefUtils.getInstance(LoginScreen.this).get(PrefUtils.KEY_LOGGED_IN, false)) {
-            if (NetworkUtils.checkInternetConnection(LoginScreen.this)) {
-                if (!loginDialog.isShowing()) {
-                    loginDialog.show();
+    public void fakeBtnFb() {
+        mButtonFakeFb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (NetworkUtils.checkInternetConnection(LoginScreen.this) && mSocketAltp.isConnected()) {
+                    mLoginButtonFb.performClick();
+                } else {
+                    connectionDiaglog.show();
                 }
-                mUser.name = PrefUtils.getInstance(LoginScreen.this).get(PrefUtils.KEY_NAME, "");
-                mUser.avatar = PrefUtils.getInstance(LoginScreen.this).get(PrefUtils.KEY_URL_AVATAR, "");
-                mUser.address = city;
-                sendLoginRequest(mUser);
-            } else {
-                NetworkUtils.movePopupConnection(LoginScreen.this);
             }
-        }
+        });
     }
 
     public void loginFB() {
         mCallbackManager = CallbackManager.Factory.create();
 
-        mLoginButtonFb = (LoginButton) findViewById(R.id.button_fb);
-        mLoginButtonFb.setBackgroundResource(R.drawable.fbbutton);
-        mLoginButtonFb.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+        //mLoginButtonFb.setBackgroundResource(R.drawable.fbbutton);
+        //mLoginButtonFb.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+        mLoginButtonFb.setVisibility(View.GONE);
         mLoginButtonFb.setReadPermissions("public_profile");
-        mLoginButtonFb.setOnTouchListener(new View.OnTouchListener() {
+        mLoginButtonFb.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
+            public void onClick(View view) {
+                mLoginButtonFb.setClickable(false);
                 loginDialog.show();
-                if (NetworkUtils.checkInternetConnection(LoginScreen.this)) {
-                    mAccessTokenTracker = new AccessTokenTracker() {
-                        @Override
-                        protected void onCurrentAccessTokenChanged(AccessToken oldToken, AccessToken newToken) {
-                            AccessToken mAccessToken = newToken;
-                        }
-                    };
-                    FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
-                        @Override
-                        public void onInitialized() {
-                            mLoginButtonFb.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-                                @Override
-                                public void onSuccess(LoginResult loginResult) {
-                                    AccessToken mAccessToken = loginResult.getAccessToken();
-                                    PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_ACCESS_TOKEN_FB, mAccessToken.getToken());
-                                    getUserInfoFromFb();
-                                }
+                mAccessTokenTracker = new AccessTokenTracker() {
+                    @Override
+                    protected void onCurrentAccessTokenChanged(AccessToken oldToken, AccessToken newToken) {
+                        AccessToken mAccessToken = newToken;
+                    }
+                };
+                FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
+                    @Override
+                    public void onInitialized() {
+                        mLoginButtonFb.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+                            @Override
+                            public void onSuccess(LoginResult loginResult) {
+                                AccessToken mAccessToken = loginResult.getAccessToken();
+                                PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_ACCESS_TOKEN_FB, mAccessToken.getToken());
+                                getUserInfoFromFb();
+                            }
 
-                                @Override
-                                public void onCancel() {
-                                }
+                            @Override
+                            public void onCancel() {
+                                mLoginButtonFb.setClickable(true);
+                            }
 
-                                @Override
-                                public void onError(FacebookException exception) {
-                                    loginDialog.hide();
-                                }
-                            });
-                            return;
+                            @Override
+                            public void onError(FacebookException exception) {
+                                mLoginButtonFb.setClickable(true);
+                                loginDialog.hide();
+                            }
+                        });
+                        return;
 
-                        }
-                    });
+                    }
+                });
 
-                    mAccessTokenTracker.startTracking();
-                } else {
-                    NetworkUtils.movePopupConnection(LoginScreen.this);
-                }
-                return false;
+                mAccessTokenTracker.startTracking();
             }
         });
+
     }
 
     private void getUserInfoFromFb() {
@@ -397,7 +395,7 @@ public class LoginScreen extends AppCompatActivity {
                         }
                     }
                 } else {
-                    NetworkUtils.movePopupConnection(LoginScreen.this);
+                    connectionDiaglog.show();
                 }
             }
         });
@@ -463,6 +461,31 @@ public class LoginScreen extends AppCompatActivity {
         ImageView loading = (ImageView) loginDialog.findViewById(R.id.imgView_loading);
 
         Glide.with(this).load(R.drawable.loading).asGif().into(loading);
+
+    }
+
+    public void popupConnection() {
+        connectionDiaglog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        connectionDiaglog.setContentView(R.layout.layout_popup_connection);
+        connectionDiaglog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        connectionDiaglog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        connectionDiaglog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+        Button tryAgain = (Button) connectionDiaglog.findViewById(R.id.btn_tryagain);
+
+        tryAgain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                connectionDiaglog.hide();
+//                Intent intent = getIntent();
+//                overridePendingTransition(0, 0);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+//                finish();
+//                overridePendingTransition(0, 0);
+//                startActivity(intent);
+                //recreate();
+            }
+        });
 
     }
 
@@ -647,9 +670,16 @@ public class LoginScreen extends AppCompatActivity {
         if (loginDialog != null) {
             loginDialog.dismiss();
         }
-        edittexDialog.dismiss();
-        avatarDialog.dismiss();
-        if(EventBus.getDefault().isRegistered(this)) {
+        if (edittexDialog != null) {
+            edittexDialog.dismiss();
+        }
+        if (avatarDialog != null) {
+            avatarDialog.dismiss();
+        }
+        if (connectionDiaglog != null) {
+            connectionDiaglog.dismiss();
+        }
+        if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
         super.onDestroy();
