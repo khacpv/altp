@@ -29,6 +29,10 @@ public class AltpHelper {
      * login user
      */
     public void login(User user) {
+        if(user == null){
+            Log.e("TAG","can not login with a NULL user");
+            return;
+        }
         try {
             Gson gson = new Gson();
             String json = String.format("{user:%s}", gson.toJson(user));
@@ -60,7 +64,7 @@ public class AltpHelper {
             Log.e("TAG", "login success");
 
             JSONObject user = data.getJSONObject("user");
-            long userId = user.getLong("id");
+            String userId = user.getString("id");
             String name = user.getString("name");
             String avatar = user.getString("avatar");
             String address = user.getString("address");
@@ -106,7 +110,7 @@ public class AltpHelper {
             for (int i = 0; i < dummyUsers.length(); i++) {
                 User dUser = new User();
                 JSONObject dummyUser = dummyUsers.getJSONObject(i);
-                dUser.id = dummyUser.getLong("id");
+                dUser.id = dummyUser.getString("id");
                 dUser.name = dummyUser.getString("name");
                 dUser.avatar = dummyUser.getString("avatar");
 
