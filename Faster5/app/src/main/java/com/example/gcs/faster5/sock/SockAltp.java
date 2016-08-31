@@ -102,10 +102,8 @@ public class SockAltp {
      * @param callback callback should be get on event fired
      */
     public void addEvent(final String eventName, final OnSocketEvent callback) {
-        if (eventListeners.containsKey(eventName)) {
-            Log.e("TAG",String.format("event with name: %s has been registered!", eventName));
-           // return;
-        }
+        mSocket.off(eventName);
+        eventListeners.remove(eventName);
         Emitter.Listener listener = new Emitter.Listener() {
             @Override
             public void call(Object... args) {

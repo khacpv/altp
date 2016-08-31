@@ -10,7 +10,7 @@ import java.io.Serializable;
 public class User implements Serializable{
 
     @SerializedName("id")
-    public long id;
+    public String id;
 
     @SerializedName("name")
     public String name;
@@ -25,7 +25,7 @@ public class User implements Serializable{
     public String avatar;
 
     @SerializedName("room")
-    public String room;
+    public String room; // room id
 
     @SerializedName("answerIndex")
     public int answerIndex;

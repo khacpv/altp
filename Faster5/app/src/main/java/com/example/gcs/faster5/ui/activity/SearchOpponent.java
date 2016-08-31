@@ -1,11 +1,17 @@
 package com.example.gcs.faster5.ui.activity;
 
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -24,6 +30,7 @@ import com.example.gcs.faster5.model.User;
 import com.example.gcs.faster5.sock.AltpHelper;
 import com.example.gcs.faster5.sock.SockAltp;
 import com.example.gcs.faster5.util.NetworkUtils;
+import com.example.gcs.faster5.util.SoundPoolManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -56,6 +63,7 @@ public class SearchOpponent extends AppCompatActivity {
     private ImageView mImageViewUserAvatar2;
     Button mButtonPlay;
     Button mButtonSeach;
+    Handler handler = new Handler();
 
     private SockAltp.OnSocketEvent globalCallback = new SockAltp.OnSocketEvent() {
         @Override
@@ -89,7 +97,6 @@ public class SearchOpponent extends AppCompatActivity {
             Question mQuestion = mAltpHelper.playCallbackQuestion(args);
 
             eventBus.notReady = notReady;
-            eventBus.count = count;
             eventBus.mQuestion = mQuestion;
             EventBus.getDefault().post(eventBus);
 
@@ -98,7 +105,6 @@ public class SearchOpponent extends AppCompatActivity {
 
     public static class OnPlayCallbackEvent {
         boolean notReady;
-        int count;
         Question mQuestion;
     }
 
@@ -120,6 +126,8 @@ public class SearchOpponent extends AppCompatActivity {
             getSupportActionBar().hide();
         }
         setContentView(R.layout.search_opponent);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        SoundPoolManager.getInstance().playSound(R.raw.search_opponent);
         getBundle();
         EventBus.getDefault().register(this);
         mSocketAltp = MainApplication.sockAltp();
@@ -127,7 +135,6 @@ public class SearchOpponent extends AppCompatActivity {
         if (!mSocketAltp.isConnected()) {
             mSocketAltp.connect();
         }
-
         mSocketAltp.addEvent("play", playCallback);
         mSocketAltp.addGlobalEvent(globalCallback);
         findViewById();
@@ -154,27 +161,18 @@ public class SearchOpponent extends AppCompatActivity {
             return;
         }
 
-        int count = event.count;
-
-        if (count > -1) {
-            // show dialog counting
-            Log.e("TAG", "start counting: " + count);
-            return;
-        }
-
         Question mQuestion = event.mQuestion;
-
-        final Intent mainScrnIntent = MainScreen.createIntent(SearchOpponent.this, mUser, enemyUser, mRoom, mQuestion);
-
-        runOnUiThread(new Runnable() {
+        final Intent playScrnIntent = PlayScreen.createIntent(SearchOpponent.this, mUser, enemyUser, mRoom, mQuestion);
+        SoundPoolManager.getInstance().playSound(R.raw.ready);
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                waitDialog.dismiss();
-                startActivity(mainScrnIntent);
+
+                startActivity(playScrnIntent);
                 overridePendingTransition(R.animator.right_in, R.animator.left_out);
+                finish();
             }
-        });
-        finish();
+        }, 5000);
 
     }
 
@@ -201,7 +199,7 @@ public class SearchOpponent extends AppCompatActivity {
     }
 
     public void findViewById() {
-        intent = new Intent(SearchOpponent.this, MainScreen.class);
+        intent = new Intent(SearchOpponent.this, PlayScreen.class);
         waitDialog = new Dialog(this);
 
         Typeface font = Typeface.createFromAsset(getAssets(),
@@ -249,6 +247,7 @@ public class SearchOpponent extends AppCompatActivity {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
                 waitDialog.hide();
             }
         });
@@ -256,6 +255,8 @@ public class SearchOpponent extends AppCompatActivity {
     }
 
     public void btnSearch(View view) {
+        SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+        SoundPoolManager.getInstance().stop();
         Intent intent = new Intent(SearchOpponent.this, InfoScreen.class);
         startActivity(intent);
         overridePendingTransition(R.animator.in_from_left, R.animator.out_to_right);
@@ -268,6 +269,7 @@ public class SearchOpponent extends AppCompatActivity {
     }
 
     public void btnPlay(View view) {
+        SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
         waitDialog.show();
         mAltpHelper.play(mUser, mRoom);
     }

@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,9 +37,11 @@ import com.example.gcs.faster5.model.User;
 import com.example.gcs.faster5.sock.AltpHelper;
 import com.example.gcs.faster5.sock.SockAltp;
 import com.example.gcs.faster5.util.CameraUtils;
+import com.example.gcs.faster5.util.ISoundPoolLoaded;
 import com.example.gcs.faster5.util.JSONParser;
 import com.example.gcs.faster5.util.NetworkUtils;
 import com.example.gcs.faster5.util.PrefUtils;
+import com.example.gcs.faster5.util.SoundPoolManager;
 import com.example.gcs.faster5.util.UploadPhotoUtils;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
@@ -57,7 +61,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import io.socket.client.Socket;
@@ -99,6 +106,7 @@ public class LoginScreen extends AppCompatActivity {
     private String fileName;
     private String imgUrl;
     private Uri uriPhoto;
+    MediaPlayer mediaPlayer;
     private boolean uploadResult,
             isCheckPickImage = false,
             isCheckBtnLater = true;
@@ -141,12 +149,9 @@ public class LoginScreen extends AppCompatActivity {
 
     public void sendLoginRequest(User user) {
         this.mUser = user;
+        this.mUser.id = NetworkUtils.getMacAddress(this).replaceAll(":", "");
         mAltpHelper.login(mUser);
         Log.e("TAG", "loginRequest: " + mUser.fbId + " " + mUser.name + " " + mUser.address + "\n" + mUser.avatar);
-    }
-
-    public static class OnLoginCallbackEvent {
-        User user;
     }
 
 
@@ -168,7 +173,8 @@ public class LoginScreen extends AppCompatActivity {
         });
 
         setContentView(R.layout.login_screen);
-
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        bgMusic();
         EventBus.getDefault().register(this);
 
         mSocketAltp = MainApplication.sockAltp();
@@ -249,6 +255,7 @@ public class LoginScreen extends AppCompatActivity {
         mEditText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
                 mEditText.setHint("");
                 mEditText.requestFocusFromTouch();
                 mEditText.setFocusableInTouchMode(true);
@@ -298,6 +305,7 @@ public class LoginScreen extends AppCompatActivity {
         mButtonFakeFb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
                 if (NetworkUtils.checkInternetConnection(LoginScreen.this) && mSocketAltp.isConnected()) {
                     mLoginButtonFb.performClick();
                 } else {
@@ -387,6 +395,7 @@ public class LoginScreen extends AppCompatActivity {
         mImageButtonPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
                 if (NetworkUtils.checkInternetConnection(LoginScreen.this)) {
                     mStringUserName = mEditText.getText().toString();
                     if (mStringUserName.length() <= 3) {
@@ -420,6 +429,7 @@ public class LoginScreen extends AppCompatActivity {
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
                 captureImage();
             }
         });
@@ -427,6 +437,7 @@ public class LoginScreen extends AppCompatActivity {
         btnGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
                 loadImagefromGallery();
             }
         });
@@ -434,6 +445,7 @@ public class LoginScreen extends AppCompatActivity {
         btnLater.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
                 pickAvatarLater();
             }
         });
@@ -451,6 +463,8 @@ public class LoginScreen extends AppCompatActivity {
         okay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
                 edittexDialog.hide();
             }
         });
@@ -481,6 +495,8 @@ public class LoginScreen extends AppCompatActivity {
         tryAgain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
                 connectionDiaglog.hide();
             }
         });
@@ -516,6 +532,7 @@ public class LoginScreen extends AppCompatActivity {
         mImageViewAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
                 isCheckBtnLater = false;
                 avatarDialog.show();
             }
@@ -601,6 +618,20 @@ public class LoginScreen extends AppCompatActivity {
         }.execute(null, null, null);
     }
 
+    public void bgMusic() {
+        AudioManager amanager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+        int maxVolume = amanager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
+        amanager.setStreamVolume(AudioManager.STREAM_ALARM, maxVolume, 0);
+        mediaPlayer = MediaPlayer.create(LoginScreen.this, R.raw.bgmusic);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
+    }
+
+    public static class OnLoginCallbackEvent {
+        User user;
+    }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -655,8 +686,20 @@ public class LoginScreen extends AppCompatActivity {
         finish();
     }
 
+
+    @Override
+    protected void onPause() {
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+        }
+        super.onPause();
+    }
+
     @Override
     protected void onResume() {
+        if (!mediaPlayer.isPlaying()) {
+            mediaPlayer.start();
+        }
         super.onResume();
     }
 
@@ -680,6 +723,11 @@ public class LoginScreen extends AppCompatActivity {
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
+
         super.onDestroy();
     }
 }

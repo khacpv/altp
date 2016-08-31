@@ -7,12 +7,14 @@ import com.example.gcs.faster5.model.Question;
 import com.example.gcs.faster5.model.Room;
 import com.example.gcs.faster5.model.User;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by FRAMGIA\pham.van.khac on 8/11/16.
@@ -29,9 +31,14 @@ public class AltpHelper {
      * login user
      */
     public void login(User user) {
+        if(user == null){
+            Log.e("TAG","can not login with a NULL user");
+            return;
+        }
         try {
             Gson gson = new Gson();
             String json = String.format("{user:%s}", gson.toJson(user));
+            Log.e("TAG", String.format("user JSON: %s", json));
             JSONObject data = new JSONObject(json);
             mSockAltp.send("login", data);
         } catch (JSONException e) {
@@ -60,7 +67,7 @@ public class AltpHelper {
             Log.e("TAG", "login success");
 
             JSONObject user = data.getJSONObject("user");
-            long userId = user.getLong("id");
+            String userId = user.getString("id");
             String name = user.getString("name");
             String avatar = user.getString("avatar");
             String address = user.getString("address");
@@ -106,7 +113,7 @@ public class AltpHelper {
             for (int i = 0; i < dummyUsers.length(); i++) {
                 User dUser = new User();
                 JSONObject dummyUser = dummyUsers.getJSONObject(i);
-                dUser.id = dummyUser.getLong("id");
+                dUser.id = dummyUser.getString("id");
                 dUser.name = dummyUser.getString("name");
                 dUser.avatar = dummyUser.getString("avatar");
 
@@ -222,8 +229,17 @@ public class AltpHelper {
         return question;
     }
 
-    public void gameOverCallback(Object... args) {
-
+    /**
+     * @return list<user> or empty
+     * */
+    public List<User> gameOverCallback(Object... args) {
+        try {
+            String json = ((JSONObject)args[0]).getJSONArray("users").toString();
+            return new Gson().fromJson(json,new TypeToken<List<User>>(){}.getType());
+        } catch (JSONException e) {
+            Log.e("TAG","err:"+e.getMessage());
+        }
+        return new ArrayList<>();
     }
 
 

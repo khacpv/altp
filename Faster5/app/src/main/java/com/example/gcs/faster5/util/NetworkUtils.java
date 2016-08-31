@@ -3,6 +3,7 @@ package com.example.gcs.faster5.util;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
 
 import com.example.gcs.faster5.ui.activity.PopupConnection;
 
@@ -21,6 +22,15 @@ public class NetworkUtils {
     public static void movePopupConnection(Context context){
         Intent intent = new Intent(context.getApplicationContext(), PopupConnection.class);
         context.startActivity(intent);
+    }
+
+    public static String getMacAddress(Context context) {
+        WifiManager wimanager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        String macAddress = wimanager.getConnectionInfo().getMacAddress();
+        if (macAddress == null) {
+            macAddress = "Device don't have mac address or wi-fi is disabled";
+        }
+        return macAddress;
     }
 
 }

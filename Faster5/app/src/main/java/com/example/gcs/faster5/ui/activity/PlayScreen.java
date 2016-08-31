@@ -1,11 +1,13 @@
 package com.example.gcs.faster5.ui.activity;
 
-import android.annotation.TargetApi;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
-import android.os.Build;
+import android.graphics.drawable.ColorDrawable;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -15,9 +17,6 @@ import android.util.Pair;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,18 +29,20 @@ import com.example.gcs.faster5.model.Room;
 import com.example.gcs.faster5.model.User;
 import com.example.gcs.faster5.sock.AltpHelper;
 import com.example.gcs.faster5.sock.SockAltp;
+import com.example.gcs.faster5.util.SoundPoolManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Kien on 07/05/2016.
  * test
  */
-public class MainScreen extends AppCompatActivity {
+public class PlayScreen extends AppCompatActivity {
 
     private final String TXT_TIME_OUT = "TIME\nOUT";
     private static final String EXTRA_USER = "user";
@@ -84,8 +85,9 @@ public class MainScreen extends AppCompatActivity {
     Room mRoom;
     Question mQuestion;
     Handler handler = new Handler();
-
+    Dialog ruleDialog;
     Button btnMy;
+    MediaPlayer mediaPlayer;
 
     private SockAltp.OnSocketEvent answerNextCallback = new SockAltp.OnSocketEvent() {
         @Override
@@ -97,6 +99,20 @@ public class MainScreen extends AppCompatActivity {
             eventBus.isFromNextQuestion = true;
             eventBus.mQuestion = mQuestion;
             EventBus.getDefault().post(eventBus);
+        }
+    };
+
+    private SockAltp.OnSocketEvent gameOverCallback = new SockAltp.OnSocketEvent() {
+        @Override
+        public void onEvent(String event, Object... args) {
+            List<User> users = mAltpHelper.gameOverCallback(args);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    startActivity(new Intent(PlayScreen.this, GameOver.class));
+                    finish();
+                }
+            });
         }
     };
 
@@ -115,7 +131,7 @@ public class MainScreen extends AppCompatActivity {
 
     @Subscribe
     public void onEventMainThread(final OnAnsCallbackEvent event) {
-        if(event.isFromNextQuestion){
+        if (event.isFromNextQuestion) {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -124,10 +140,11 @@ public class MainScreen extends AppCompatActivity {
                         @Override
                         public void run() {
                             setQA(1);
+                            Log.e("TAG", "stt Question " + mQuestion.mStt);
                         }
                     });
                 }
-            },4000);
+            }, 4000);
             return;
         }
         Pair<Integer, ArrayList<User>> result = event.result;
@@ -164,6 +181,14 @@ public class MainScreen extends AppCompatActivity {
                 }
 
                 if (checkAns(myAnswerIndex)) {
+
+                    switch (myAnswerIndex){
+                        case 0: SoundPoolManager.getInstance().playSound(R.raw.true_a); break;
+                        case 1: SoundPoolManager.getInstance().playSound(R.raw.true_b); break;
+                        case 2: SoundPoolManager.getInstance().playSound(R.raw.true_c); break;
+                        case 3: SoundPoolManager.getInstance().playSound(R.raw.true_d); break;
+                    }
+
                     AnimationDrawable btnAnswerDrawable = (AnimationDrawable)
                             getResources().getDrawable(R.drawable.xml_btn_anim);
                     mButtonAns[myAnswerIndex].setBackgroundDrawable(btnAnswerDrawable);
@@ -183,6 +208,13 @@ public class MainScreen extends AppCompatActivity {
                 } else {
                     mButtonAns[myAnswerIndex].setBackgroundResource(R.drawable.answer_wrong);
 
+                    switch (answerRight){
+                        case 0: SoundPoolManager.getInstance().playSound(R.raw.lose_a); break;
+                        case 1: SoundPoolManager.getInstance().playSound(R.raw.lose_b); break;
+                        case 2: SoundPoolManager.getInstance().playSound(R.raw.lose_c); break;
+                        case 3: SoundPoolManager.getInstance().playSound(R.raw.lose_d); break;
+                    }
+
                     AnimationDrawable btnAnswerDrawable = (AnimationDrawable)
                             getResources().getDrawable(R.drawable.xml_btn_anim);
                     mButtonAns[answerRight].setBackgroundDrawable(btnAnswerDrawable);
@@ -195,7 +227,7 @@ public class MainScreen extends AppCompatActivity {
     }
 
     public static Intent createIntent(Context context, User user, User enemy, Room room, Question question) {
-        Intent intent = new Intent(context, MainScreen.class);
+        Intent intent = new Intent(context, PlayScreen.class);
         intent.putExtra(EXTRA_USER, user);
         intent.putExtra(EXTRA_ENEMY, enemy);
         intent.putExtra(EXTRA_ROOM, room);
@@ -203,7 +235,6 @@ public class MainScreen extends AppCompatActivity {
         return intent;
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -213,10 +244,10 @@ public class MainScreen extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
-        setContentView(R.layout.main_screen);
+        setContentView(R.layout.play_screen);
         EventBus.getDefault().register(this);
         getBundle();
-
+        bgMusic();
         mSocketAltp = MainApplication.sockAltp();
         mAltpHelper = new AltpHelper(mSocketAltp);
         if (!mSocketAltp.isConnected()) {
@@ -225,6 +256,7 @@ public class MainScreen extends AppCompatActivity {
 
         mSocketAltp.addEvent("answer", answerCallback);
         mSocketAltp.addEvent("answerNext", answerNextCallback);
+        mSocketAltp.addEvent("gameOver", gameOverCallback);
 
         mTimeLeft = new CountDownTimer(11000, 1000) {
             public void onTick(long millisUntilFinished) {
@@ -246,12 +278,15 @@ public class MainScreen extends AppCompatActivity {
 
         findViewById();
         setUserInfo();
-
         setQA(0);
+        popupRule();
         setTxtRound(mStt + 1);
     }
 
     public void findViewById() {
+
+        ruleDialog = new Dialog(this);
+
 
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/roboto.ttf");
         mButtonAns = new Button[4];
@@ -305,6 +340,67 @@ public class MainScreen extends AppCompatActivity {
         }
     }
 
+    public void bgMusic() {
+        AudioManager amanager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+        int maxVolume = amanager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
+        amanager.setStreamVolume(AudioManager.STREAM_ALARM, maxVolume, 0);
+        mediaPlayer = MediaPlayer.create(PlayScreen.this, R.raw.bgmusic_playscr);
+        mediaPlayer.setLooping(true);
+    }
+
+    public void popupRule() {
+        mediaPlayer.pause();
+        ruleDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        ruleDialog.setContentView(R.layout.layout_popup_rule);
+        ruleDialog.getWindow().getAttributes().windowAnimations = R.style.DialogNoAnimation;
+        ruleDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        ruleDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+        Button skipBtn = (Button) ruleDialog.findViewById(R.id.button_skip);
+        final int n = new Random().nextInt(2) + 1;
+
+        final Runnable hideRuleDialog = new Runnable() {
+            @Override
+            public void run() {
+                switch (n) {
+                    case 1:
+                        SoundPoolManager.getInstance().playSound(R.raw.ques1);
+                        break;
+                    case 2:
+                        SoundPoolManager.getInstance().playSound(R.raw.ques1_b);
+                        break;
+                }
+                ruleDialog.hide();
+                mediaPlayer.start();
+            }
+        };
+
+        handler.postDelayed(hideRuleDialog, 8000);
+
+        skipBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                SoundPoolManager.getInstance().stop();
+                handler.removeCallbacks(hideRuleDialog);
+                ruleDialog.hide();
+                mediaPlayer.start();
+                switch (n) {
+                    case 1:
+                        SoundPoolManager.getInstance().playSound(R.raw.ques1);
+                        break;
+                    case 2:
+                        SoundPoolManager.getInstance().playSound(R.raw.ques1_b);
+                        break;
+                }
+            }
+        });
+
+
+        ruleDialog.show();
+        SoundPoolManager.getInstance().playSound(R.raw.luatchoi);
+    }
+
     public void setUserInfo() {
         fillData();
         setQA(0);
@@ -340,7 +436,56 @@ public class MainScreen extends AppCompatActivity {
         mTextViewAns2.setText("B: " + mQuestion.mAns.get(1));
         mTextViewAns3.setText("C: " + mQuestion.mAns.get(2));
         mTextViewAns4.setText("D: " + mQuestion.mAns.get(3));
-//        mTimeLeft.start();
+        mediaPlayer.start();
+    }
+
+    public void setSoundQuestion(int stt) {
+        switch (stt) {
+            case 2:
+                SoundPoolManager.getInstance().playSound(R.raw.ques2);
+                break;
+            case 3:
+                SoundPoolManager.getInstance().playSound(R.raw.ques3);
+                break;
+            case 4:
+                SoundPoolManager.getInstance().playSound(R.raw.ques4);
+                break;
+            case 5:
+                SoundPoolManager.getInstance().playSound(R.raw.ques5);
+                break;
+            case 6:
+                SoundPoolManager.getInstance().playSound(R.raw.ques6);
+                break;
+            case 7:
+                SoundPoolManager.getInstance().playSound(R.raw.ques7);
+                break;
+            case 8:
+                SoundPoolManager.getInstance().playSound(R.raw.ques8);
+                break;
+            case 9:
+                SoundPoolManager.getInstance().playSound(R.raw.ques9);
+                break;
+            case 10:
+                SoundPoolManager.getInstance().playSound(R.raw.ques10);
+                break;
+            case 11:
+                SoundPoolManager.getInstance().playSound(R.raw.ques11);
+                break;
+            case 12:
+                SoundPoolManager.getInstance().playSound(R.raw.ques12);
+                break;
+            case 13:
+                SoundPoolManager.getInstance().playSound(R.raw.ques13);
+                break;
+            case 14:
+                SoundPoolManager.getInstance().playSound(R.raw.ques14);
+                break;
+            case 15:
+                SoundPoolManager.getInstance().playSound(R.raw.ques15);
+                break;
+        }
+
+
     }
 
     public boolean checkAns(int answerIndex) {
@@ -354,47 +499,59 @@ public class MainScreen extends AppCompatActivity {
     public void btnAnswerClick(final View btnAnswer) {
         btnMy = (Button) btnAnswer;
         if (clickable) {
+            mediaPlayer.pause();
             clickable = false;
             mTimeLeft.cancel();
-
+            final int n = new Random().nextInt(2) + 1;
             switch (btnAnswer.getId()) {
                 case R.id.button_ans1:
+                    switch (n) {
+                        case 1:
+                            SoundPoolManager.getInstance().playSound(R.raw.ans_a);
+                            break;
+                        case 2:
+                            SoundPoolManager.getInstance().playSound(R.raw.ans_a2);
+                            break;
+                    }
                     myAnswerIndex = 0;
                     break;
                 case R.id.button_ans2:
+                    switch (n) {
+                        case 1:
+                            SoundPoolManager.getInstance().playSound(R.raw.ans_b);
+                            break;
+                        case 2:
+                            SoundPoolManager.getInstance().playSound(R.raw.ans_b2);
+                            break;
+                    }
                     myAnswerIndex = 1;
                     break;
                 case R.id.button_ans3:
+                    switch (n) {
+                        case 1:
+                            SoundPoolManager.getInstance().playSound(R.raw.ans_c);
+                            break;
+                        case 2:
+                            SoundPoolManager.getInstance().playSound(R.raw.ans_c2);
+                            break;
+                    }
                     myAnswerIndex = 2;
                     break;
                 case R.id.button_ans4:
+                    switch (n) {
+                        case 1:
+                            SoundPoolManager.getInstance().playSound(R.raw.ans_d);
+                            break;
+                        case 2:
+                            SoundPoolManager.getInstance().playSound(R.raw.ans_d2);
+                            break;
+                    }
                     myAnswerIndex = 3;
                     break;
             }
             mAltpHelper.answer(mUser, mRoom, myAnswerIndex);
 
             btnAnswer.setBackgroundResource(R.drawable.answer1);
-
-//              mWaitTime = new CountDownTimer(10000, 100) {
-//                boolean isBlue = true;
-//
-//                public void onTick(long millisUntilFinished) {
-//                    if ((millisUntilFinished / 100) % 5 == 0) {
-//                        isBlue = !isBlue;
-//                    }
-//                    btnAnswer.setBackgroundResource(isBlue ? R.drawable.answer1 : R.drawable.answer_right);
-//                }
-//
-//                           public void onFinish() {
-//                    if (checkAns(answerRight)) {
-//                        btnAnswer.setBackgroundResource(R.drawable.answer_right);
-//
-//                    } else {
-//                        btnAnswer.setBackgroundResource(R.drawable.answer_wrong);
-//                    }
-//              }
-//             };
-//              mWaitTime.start();
         }
     }
 
@@ -445,11 +602,31 @@ public class MainScreen extends AppCompatActivity {
         Question mQuestion;
     }
 
+    @Override
+    protected void onPause() {
+        if(mediaPlayer.isPlaying()){
+            mediaPlayer.pause();
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        mediaPlayer.start();
+        super.onResume();
+    }
 
     @Override
     protected void onDestroy() {
+        if(mediaPlayer != null ){
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
+        if (ruleDialog != null) {
+            ruleDialog.dismiss();
+        }
         super.onDestroy();
-        if(EventBus.getDefault().isRegistered(this)) {
+        if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
     }
