@@ -249,17 +249,34 @@ public class AltpHelper {
 
     /**
      * fire when timeout or disconnect
-     * @see AltpHelper#gameOverCallback(Object...) 
+     * @see AltpHelper#gameOverCallback(Object...)
      * */
-    public void quit(User user){
+    public void quit(User user, Room room) {
         try {
             Gson gson = new Gson();
             String json =
-                    String.format("{user:%s}", gson.toJson(user));
+                    String.format("{user:%s, room:%s}", gson.toJson(user), gson.toJson(room));
             JSONObject data = new JSONObject(json);
             mSockAltp.send("quit", data);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * fire when an user has loss connection
+     * */
+    public Pair<Room, User> quitCallback(Object... args) {
+        Pair<Room, User> result = new Pair<>(new Room(), null);
+        JSONObject data = (JSONObject) args[0];
+
+        try {
+            Room room = new Gson().fromJson(data.getString("room"), Room.class);
+            User user = new Gson().fromJson(data.getString("user"),User.class);
+            result = new Pair<>(room, user);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 }
