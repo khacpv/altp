@@ -227,8 +227,24 @@ public class AltpHelper {
         return question;
     }
 
-    public void gameOverCallback(Object... args) {
-
+    /**
+     * @return list users with score
+     * */
+    public ArrayList<User> gameOverCallback(Object... args) {
+        JSONObject data = (JSONObject) args[0];
+        JSONArray users;
+        try {
+            users = data.getJSONArray("users");
+            ArrayList<User> answerUserList = new ArrayList<>();
+            for (int i = 0; i < users.length(); i++) {
+                User userAnswer = new Gson().fromJson(users.get(i).toString(), User.class);
+                answerUserList.add(userAnswer);
+            }
+            return answerUserList;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
     }
 
 
