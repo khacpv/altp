@@ -133,7 +133,7 @@ public class LoginScreen extends AppCompatActivity {
 
     public void sendLoginRequest(User user) {
         this.mUser = user;
-        this.mUser.id = NetworkUtils.getMacAddress(this);
+        this.mUser.id = NetworkUtils.getDeviceId();
         mAltpHelper.login(mUser);
         Log.e("TAG", "loginRequest: " + mUser.fbId + " " + mUser.name + " " + mUser.address + "\n" + mUser.avatar);
     }

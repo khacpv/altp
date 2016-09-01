@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 
+import android.provider.Settings;
 import com.example.gcs.faster5.ui.activity.PopupConnection;
 
 /**
@@ -31,6 +32,13 @@ public class NetworkUtils {
             macAddress = "Device don't have mac address or wi-fi is disabled";
         }
         return macAddress;
+    }
+
+    /**
+     * value only change if device factory reset
+     * */
+    public static String getDeviceId(){
+        return Settings.Secure.ANDROID_ID;
     }
 
 }
