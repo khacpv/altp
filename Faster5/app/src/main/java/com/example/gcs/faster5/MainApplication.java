@@ -14,6 +14,7 @@ public class MainApplication extends Application {
     public static SockAltp sockAltp(){
         if(mSockAltp == null){
             mSockAltp = new SockAltp(SockAltp.SERVER_PROD,true);
+           // mSockAltp = new SockAltp(SockAltp.SERVER_LOCAL,true);
         }
         return mSockAltp;
     }

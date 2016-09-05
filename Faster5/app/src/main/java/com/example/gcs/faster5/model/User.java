@@ -30,5 +30,8 @@ public class User implements Serializable{
     @SerializedName("answerIndex")
     public int answerIndex;
 
+    @SerializedName("score")
+    public int score;
+
     public boolean isDummy = true;
 }

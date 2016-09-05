@@ -57,8 +57,6 @@ public class MainActivity extends AppCompatActivity {
         sounds.add(R.raw.search_opponent);
         sounds.add(R.raw.ready);
         sounds.add(R.raw.luatchoi);
-        sounds.add(R.raw.ques1);
-        sounds.add(R.raw.ques1_b);
         sounds.add(R.raw.ans_a);
         sounds.add(R.raw.ans_a2);
         sounds.add(R.raw.ans_b);
@@ -67,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
         sounds.add(R.raw.ans_c2);
         sounds.add(R.raw.ans_d);
         sounds.add(R.raw.ans_d2);
+        sounds.add(R.raw.ques1);
+        sounds.add(R.raw.ques1_b);
         sounds.add(R.raw.ques2);
         sounds.add(R.raw.ques3);
         sounds.add(R.raw.ques4);

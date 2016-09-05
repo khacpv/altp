@@ -139,12 +139,13 @@ public class PlayScreen extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            setQA(1);
-                            Log.e("TAG", "stt Question " + mQuestion.mStt);
+                            clickable = true;
+                            setSoundQuestion(mQuestion.questionIndex + 1);
+                            setQA(mQuestion.questionIndex + 1);
                         }
                     });
                 }
-            }, 4000);
+            }, 6000);
             return;
         }
         Pair<Integer, ArrayList<User>> result = event.result;
@@ -157,7 +158,7 @@ public class PlayScreen extends AppCompatActivity {
         List<User> answerUserList = result.second;
 
         for (User user : answerUserList) {
-            if (user.id != mUser.id) {
+            if (!String.valueOf(user.id).equalsIgnoreCase(mUser.id)) {
                 Log.e("TAG", "mEnemyanswer: " + mEnemy.answerIndex);
                 enemyAnswerIndex = mEnemy.answerIndex = user.answerIndex;
 
@@ -201,8 +202,6 @@ public class PlayScreen extends AppCompatActivity {
                                 mButtonAns[i].clearAnimation();
                                 mButtonAns[i].setBackgroundResource(R.drawable.answer0);
                             }
-                            setQA(1);
-                            clickable = true;
                         }
                     }, 2000);
                 } else {
@@ -222,7 +221,7 @@ public class PlayScreen extends AppCompatActivity {
 
                 }
             }
-        }, 2000);
+        }, 3000);
 
     }
 
@@ -355,6 +354,7 @@ public class PlayScreen extends AppCompatActivity {
         ruleDialog.getWindow().getAttributes().windowAnimations = R.style.DialogNoAnimation;
         ruleDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         ruleDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        ruleDialog.setCancelable(false);
 
         Button skipBtn = (Button) ruleDialog.findViewById(R.id.button_skip);
         final int n = new Random().nextInt(2) + 1;

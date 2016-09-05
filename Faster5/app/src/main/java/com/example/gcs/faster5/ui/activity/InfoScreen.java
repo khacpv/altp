@@ -70,6 +70,7 @@ public class InfoScreen extends AppCompatActivity {
     private Dialog connectionDiaglog;
     MediaPlayer mediaPlayer;
     private Handler handler = new Handler();
+    Runnable resetSearch;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -100,6 +101,7 @@ public class InfoScreen extends AppCompatActivity {
         @Override
         public void onEvent(String event, Object... args) {
             Pair<Room, ArrayList<User>> result = mAltpHelper.searchCallback(args);
+            handler.removeCallbacks(resetSearch);
             OnSearhCallbackEvent eventBus = new OnSearhCallbackEvent();
             eventBus.result = result;
             EventBus.getDefault().post(eventBus);
@@ -118,14 +120,7 @@ public class InfoScreen extends AppCompatActivity {
         }
         this.mUser = user;
         mAltpHelper.search(mUser);
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                searchBg.stop();
-                mButtonSearch.setClickable(true);
-            }
-        }, 10000);
+        handler.postDelayed(resetSearch , 12000);
 
         Log.e("TAG", "searchRequest: " + mUser.id + " " + mUser.name + " " + mUser.address + "\n" + mUser.avatar);
     }
@@ -149,6 +144,7 @@ public class InfoScreen extends AppCompatActivity {
         }
         setContentView(R.layout.info_screen);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        bgMusic();
         EventBus.getDefault().register(this);
 
         mSocketAltp = MainApplication.sockAltp();
@@ -182,6 +178,15 @@ public class InfoScreen extends AppCompatActivity {
 
         popupConnection();
 
+        resetSearch = new Runnable() {
+            @Override
+            public void run() {
+                searchBg.stop();
+                searchBg.reset();
+                mButtonSearch.setClickable(true);
+            }
+        };
+
         mButtonSearch = (RelativeLayout) findViewById(R.id.button_search);
 
 
@@ -196,11 +201,10 @@ public class InfoScreen extends AppCompatActivity {
                                              public void onClick(View v) {
                                                  SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
                                                  if (NetworkUtils.checkInternetConnection(InfoScreen.this)) {
-                                                     bgMusic();
                                                      setUserInfo();
                                                      sendSearchRequest(mUser);
-                                                     searchBg.start();
                                                      mButtonSearch.setClickable(false);
+                                                     searchBg.start();
                                                  } else {
                                                      connectionDiaglog.show();
                                                  }
@@ -297,7 +301,7 @@ public class InfoScreen extends AppCompatActivity {
         amanager.setStreamVolume(AudioManager.STREAM_ALARM, maxVolume, 0);
         mediaPlayer = MediaPlayer.create(InfoScreen.this, R.raw.bgsearch);
         mediaPlayer.setLooping(true);
-        mediaPlayer.start();
+
     }
 
     @Subscribe

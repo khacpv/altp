@@ -31,8 +31,8 @@ public class AltpHelper {
      * login user
      */
     public void login(User user) {
-        if(user == null){
-            Log.e("TAG","can not login with a NULL user");
+        if (user == null) {
+            Log.e("TAG", "can not login with a NULL user");
             return;
         }
         try {
@@ -229,15 +229,22 @@ public class AltpHelper {
         return question;
     }
 
-    /**
-     * @return list<user> or empty
-     * */
-    public List<User> gameOverCallback(Object... args) {
+    /*
+    * @return list users with score
+    * */
+    public ArrayList<User> gameOverCallback(Object... args) {
+        JSONObject data = (JSONObject) args[0];
+        JSONArray users;
         try {
-            String json = ((JSONObject)args[0]).getJSONArray("users").toString();
-            return new Gson().fromJson(json,new TypeToken<List<User>>(){}.getType());
+            users = data.getJSONArray("users");
+            ArrayList<User> answerUserList = new ArrayList<>();
+            for (int i = 0; i < users.length(); i++) {
+                User userAnswer = new Gson().fromJson(users.get(i).toString(), User.class);
+                answerUserList.add(userAnswer);
+            }
+            return answerUserList;
         } catch (JSONException e) {
-            Log.e("TAG","err:"+e.getMessage());
+            e.printStackTrace();
         }
         return new ArrayList<>();
     }
