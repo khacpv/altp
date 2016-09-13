@@ -57,8 +57,8 @@ public class SearchOpponent extends AppCompatActivity {
     private TextView mTextViewCityUser2;
     private TextView mTextViewUserName1;
     private TextView mTextViewUserName2;
-    private TextView mTextViewMoney1;
-    private TextView mTextViewMoney2;
+    private TextView mTextViewScore1;
+    private TextView mTextViewScore2;
     private ImageView mImageViewUserAvatar1;
     private ImageView mImageViewUserAvatar2;
     Button mButtonPlay;
@@ -91,8 +91,6 @@ public class SearchOpponent extends AppCompatActivity {
             OnPlayCallbackEvent eventBus = new OnPlayCallbackEvent();
 
             boolean notReady = mAltpHelper.playCallbackReady(args);
-
-            int count = mAltpHelper.playCallbackCount(args);
 
             Question mQuestion = mAltpHelper.playCallbackQuestion(args);
 
@@ -190,11 +188,13 @@ public class SearchOpponent extends AppCompatActivity {
         mTextViewUserName1.setText(mUser.name);
         Glide.with(getApplicationContext()).load(mUser.avatar).into(mImageViewUserAvatar1);
         mTextViewCityUser1.setText(mUser.address);
+        mTextViewScore1.setText(Integer.toString(mUser.totalScore));
 
         // enemy user
         mTextViewUserName2.setText(enemyUser.name);
         Glide.with(getApplicationContext()).load(enemyUser.avatar).into(mImageViewUserAvatar2);
         mTextViewCityUser2.setText(enemyUser.address);
+        mTextViewScore2.setText(Integer.toString(enemyUser.totalScore));
 
     }
 
@@ -206,30 +206,28 @@ public class SearchOpponent extends AppCompatActivity {
                 "fonts/roboto.ttf");
 
         mTextViewUserName1 = (TextView) findViewById(R.id.textview_username1);
-        mTextViewUserName1.setTypeface(font);
-
         mImageViewUserAvatar1 = (ImageView) findViewById(R.id.imageview_useravatar1);
-
         mTextViewCityUser1 = (TextView) findViewById(R.id.textview_city_user1);
-        mTextViewCityUser1.setTypeface(font);
+        mTextViewScore1 = (TextView) findViewById(R.id.textview_score1);
 
-        mTextViewMoney1 = (TextView) findViewById(R.id.textview_money1);
-        mTextViewMoney1.setTypeface(font);
 
         mTextViewUserName2 = (TextView) findViewById(R.id.textview_username2);
-        mTextViewUserName2.setTypeface(font);
-
         mImageViewUserAvatar2 = (ImageView) findViewById(R.id.imageview_useravatar2);
-
         mTextViewCityUser2 = (TextView) findViewById(R.id.textview_city_user2);
-        mTextViewCityUser2.setTypeface(font);
+        mTextViewScore2 = (TextView) findViewById(R.id.textview_score2);
 
-        mTextViewMoney2 = (TextView) findViewById(R.id.textview_money2);
-        mTextViewMoney2.setTypeface(font);
+        setTypeface(font, mTextViewUserName1, mTextViewCityUser1, mTextViewScore1, mTextViewUserName2, mTextViewCityUser2, mTextViewScore2);
 
         mButtonSeach = (Button) findViewById(R.id.button_search_again);
         mButtonPlay = (Button) findViewById(R.id.button_play);
     }
+
+    public static void setTypeface(Typeface font, TextView... textviews) {
+        for (TextView textView : textviews) {
+            textView.setTypeface(font);
+        }
+    }
+
 
     public void popupWait() {
         waitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);

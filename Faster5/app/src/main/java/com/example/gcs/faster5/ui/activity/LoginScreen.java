@@ -151,7 +151,7 @@ public class LoginScreen extends AppCompatActivity {
         this.mUser = user;
         // this.mUser.id = NetworkUtils.getMacAddress(this).replaceAll(":", "");
         // this.mUser.id = NetworkUtils.getDeviceId();
-        this.mUser.id = NetworkUtils.getUniqueID(this).replaceAll("-","");
+        this.mUser.id = NetworkUtils.getUniqueID(this).replaceAll("-", "");
         mAltpHelper.login(mUser);
         Log.e("TAG", "loginRequest: " + mUser.fbId + " " + mUser.name + " " + mUser.address + "\n" + mUser.avatar);
     }
@@ -225,6 +225,7 @@ public class LoginScreen extends AppCompatActivity {
         PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_NAME, mUser.name);
         PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_LOCATION, mUser.address);
         PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_URL_AVATAR, mUser.avatar);
+        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_TOTAL_SCORE, mUser.totalScore);
         PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_LOGGED_IN, true);
         Log.e("TAG", "LoginCallback: " + user.fbId + " " + user.id + " " + user.name + " " + user.address + " " + "\n" + user.avatar);
         runOnUiThread(new Runnable() {
@@ -242,14 +243,16 @@ public class LoginScreen extends AppCompatActivity {
         connectionDiaglog = new Dialog(this);
         prgDialog = new ProgressDialog(this);
         prgDialog.setCancelable(false);
+        font = Typeface.createFromAsset(getAssets(), "fonts/roboto.ttf");
         mImageViewAvatar = (ImageView) findViewById(R.id.imageview_avatar);
         mTextViewCity = (TextView) findViewById(R.id.textview_city_login);
+        mTextViewCity.setTypeface(font);
         mRelativeLayoutBg = (RelativeLayout) findViewById(R.id.background);
         mEditText = (EditText) findViewById(R.id.text_edit);
         mLoginButtonFb = (LoginButton) findViewById(R.id.button_fb);
         mImageButtonPlay = (Button) findViewById(R.id.button_login);
         mButtonFakeFb = (Button) findViewById(R.id.btn_fakefb);
-        font = Typeface.createFromAsset(getAssets(), "fonts/roboto.ttf");
+
     }
 
     public void editTexConfig() {
@@ -592,7 +595,7 @@ public class LoginScreen extends AppCompatActivity {
 
                         PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_URL_AVATAR, imgUrl);
                         PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_NAME, mStringUserName);
-                        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_MONEY, 0);
+                        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_TOTAL_SCORE, 0);
                         PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_LOCATION, city);
 
                         mUser.name = mStringUserName;

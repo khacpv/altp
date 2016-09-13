@@ -48,7 +48,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/textview_money1"
+            android:id="@+id/textview_score1"
             android:layout_width="220dp"
             android:layout_height="45dp"
             android:layout_alignLeft="@+id/imageview_useravatar1"
@@ -112,7 +112,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/textview_money2"
+            android:id="@+id/textview_score2"
             android:layout_width="220dp"
             android:layout_height="45dp"
             android:layout_alignRight="@+id/imageview_useravatar2"

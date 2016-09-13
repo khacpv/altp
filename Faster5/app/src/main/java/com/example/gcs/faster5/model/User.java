@@ -33,6 +33,9 @@ public class User implements Serializable{
     @SerializedName("score")
     public int score;
 
+    @SerializedName("totalScore")
+    public int totalScore;
+
     public boolean isDummy = true;
 
     @SerializedName("winner")

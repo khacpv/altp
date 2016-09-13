@@ -90,6 +90,7 @@ public class PlayScreen extends AppCompatActivity {
     private boolean isCheckFifty = true;
     private long timeLeft;
     private int mMoney = 0;
+    private int mWinner;
 
 
     private SockAltp.OnSocketEvent answerNextCallback = new SockAltp.OnSocketEvent() {
@@ -122,11 +123,24 @@ public class PlayScreen extends AppCompatActivity {
         public void onEvent(String event, Object... args) {
             OnGameOverCallbackEvent eventBus = new OnGameOverCallbackEvent();
             Pair<Integer, ArrayList<User>> result = mAltpHelper.gameOverCallback(args);
+
+            List<User> userGameOver = result.second;
+            if (userGameOver.get(0).isWinner && !userGameOver.get(1).isWinner) {
+                mWinner = 0;
+            } else if (userGameOver.get(1).isWinner && !userGameOver.get(0).isWinner) {
+                mWinner = 1;
+            } else if (userGameOver.get(0).isWinner && userGameOver.get(1).isWinner
+                    || !userGameOver.get(0).isWinner && !userGameOver.get(1).isWinner) {
+                mWinner = -1;
+            }
+
             boolean isLastQuestion = mAltpHelper.gameOverCallbackGetLastQuestion(args);
             Runnable moveGameOverScr = new Runnable() {
                 @Override
                 public void run() {
-                    gameOver();
+                    startActivity(GameOver.createIntent(PlayScreen.this, mMyScore, mWinner));
+                    overridePendingTransition(R.animator.right_in, R.animator.left_out);
+                    finish();
                 }
             };
             handler.postDelayed(moveGameOverScr, 7000);
@@ -135,7 +149,9 @@ public class PlayScreen extends AppCompatActivity {
 
             if (isLastQuestion) {
                 handler.removeCallbacks(moveGameOverScr);
-                gameOver();
+                startActivity(GameOver.createIntent(PlayScreen.this, mMyScore, mWinner));
+                overridePendingTransition(R.animator.right_in, R.animator.left_out);
+                finish();
                 return;
             }
         }
@@ -397,7 +413,7 @@ public class PlayScreen extends AppCompatActivity {
         setUserInfo();
         setQA(0);
         popupRule();
-        setTxtRound(mStt + 1);
+
     }
 
     public void findViewById() {
@@ -539,7 +555,7 @@ public class PlayScreen extends AppCompatActivity {
 
     public void setQA(int stt) {
         this.mStt = stt;
-        setTxtRound(mStt);
+        setTxtRound(mStt + 1);
         mTextViewQuestion.setText(mQuestion.mQuestion);
         mTextViewAns1.setText("A: " + mQuestion.mAns.get(0));
         mTextViewAns2.setText("B: " + mQuestion.mAns.get(1));
@@ -700,7 +716,7 @@ public class PlayScreen extends AppCompatActivity {
     }
 
     public void fifty(View fifty) {
-        if (isCheckFifty || true) {
+        if (isCheckFifty && clickable) {
             SoundPoolManager.getInstance().playSound(R.raw.sound5050);
             isCheckFifty = false;
             mButtonAns[0].postDelayed(new Runnable() {
@@ -745,7 +761,7 @@ public class PlayScreen extends AppCompatActivity {
         int randomIndex = 0;
         while (true) {
             randomIndex = new Random().nextInt(3);
-            Log.e("TAG", "50/50 idx:" + randomIndex + "RightIndex: " + rightIndex);
+            Log.e("TAG", "50/50 idx:" + randomIndex + " RightIndex: " + rightIndex);
             if (randomIndex != rightIndex) {
                 break;
             }
