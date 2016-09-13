@@ -9,6 +9,7 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.List;
@@ -55,11 +56,11 @@ public class SoundPoolManager {
                     .build();
             soundPool = new SoundPool.Builder()
                     .setAudioAttributes(attributes)
-                    .setMaxStreams(40)
+                    .setMaxStreams(45)
                     .build();
 
         } else {
-            soundPool = new SoundPool(40, AudioManager.STREAM_MUSIC, 100);
+            soundPool = new SoundPool(45, AudioManager.STREAM_MUSIC, 100);
         }
 
 
@@ -78,7 +79,7 @@ public class SoundPoolManager {
             }
         });
         int length = sounds.size();
-        hashMap = new HashMap<Integer, SoundSampleEntity>();
+        hashMap = new HashMap<>();
         int index;
         for (index = 0; index < length; index++) {
             hashMap.put(sounds.get(index), new SoundSampleEntity(0, false));
@@ -86,7 +87,8 @@ public class SoundPoolManager {
         index = 0;
         for (Map.Entry<Integer, SoundSampleEntity> entry : hashMap.entrySet()) {
             index++;
-            entry.getValue().setSampleId(soundPool.load(activity, entry.getKey(), index));
+            int loadResId = soundPool.load(activity, entry.getKey(), index);
+            entry.getValue().setSampleId(loadResId);
         }
     }
 
@@ -121,7 +123,8 @@ public class SoundPoolManager {
         if (isPlaySound()) {
             SoundSampleEntity entity = hashMap.get(resourceId);
             if (entity.getSampleId() > 0 && entity.isLoaded()) {
-                soundPool.play(entity.getSampleId(), 1f, 1f, 1, 0, 1f);
+                int streamId = soundPool.play(entity.getSampleId(), 1f, 1f, 1, 0, 1f);
+                entity.setStreamId(streamId);
             }
         }
     }
@@ -136,15 +139,17 @@ public class SoundPoolManager {
         if (soundPool != null) {
             for (Map.Entry<Integer, SoundSampleEntity> entry : hashMap.entrySet()) {
                 SoundSampleEntity entity = entry.getValue();
-                soundPool.stop(entity.getSampleId());
+                soundPool.stop(entity.getStreamId());
             }
         }
     }
 
 
     private class SoundSampleEntity {
-        private int sampleId;
+        private int sampleId;   // for play, return by load()
         private boolean isLoaded;
+        private int streamId;   // for stop, return by play()
+
 
         public SoundSampleEntity(int sampleId, boolean isLoaded) {
             this.isLoaded = isLoaded;
@@ -165,6 +170,14 @@ public class SoundPoolManager {
 
         public void setLoaded(boolean isLoaded) {
             this.isLoaded = isLoaded;
+        }
+
+        public int getStreamId() {
+            return streamId;
+        }
+
+        public void setStreamId(int streamId) {
+            this.streamId = streamId;
         }
     }
 }

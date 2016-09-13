@@ -108,9 +108,6 @@ public class InfoScreen extends AppCompatActivity {
         }
     };
 
-    public InfoScreen() {
-    }
-
     public void sendSearchRequest(User user) {
         if (searchTimes > 0) {
             for (int i = 0; i < 8; i++) {

@@ -138,7 +138,7 @@ public class SearchOpponent extends AppCompatActivity {
         mSocketAltp.addEvent("play", playCallback);
         mSocketAltp.addGlobalEvent(globalCallback);
         findViewById();
-        popupLogin();
+        popupWait();
         setInfoUser();
 
     }
@@ -231,7 +231,7 @@ public class SearchOpponent extends AppCompatActivity {
         mButtonPlay = (Button) findViewById(R.id.button_play);
     }
 
-    public void popupLogin() {
+    public void popupWait() {
         waitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         waitDialog.setContentView(R.layout.layout_wait_popup);
         waitDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
@@ -241,17 +241,6 @@ public class SearchOpponent extends AppCompatActivity {
         ImageView loading = (ImageView) waitDialog.findViewById(R.id.imgView_loading);
 
         Glide.with(this).load(R.drawable.loading).asGif().into(loading);
-
-        Button btnCancel = (Button) waitDialog.findViewById(R.id.button_cancel);
-
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-                waitDialog.hide();
-            }
-        });
-
     }
 
     public void btnSearch(View view) {

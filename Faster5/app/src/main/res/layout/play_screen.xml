@@ -72,7 +72,7 @@
                 android:background="@drawable/button_money"
                 android:gravity="center_horizontal"
                 android:paddingTop="5dp"
-                android:text="000.000.000"
+                android:text="0"
                 android:textColor="#000000"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -149,7 +149,7 @@
                 android:background="@drawable/button_money2"
                 android:gravity="center_horizontal"
                 android:paddingTop="5dp"
-                android:text="000.000.000"
+                android:text="0"
                 android:textColor="#000000"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -170,7 +170,8 @@
             android:layout_height="50dp"
             android:layout_marginRight="20dp"
             android:layout_toLeftOf="@+id/button_save2"
-            android:background="@drawable/save1" />
+            android:background="@drawable/save1"
+            android:onClick="fifty"/>
 
         <Button
             android:id="@+id/button_save2"
@@ -214,7 +215,9 @@
                 android:background="@drawable/table_question"
                 android:gravity="center_horizontal|center_vertical"
                 android:paddingBottom="15dp"
-                android:text="Một con vịt có mấy chân?"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:text="Một con vịt có mấy chân1233312312312312312312312312312312?"
                 android:textColor="#FFF"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -231,7 +234,7 @@
             android:background="@drawable/money_question"
             android:gravity="center_horizontal|center_vertical"
             android:paddingBottom="5dp"
-            android:text="100.000.000"
+            android:text="0"
             android:textColor="#FFF"
             android:textSize="20sp"
             android:textStyle="bold" />

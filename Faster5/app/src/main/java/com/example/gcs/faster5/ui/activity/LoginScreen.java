@@ -149,7 +149,9 @@ public class LoginScreen extends AppCompatActivity {
 
     public void sendLoginRequest(User user) {
         this.mUser = user;
-        this.mUser.id = NetworkUtils.getMacAddress(this).replaceAll(":", "");
+        // this.mUser.id = NetworkUtils.getMacAddress(this).replaceAll(":", "");
+        // this.mUser.id = NetworkUtils.getDeviceId();
+        this.mUser.id = NetworkUtils.getUniqueID(this).replaceAll("-","");
         mAltpHelper.login(mUser);
         Log.e("TAG", "loginRequest: " + mUser.fbId + " " + mUser.name + " " + mUser.address + "\n" + mUser.avatar);
     }

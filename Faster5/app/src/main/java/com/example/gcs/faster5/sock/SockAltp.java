@@ -4,7 +4,9 @@ import android.util.Log;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -16,7 +18,7 @@ import io.socket.emitter.Emitter;
  */
 public class SockAltp {
 
-    public static final String SERVER_LOCAL = "http://192.168.1.102:8081";
+    public static final String SERVER_LOCAL = "http://192.168.1.103:8081";
 
     public static final String SERVER_PROD = "http://altp-oic.rhcloud.com";
 
@@ -85,6 +87,10 @@ public class SockAltp {
         for (Map.Entry<String, Emitter.Listener> item : eventListeners.entrySet()) {
             mSocket.off(item.getKey(), item.getValue());
         }
+
+        eventListeners.clear();
+
+        isConnected = false;
     }
 
     /**

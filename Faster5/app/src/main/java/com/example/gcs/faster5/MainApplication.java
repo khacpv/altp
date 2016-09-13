@@ -11,10 +11,10 @@ public class MainApplication extends Application {
 
     private static SockAltp mSockAltp;
 
-    public static SockAltp sockAltp(){
-        if(mSockAltp == null){
-            mSockAltp = new SockAltp(SockAltp.SERVER_PROD,true);
-           // mSockAltp = new SockAltp(SockAltp.SERVER_LOCAL,true);
+    public static SockAltp sockAltp() {
+        if (mSockAltp == null) {
+            mSockAltp = new SockAltp(SockAltp.SERVER_PROD, true);
+            //mSockAltp = new SockAltp(SockAltp.SERVER_LOCAL,true);
         }
         return mSockAltp;
     }

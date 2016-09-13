@@ -89,6 +89,9 @@ public class MainActivity extends AppCompatActivity {
         sounds.add(R.raw.lose_b);
         sounds.add(R.raw.lose_c);
         sounds.add(R.raw.lose_d);
+        sounds.add(R.raw.important);
+        sounds.add(R.raw.sound5050);
+
         SoundPoolManager.getInstance().setSounds(sounds);
         SoundPoolManager.getInstance().setPlaySound(true);
         try {

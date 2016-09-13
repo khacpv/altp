@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import me.grantland.widget.AutofitHelper;
+
 /**
  * Created by Kien on 07/05/2016.
  * test
@@ -51,8 +53,8 @@ public class PlayScreen extends AppCompatActivity {
     private static final String EXTRA_QUESTION = "question";
     ImageView mImageViewUserAvatar1;
     ImageView mImageViewUserAvatar2;
-    TextView mTextViewScore1;
-    TextView mTextViewScore2;
+    TextView mTextViewMyScore;
+    TextView mTextViewEnemyScore;
     TextView mTextViewRound;
     TextView mTextViewQuestion;
     TextView mTextViewAns1;
@@ -65,29 +67,30 @@ public class PlayScreen extends AppCompatActivity {
     TextView mTextViewCityUser1;
     TextView mTextViewCityUser2;
     TextView mTextViewMoneyQuestion;
-    int mStt = 1;
-    int mUserScore1 = 0;
-    int mUserScore2 = 0;
-    int answerRight;
-    int myAnswerIndex = 0;
-    int enemyAnswerIndex = 0;
     Button[] mButtonAns;
     CountDownTimer mTimeLeft;
     CountDownTimer mWaitTimeNextQues;
     CountDownTimer mWaitTime;
-    boolean clickable = true;
-    long timeLeft;
-    int mMoney = 0;
     private SockAltp mSocketAltp;
     private AltpHelper mAltpHelper;
-    User mUser;
-    User mEnemy;
-    Room mRoom;
-    Question mQuestion;
+    private User mUser;
+    private User mEnemy;
+    private Room mRoom;
+    private Question mQuestion;
     Handler handler = new Handler();
     Dialog ruleDialog;
-    Button btnMy;
     MediaPlayer mediaPlayer;
+    private int mStt = 1;
+    private int mMyScore = 0;
+    private int mEnemyScore = 0;
+    private int answerRight;
+    private int myAnswerIndex = 0;
+    private int enemyAnswerIndex = 0;
+    private boolean clickable = true;
+    private boolean isCheckFifty = true;
+    private long timeLeft;
+    private int mMoney = 0;
+
 
     private SockAltp.OnSocketEvent answerNextCallback = new SockAltp.OnSocketEvent() {
         @Override
@@ -102,21 +105,6 @@ public class PlayScreen extends AppCompatActivity {
         }
     };
 
-    private SockAltp.OnSocketEvent gameOverCallback = new SockAltp.OnSocketEvent() {
-        @Override
-        public void onEvent(String event, Object... args) {
-            List<User> users = mAltpHelper.gameOverCallback(args);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    startActivity(new Intent(PlayScreen.this, GameOver.class));
-                    finish();
-                }
-            });
-        }
-    };
-
-
     private SockAltp.OnSocketEvent answerCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
@@ -129,41 +117,41 @@ public class PlayScreen extends AppCompatActivity {
     };
 
 
-    @Subscribe
-    public void onEventMainThread(final OnAnsCallbackEvent event) {
-        if (event.isFromNextQuestion) {
-            handler.postDelayed(new Runnable() {
+    private SockAltp.OnSocketEvent gameOverCallback = new SockAltp.OnSocketEvent() {
+        @Override
+        public void onEvent(String event, Object... args) {
+            OnGameOverCallbackEvent eventBus = new OnGameOverCallbackEvent();
+            Pair<Integer, ArrayList<User>> result = mAltpHelper.gameOverCallback(args);
+            boolean isLastQuestion = mAltpHelper.gameOverCallbackGetLastQuestion(args);
+            Runnable moveGameOverScr = new Runnable() {
                 @Override
                 public void run() {
-                    mQuestion = event.mQuestion;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            clickable = true;
-                            setSoundQuestion(mQuestion.questionIndex + 1);
-                            setQA(mQuestion.questionIndex + 1);
-                        }
-                    });
+                    gameOver();
                 }
-            }, 6000);
-            return;
+            };
+            handler.postDelayed(moveGameOverScr, 7000);
+            eventBus.result = result;
+            EventBus.getDefault().post(eventBus);
+
+            if (isLastQuestion) {
+                handler.removeCallbacks(moveGameOverScr);
+                gameOver();
+                return;
+            }
         }
+    };
+
+    @Subscribe
+    public void onEventMainThread(final OnGameOverCallbackEvent event) {
         Pair<Integer, ArrayList<User>> result = event.result;
         if (result.first < 0) {
             return;
         }
-
-
         answerRight = result.first;
-        List<User> answerUserList = result.second;
-
-        for (User user : answerUserList) {
+        final List<User> userGameOver = result.second;
+        for (User user : userGameOver) {
             if (!String.valueOf(user.id).equalsIgnoreCase(mUser.id)) {
-                Log.e("TAG", "mEnemyanswer: " + mEnemy.answerIndex);
                 enemyAnswerIndex = mEnemy.answerIndex = user.answerIndex;
-
-                mAltpHelper.getNextQuestion(mUser, mRoom);
-
                 mButtonAns[mEnemy.answerIndex].post(new Runnable() {
                     @Override
                     public void run() {
@@ -177,17 +165,161 @@ public class PlayScreen extends AppCompatActivity {
         mButtonAns[myAnswerIndex].postDelayed(new Runnable() {
             @Override
             public void run() {
+                AnimationDrawable btnAnswerDrawable = (AnimationDrawable)
+                        getResources().getDrawable(R.drawable.xml_btn_anim);
+
+
                 if (!checkAns(enemyAnswerIndex)) {
                     mButtonAns[enemyAnswerIndex].setBackgroundResource(R.drawable.answer_wrong);
+                } else {
+                    //Add score for enemy user
+
+                    mTextViewMyScore.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mEnemyScore = userGameOver.get(0).score;
+                            mTextViewEnemyScore.setText(String.valueOf(mEnemyScore));
+                        }
+                    });
                 }
 
                 if (checkAns(myAnswerIndex)) {
 
-                    switch (myAnswerIndex){
-                        case 0: SoundPoolManager.getInstance().playSound(R.raw.true_a); break;
-                        case 1: SoundPoolManager.getInstance().playSound(R.raw.true_b); break;
-                        case 2: SoundPoolManager.getInstance().playSound(R.raw.true_c); break;
-                        case 3: SoundPoolManager.getInstance().playSound(R.raw.true_d); break;
+                    //Add score for user
+                    mTextViewMyScore.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mMyScore = userGameOver.get(1).score;
+                            mTextViewMyScore.setText(String.valueOf(mMyScore));
+                        }
+                    });
+
+                    switch (myAnswerIndex) {
+                        case 0:
+                            SoundPoolManager.getInstance().playSound(R.raw.true_a);
+                            break;
+                        case 1:
+                            SoundPoolManager.getInstance().playSound(R.raw.true_b);
+                            break;
+                        case 2:
+                            SoundPoolManager.getInstance().playSound(R.raw.true_c);
+                            break;
+                        case 3:
+                            SoundPoolManager.getInstance().playSound(R.raw.true_d);
+                            break;
+                    }
+
+
+                    mButtonAns[myAnswerIndex].setBackgroundDrawable(btnAnswerDrawable);
+                    btnAnswerDrawable.start();
+                } else {
+                    mButtonAns[myAnswerIndex].setBackgroundResource(R.drawable.answer_wrong);
+
+                    switch (answerRight) {
+                        case 0:
+                            SoundPoolManager.getInstance().playSound(R.raw.lose_a);
+                            break;
+                        case 1:
+                            SoundPoolManager.getInstance().playSound(R.raw.lose_b);
+                            break;
+                        case 2:
+                            SoundPoolManager.getInstance().playSound(R.raw.lose_c);
+                            break;
+                        case 3:
+                            SoundPoolManager.getInstance().playSound(R.raw.lose_d);
+                            break;
+                    }
+                    mButtonAns[answerRight].setBackgroundDrawable(btnAnswerDrawable);
+                    btnAnswerDrawable.start();
+                }
+            }
+        }, 3000);
+    }
+
+    @Subscribe
+    public void onEventMainThread(final OnAnsCallbackEvent event) {
+        //get Next Question
+        if (event.isFromNextQuestion) {
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mQuestion = event.mQuestion;
+                    Log.e("TAG", "Index Question: " + mQuestion.questionIndex);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            clickable = true;
+                            setSoundQuestion(mQuestion.questionIndex + 1);
+                            setQA(mQuestion.questionIndex + 1);
+                        }
+                    });
+                    if (mQuestion.questionIndex == 4) {
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                SoundPoolManager.getInstance().playSound(R.raw.important);
+                            }
+                        }, 1000);
+                    }
+                }
+            }, 7000);
+            return;
+        }
+
+        Pair<Integer, ArrayList<User>> result = event.result;
+        if (result.first < 0) {
+            return;
+        }
+
+        answerRight = result.first;
+        final List<User> answerUserList = result.second;
+
+        // Kiem tra cau tra loi cua enemy
+        for (User user : answerUserList) {
+            if (!String.valueOf(user.id).equalsIgnoreCase(mUser.id)) {
+                Log.e("TAG", "mEnemyanswer: " + mEnemy.answerIndex);
+                enemyAnswerIndex = mEnemy.answerIndex = user.answerIndex;
+
+                mAltpHelper.getNextQuestion(mUser, mRoom);
+
+                mButtonAns[mEnemy.answerIndex].post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mButtonAns[mEnemy.answerIndex].setBackgroundResource(R.drawable.answer4);
+                    }
+                });
+            }
+        }
+
+        // Kiem tra cau tra loi
+        mButtonAns[myAnswerIndex].postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (checkAns(myAnswerIndex)) {
+                    //Add score for user
+                    mTextViewMyScore.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mEnemyScore = answerUserList.get(0).score;
+                            mMyScore = answerUserList.get(1).score;
+                            mTextViewMyScore.setText(String.valueOf(mMyScore));
+                            mTextViewEnemyScore.setText(String.valueOf(mEnemyScore));
+                        }
+                    });
+
+                    switch (myAnswerIndex) {
+                        case 0:
+                            SoundPoolManager.getInstance().playSound(R.raw.true_a);
+                            break;
+                        case 1:
+                            SoundPoolManager.getInstance().playSound(R.raw.true_b);
+                            break;
+                        case 2:
+                            SoundPoolManager.getInstance().playSound(R.raw.true_c);
+                            break;
+                        case 3:
+                            SoundPoolManager.getInstance().playSound(R.raw.true_d);
+                            break;
                     }
 
                     AnimationDrawable btnAnswerDrawable = (AnimationDrawable)
@@ -201,24 +333,10 @@ public class PlayScreen extends AppCompatActivity {
                             for (int i = 0; i < 4; i++) {
                                 mButtonAns[i].clearAnimation();
                                 mButtonAns[i].setBackgroundResource(R.drawable.answer0);
+                                mButtonAns[i].setEnabled(true);
                             }
                         }
                     }, 2000);
-                } else {
-                    mButtonAns[myAnswerIndex].setBackgroundResource(R.drawable.answer_wrong);
-
-                    switch (answerRight){
-                        case 0: SoundPoolManager.getInstance().playSound(R.raw.lose_a); break;
-                        case 1: SoundPoolManager.getInstance().playSound(R.raw.lose_b); break;
-                        case 2: SoundPoolManager.getInstance().playSound(R.raw.lose_c); break;
-                        case 3: SoundPoolManager.getInstance().playSound(R.raw.lose_d); break;
-                    }
-
-                    AnimationDrawable btnAnswerDrawable = (AnimationDrawable)
-                            getResources().getDrawable(R.drawable.xml_btn_anim);
-                    mButtonAns[answerRight].setBackgroundDrawable(btnAnswerDrawable);
-                    btnAnswerDrawable.start();
-
                 }
             }
         }, 3000);
@@ -286,7 +404,6 @@ public class PlayScreen extends AppCompatActivity {
 
         ruleDialog = new Dialog(this);
 
-
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/roboto.ttf");
         mButtonAns = new Button[4];
 
@@ -295,10 +412,8 @@ public class PlayScreen extends AppCompatActivity {
 
         mTextViewRound = (TextView) findViewById(R.id.textview_numberquestion);
 
-        mTextViewScore1 = (TextView) findViewById(R.id.textview_money1);
-        mTextViewScore1.setText(String.valueOf(mUserScore1));
-        mTextViewScore2 = (TextView) findViewById(R.id.textview_money2);
-        mTextViewScore2.setText(String.valueOf(mUserScore2));
+        mTextViewMyScore = (TextView) findViewById(R.id.textview_money1);
+        mTextViewEnemyScore = (TextView) findViewById(R.id.textview_money2);
 
         mTextViewQuestion = (TextView) findViewById(R.id.textview_tablequestion);
         mTextViewAns1 = (TextView) findViewById(R.id.button_ans1);
@@ -318,7 +433,7 @@ public class PlayScreen extends AppCompatActivity {
 
         mTextViewMoneyQuestion = (TextView) findViewById(R.id.textview_moneyquestion);
 
-        setTypeface(font, mTextViewTimer, mTextViewRound, mTextViewScore1, mTextViewScore2,
+        setTypeface(font, mTextViewTimer, mTextViewRound, mTextViewMyScore, mTextViewEnemyScore,
                 mTextViewQuestion, mTextViewAns1, mTextViewAns2, mTextViewAns3, mTextViewAns4,
                 mTextViewUserName1, mTextViewUserName2, mTextViewCityUser1, mTextViewCityUser2);
 
@@ -370,20 +485,21 @@ public class PlayScreen extends AppCompatActivity {
                         SoundPoolManager.getInstance().playSound(R.raw.ques1_b);
                         break;
                 }
-                ruleDialog.hide();
+                ruleDialog.dismiss();
                 mediaPlayer.start();
             }
         };
+        SoundPoolManager.getInstance().playSound(R.raw.luatchoi);
 
         handler.postDelayed(hideRuleDialog, 8000);
 
         skipBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
                 SoundPoolManager.getInstance().stop();
+
                 handler.removeCallbacks(hideRuleDialog);
-                ruleDialog.hide();
+                ruleDialog.dismiss();
                 mediaPlayer.start();
                 switch (n) {
                     case 1:
@@ -395,16 +511,7 @@ public class PlayScreen extends AppCompatActivity {
                 }
             }
         });
-
-
         ruleDialog.show();
-        SoundPoolManager.getInstance().playSound(R.raw.luatchoi);
-    }
-
-    public void setUserInfo() {
-        fillData();
-        setQA(0);
-        setTxtRound(mStt + 1);
     }
 
     /**
@@ -415,9 +522,10 @@ public class PlayScreen extends AppCompatActivity {
         mEnemy = (User) getIntent().getSerializableExtra(EXTRA_ENEMY);
         mRoom = (Room) getIntent().getSerializableExtra(EXTRA_ROOM);
         mQuestion = (Question) getIntent().getSerializableExtra(EXTRA_QUESTION);
+        answerRight = mQuestion.mCorrectAnsId;
     }
 
-    private void fillData() {
+    private void setUserInfo() {
         // my info
         mTextViewUserName1.setText(mUser.name);
         mTextViewCityUser1.setText(mUser.address);
@@ -431,11 +539,13 @@ public class PlayScreen extends AppCompatActivity {
 
     public void setQA(int stt) {
         this.mStt = stt;
+        setTxtRound(mStt);
         mTextViewQuestion.setText(mQuestion.mQuestion);
         mTextViewAns1.setText("A: " + mQuestion.mAns.get(0));
         mTextViewAns2.setText("B: " + mQuestion.mAns.get(1));
         mTextViewAns3.setText("C: " + mQuestion.mAns.get(2));
         mTextViewAns4.setText("D: " + mQuestion.mAns.get(3));
+        autoFitText(mTextViewQuestion, mTextViewAns1, mTextViewAns2, mTextViewAns3, mTextViewAns4);
         mediaPlayer.start();
     }
 
@@ -492,12 +602,11 @@ public class PlayScreen extends AppCompatActivity {
         return answerIndex == answerRight;
     }
 
-    public boolean checkEnemyAns(int enemyAnswerIndex) {
-        return enemyAnswerIndex == myAnswerIndex;
+    public boolean checkEnemyAns(int answerIndex) {
+        return answerIndex == myAnswerIndex;
     }
 
     public void btnAnswerClick(final View btnAnswer) {
-        btnMy = (Button) btnAnswer;
         if (clickable) {
             mediaPlayer.pause();
             clickable = false;
@@ -564,19 +673,19 @@ public class PlayScreen extends AppCompatActivity {
     private void setTxtRound(int round) {
         switch (round) {
             case 1:
-                mMoney = 100000;
-                break;
-            case 2:
                 mMoney = 200000;
                 break;
+            case 2:
+                mMoney = 400000;
+                break;
             case 3:
-                mMoney = 300000;
+                mMoney = 600000;
                 break;
             case 4:
-                mMoney = 500000;
+                mMoney = 1000000;
                 break;
             case 5:
-                mMoney = 1000000;
+                mMoney = 2000000;
                 break;
         }
         mTextViewMoneyQuestion.setText(String.valueOf(mMoney));
@@ -590,10 +699,75 @@ public class PlayScreen extends AppCompatActivity {
         finish();
     }
 
+    public void fifty(View fifty) {
+        if (isCheckFifty || true) {
+            SoundPoolManager.getInstance().playSound(R.raw.sound5050);
+            isCheckFifty = false;
+            mButtonAns[0].postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < 4; i++) {
+                        mButtonAns[i].setText("");
+                        mButtonAns[i].setEnabled(false);
+                    }
+
+                    answerRight = mQuestion.mCorrectAnsId;
+                    int rdIdx = getFifty(answerRight);
+                    mButtonAns[rdIdx].setText(tileQuestion(rdIdx) + mQuestion.mAns.get(rdIdx));
+                    mButtonAns[rdIdx].setEnabled(true);
+                    mButtonAns[answerRight].setText(tileQuestion(answerRight) + mQuestion.mAns.get(answerRight));
+                    mButtonAns[answerRight].setEnabled(true);
+                }
+            }, 3100);
+        }
+    }
+
+    public String tileQuestion(int indexAns) {
+        String alphabet = "";
+        switch (indexAns) {
+            case 0:
+                alphabet = "A: ";
+                break;
+            case 1:
+                alphabet = "B: ";
+                break;
+            case 2:
+                alphabet = "C: ";
+                break;
+            case 3:
+                alphabet = "D: ";
+                break;
+        }
+        return alphabet;
+    }
+
+    public int getFifty(int rightIndex) {
+        int randomIndex = 0;
+        while (true) {
+            randomIndex = new Random().nextInt(3);
+            Log.e("TAG", "50/50 idx:" + randomIndex + "RightIndex: " + rightIndex);
+            if (randomIndex != rightIndex) {
+                break;
+            }
+        }
+        return randomIndex;
+    }
+
+
     public static void setTypeface(Typeface font, TextView... textviews) {
         for (TextView textView : textviews) {
             textView.setTypeface(font);
         }
+    }
+
+    public static void autoFitText(TextView... textviews) {
+        for (TextView textView : textviews) {
+            AutofitHelper.create(textView);
+        }
+    }
+
+    public static class OnGameOverCallbackEvent {
+        Pair<Integer, ArrayList<User>> result;
     }
 
     public static class OnAnsCallbackEvent {
@@ -604,7 +778,7 @@ public class PlayScreen extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        if(mediaPlayer.isPlaying()){
+        if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
         }
         super.onPause();
@@ -618,7 +792,7 @@ public class PlayScreen extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if(mediaPlayer != null ){
+        if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();
         }
