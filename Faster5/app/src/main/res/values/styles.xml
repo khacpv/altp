@@ -28,6 +28,12 @@
         <item name="android:windowEnterAnimation">@android:anim/slide_in_left</item>
         <item name="android:windowExitAnimation">@android:anim/slide_out_right</item>
     </style>
+
+    <style name="DialogNoAnimation">
+        <item name="android:windowEnterAnimation">@animator/dialog_enter_noani</item>
+        <item name="android:windowExitAnimation">@animator/dialog_exit_noani</item>
+    </style>
+
     <style name="FullyTranslucent" parent="android:Theme.Translucent.NoTitleBar">
         <item name="android:progressBarStyle">@style/InvisibleProgress</item>
     </style>

@@ -34,4 +34,7 @@ public class User implements Serializable{
     public int score;
 
     public boolean isDummy = true;
+
+    @SerializedName("winner")
+    public boolean isWinner = true;
 }

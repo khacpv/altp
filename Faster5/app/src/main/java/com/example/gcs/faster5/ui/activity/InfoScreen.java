@@ -1,10 +1,12 @@
 package com.example.gcs.faster5.ui.activity;
 
 import android.app.Dialog;
-import android.content.Intent;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,8 +30,10 @@ import com.example.gcs.faster5.model.User;
 import com.example.gcs.faster5.sock.AltpHelper;
 import com.example.gcs.faster5.sock.SockAltp;
 import com.example.gcs.faster5.ui.widget.HexagonDrawable;
+import com.example.gcs.faster5.util.ISoundPoolLoaded;
 import com.example.gcs.faster5.util.NetworkUtils;
 import com.example.gcs.faster5.util.PrefUtils;
+import com.example.gcs.faster5.util.SoundPoolManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -44,23 +48,29 @@ import io.socket.client.Socket;
  * Created by Kien on 07/05/2016.
  */
 public class InfoScreen extends AppCompatActivity {
-    TextView mTextViewNameUser;
-    TextView mTextViewMoney;
-    TextView mTextViewCity;
-    ImageView mImageViewAvatar;
-    Button[] mButtonPlayer = new Button[8];
-    RelativeLayout mButtonSearch;
+    private TextView mTextViewNameUser;
+    private TextView mTextViewMoney;
+    private TextView mTextViewCity;
+    private ImageView mImageViewAvatar;
+    private Button[] mButtonPlayer = new Button[8];
+    private RelativeLayout mButtonSearch;
     private SockAltp mSocketAltp;
     private AltpHelper mAltpHelper;
     private User mUser = new User();
     private User mEnemy = new User();
-    String username, linkAvatar, location, money;
-    String userId;
-    final HexagonDrawable searchBg = new HexagonDrawable();
-    int searchTimes = 0, enemyNumberInList;
-    boolean isEnemy = false;
-    Dialog connectionDiaglog;
-    Handler handler = new Handler();
+    private String username;
+    private String linkAvatar;
+    private String location;
+    private String money;
+    private String userId;
+    private final HexagonDrawable searchBg = new HexagonDrawable();
+    private int searchTimes = 0;
+    private int enemyNumberInList;
+    private boolean isEnemy = false;
+    private Dialog connectionDiaglog;
+    MediaPlayer mediaPlayer;
+    private Handler handler = new Handler();
+    Runnable resetSearch;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -72,23 +82,26 @@ public class InfoScreen extends AppCompatActivity {
         @Override
         public void onEvent(String event, Object... args) {
             switch (event) {
+                case Socket.EVENT_CONNECTING:
+                    Log.e("TAG_INFO", "connecting");
+                    break;
                 case Socket.EVENT_CONNECT:  // auto call on connect to server
                     Log.e("TAG_INFO", "connect");
                     break;
                 case Socket.EVENT_CONNECT_ERROR:
+                    Log.e("TAG_INFO", "error");
+                    break;
                 case Socket.EVENT_CONNECT_TIMEOUT:
-                    //Log.e("TAG_INFO", "disconnect");
-                    searchBg.stop();
-                    mButtonSearch.setClickable(true);
+                    Log.e("TAG_INFO", "timeout");
                     break;
             }
         }
     };
-
     private SockAltp.OnSocketEvent searchCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
             Pair<Room, ArrayList<User>> result = mAltpHelper.searchCallback(args);
+            handler.removeCallbacks(resetSearch);
             OnSearhCallbackEvent eventBus = new OnSearhCallbackEvent();
             eventBus.result = result;
             EventBus.getDefault().post(eventBus);
@@ -104,6 +117,7 @@ public class InfoScreen extends AppCompatActivity {
         }
         this.mUser = user;
         mAltpHelper.search(mUser);
+        handler.postDelayed(resetSearch , 12000);
 
         Log.e("TAG", "searchRequest: " + mUser.id + " " + mUser.name + " " + mUser.address + "\n" + mUser.avatar);
     }
@@ -126,13 +140,15 @@ public class InfoScreen extends AppCompatActivity {
             getSupportActionBar().hide();
         }
         setContentView(R.layout.info_screen);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        bgMusic();
         EventBus.getDefault().register(this);
 
         mSocketAltp = MainApplication.sockAltp();
         mAltpHelper = new AltpHelper(mSocketAltp);
 
 
-        if(!mSocketAltp.isConnected()){
+        if (!mSocketAltp.isConnected()) {
             mSocketAltp.connect();
         }
 
@@ -159,6 +175,15 @@ public class InfoScreen extends AppCompatActivity {
 
         popupConnection();
 
+        resetSearch = new Runnable() {
+            @Override
+            public void run() {
+                searchBg.stop();
+                searchBg.reset();
+                mButtonSearch.setClickable(true);
+            }
+        };
+
         mButtonSearch = (RelativeLayout) findViewById(R.id.button_search);
 
 
@@ -171,11 +196,12 @@ public class InfoScreen extends AppCompatActivity {
         mButtonSearch.setOnClickListener(new View.OnClickListener() {
                                              @Override
                                              public void onClick(View v) {
+                                                 SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
                                                  if (NetworkUtils.checkInternetConnection(InfoScreen.this)) {
                                                      setUserInfo();
                                                      sendSearchRequest(mUser);
-                                                     searchBg.start();
                                                      mButtonSearch.setClickable(false);
+                                                     searchBg.start();
                                                  } else {
                                                      connectionDiaglog.show();
                                                  }
@@ -216,12 +242,7 @@ public class InfoScreen extends AppCompatActivity {
         tryAgain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = getIntent();
-                overridePendingTransition(0, 0);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                finish();
-                overridePendingTransition(0, 0);
-                startActivity(intent);
+                connectionDiaglog.hide();
             }
         });
 
@@ -271,6 +292,15 @@ public class InfoScreen extends AppCompatActivity {
 
     }
 
+    public void bgMusic() {
+        AudioManager amanager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+        int maxVolume = amanager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
+        amanager.setStreamVolume(AudioManager.STREAM_ALARM, maxVolume, 0);
+        mediaPlayer = MediaPlayer.create(InfoScreen.this, R.raw.bgsearch);
+        mediaPlayer.setLooping(true);
+
+    }
+
     @Subscribe
     public void onEventMainThread(OnSearhCallbackEvent event) {
         Pair<Room, ArrayList<User>> result = event.result;
@@ -294,6 +324,11 @@ public class InfoScreen extends AppCompatActivity {
         Collections.shuffle(dummyUsers);
 
         if (isEnemy) {
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.stop();
+            }
+            SoundPoolManager.getInstance().playSound(R.raw.search_finish);
+
             searchBg.stop();
 
             for (int i = 0; i < dummyUsers.size(); i++) {
@@ -304,12 +339,12 @@ public class InfoScreen extends AppCompatActivity {
                     mButtonPlayer[enemyNumberInList].postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mButtonSearch.setClickable(true);
 
                             AnimationDrawable btnAnswerDrawable = (AnimationDrawable)
                                     getResources().getDrawable(R.drawable.xml_btn_anim);
                             mButtonPlayer[enemyNumberInList].setBackgroundDrawable(btnAnswerDrawable);
                             btnAnswerDrawable.start();
+                            SoundPoolManager.getInstance().playSound(R.raw.enemy_selected);
 
                         }
                     }, 2000);
@@ -347,7 +382,23 @@ public class InfoScreen extends AppCompatActivity {
 
     @Override
     public void onPause() {
+        if (mediaPlayer != null) {
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+            }
+        }
         super.onPause();
+    }
+
+
+    @Override
+    protected void onResume() {
+        if (mediaPlayer != null) {
+            if (!mediaPlayer.isPlaying()) {
+                mediaPlayer.start();
+            }
+        }
+        super.onResume();
     }
 
     @Override
@@ -359,7 +410,13 @@ public class InfoScreen extends AppCompatActivity {
         if (connectionDiaglog != null) {
             connectionDiaglog.dismiss();
         }
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
+
         super.onDestroy();
+
     }
 
     public static class OnSearhCallbackEvent {

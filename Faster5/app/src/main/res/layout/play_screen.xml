@@ -63,7 +63,7 @@
             <TextView
                 android:id="@+id/textview_money1"
                 android:layout_width="160dp"
-                android:layout_height="45dp"
+                android:layout_height="35dp"
                 android:layout_alignLeft="@+id/imageview_useravatar1"
                 android:layout_alignStart="@+id/imageview_useravatar1"
                 android:layout_below="@+id/imageview_useravatar1"
@@ -71,14 +71,27 @@
                 android:layout_marginTop="10dp"
                 android:background="@drawable/button_money"
                 android:gravity="center_horizontal"
-                android:paddingTop="9dp"
-                android:text="000.000.000"
+                android:paddingTop="5dp"
+                android:text="0"
                 android:textColor="#000000"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
 
         </RelativeLayout>
+
+        <TextView
+            android:id="@+id/textview_timer"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:background="@drawable/clock"
+            android:gravity="center_horizontal|center_vertical"
+            android:paddingRight="2dp"
+            android:text="TIME \nOUT"
+            android:textColor="#FFF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <RelativeLayout
             android:layout_width="0dp"
@@ -128,36 +141,23 @@
             <TextView
                 android:id="@+id/textview_money2"
                 android:layout_width="160dp"
-                android:layout_height="45dp"
+                android:layout_height="35dp"
                 android:layout_alignRight="@+id/imageview_useravatar2"
                 android:layout_below="@+id/imageview_useravatar2"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/button_money2"
                 android:gravity="center_horizontal"
-                android:paddingTop="9dp"
-                android:text="000.000.000"
+                android:paddingTop="5dp"
+                android:text="0"
                 android:textColor="#000000"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
             />
         </RelativeLayout>
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/textview_timer"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_gravity="center"
-        android:background="@drawable/clock"
-        android:gravity="center_horizontal|center_vertical"
-        android:paddingBottom="5dp"
-        android:paddingRight="2dp"
-        android:text="TIME OUT"
-        android:textColor="#FFF"
-        android:textSize="18sp"
-        android:textStyle="bold" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -170,7 +170,8 @@
             android:layout_height="50dp"
             android:layout_marginRight="20dp"
             android:layout_toLeftOf="@+id/button_save2"
-            android:background="@drawable/save1" />
+            android:background="@drawable/save1"
+            android:onClick="fifty"/>
 
         <Button
             android:id="@+id/button_save2"
@@ -194,18 +195,35 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp">
 
-        <TextView
-            android:id="@+id/textview_tablequestion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:background="@drawable/table_question"
-            android:gravity="center_horizontal|center_vertical"
-            android:paddingBottom="15dp"
-            android:text="Một con vịt có mấy chân?"
-            android:textColor="#FFF"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="3dp"
+                android:background="#FFF" />
+
+            <TextView
+                android:id="@+id/textview_tablequestion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/table_question"
+                android:gravity="center_horizontal|center_vertical"
+                android:paddingBottom="15dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:text="Một con vịt có mấy chân1233312312312312312312312312312312?"
+                android:textColor="#FFF"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+
 
         <TextView
             android:id="@+id/textview_moneyquestion"
@@ -216,7 +234,7 @@
             android:background="@drawable/money_question"
             android:gravity="center_horizontal|center_vertical"
             android:paddingBottom="5dp"
-            android:text="100.000.000"
+            android:text="0"
             android:textColor="#FFF"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -238,6 +256,7 @@
     </RelativeLayout>
 
     <include
+        android:layout_marginTop="20dp"
         layout="@layout/layout_answer_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

@@ -29,6 +29,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="20dp"
+            android:layout_marginBottom="50dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:gravity="center"
@@ -36,23 +37,6 @@
             android:text="Vui lòng đợi đối thủ..."
             android:textColor="#00366D"
             android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/button_cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_marginLeft="80dp"
-            android:layout_marginRight="80dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginBottom="30dp"
-            android:background="@drawable/answer0"
-            android:gravity="center"
-            android:paddingBottom="10dp"
-            android:text="Hủy"
-            android:textAllCaps="false"
-            android:textColor="#ffffff"
-            android:textSize="18sp"
-            android:textStyle="bold" />
 
 
 

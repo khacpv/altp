@@ -16,8 +16,6 @@ public class Question implements Serializable{
     @SerializedName("answers")
     public List<String> mAns;
 
-    @SerializedName("id")
-    public Integer mStt;
 
     @SerializedName("answerRight")
     public Integer mCorrectAnsId;

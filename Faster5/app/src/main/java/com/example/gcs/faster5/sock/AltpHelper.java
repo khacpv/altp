@@ -7,12 +7,14 @@ import com.example.gcs.faster5.model.Question;
 import com.example.gcs.faster5.model.Room;
 import com.example.gcs.faster5.model.User;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by FRAMGIA\pham.van.khac on 8/11/16.
@@ -29,8 +31,8 @@ public class AltpHelper {
      * login user
      */
     public void login(User user) {
-        if(user == null){
-            Log.e("TAG","can not login with a NULL user");
+        if (user == null) {
+            Log.e("TAG", "can not login with a NULL user");
             return;
         }
         try {
@@ -188,6 +190,8 @@ public class AltpHelper {
             return result;
         }
 
+
+
         try {
             int answerRight = data.getInt("answerRight");
             JSONArray answerUsers = data.getJSONArray("answerUsers");
@@ -219,6 +223,7 @@ public class AltpHelper {
     public Question answerNextCallback(Object... args) {
         Question question = new Question();
         JSONObject data = (JSONObject) args[0];
+        Log.e("TAG","answerNextCallback:"+data.toString());
         try {
             question = new Gson().fromJson(data.getJSONObject("question").toString(), Question.class);
         } catch (JSONException e) {
@@ -227,30 +232,49 @@ public class AltpHelper {
         return question;
     }
 
-    /**
-     * @return list users with score
-     * */
-    public ArrayList<User> gameOverCallback(Object... args) {
+    /*
+    * @return list users with score
+    * */
+    public Pair<Integer, ArrayList<User>> gameOverCallback(Object... args) {
+        Pair<Integer, ArrayList<User>> result = new Pair<>(-1, new ArrayList<User>());
         JSONObject data = (JSONObject) args[0];
-        JSONArray users;
         try {
-            users = data.getJSONArray("users");
+            boolean isLastQuestion = false;
+            if(data.has("lastQuestion")){
+                isLastQuestion = data.getBoolean("lastQuestion");
+            }
+            int answerRight = data.getInt("answerRight");
+            JSONArray users = data.getJSONArray("users");
             ArrayList<User> answerUserList = new ArrayList<>();
             for (int i = 0; i < users.length(); i++) {
                 User userAnswer = new Gson().fromJson(users.get(i).toString(), User.class);
                 answerUserList.add(userAnswer);
             }
-            return answerUserList;
+            result = new Pair<>(answerRight, answerUserList);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return new ArrayList<>();
+        return result;
+    }
+
+    public boolean gameOverCallbackGetLastQuestion(Object... args) {
+        JSONObject data = (JSONObject) args[0];
+        boolean isLastQuestion = false;
+        if(data.has("lastQuestion")){
+            try {
+                isLastQuestion = data.getBoolean("lastQuestion");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return isLastQuestion;
     }
 
     /**
      * fire when timeout or disconnect
+     *
      * @see AltpHelper#gameOverCallback(Object...)
-     * */
+     */
     public void quit(User user, Room room) {
         try {
             Gson gson = new Gson();
@@ -265,14 +289,14 @@ public class AltpHelper {
 
     /**
      * fire when an user has loss connection
-     * */
+     */
     public Pair<Room, User> quitCallback(Object... args) {
         Pair<Room, User> result = new Pair<>(new Room(), null);
         JSONObject data = (JSONObject) args[0];
 
         try {
             Room room = new Gson().fromJson(data.getString("room"), Room.class);
-            User user = new Gson().fromJson(data.getString("user"),User.class);
+            User user = new Gson().fromJson(data.getString("user"), User.class);
             result = new Pair<>(room, user);
         } catch (JSONException e) {
             e.printStackTrace();

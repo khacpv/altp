@@ -32,11 +32,11 @@
                 android:onClick="btnAnswerClick"
                 android:paddingBottom="10dp"
                 android:paddingLeft="20dp"
-                android:text="A: 1"
+                android:singleLine="true"
+                android:text="A: 1Kien"
+                android:textAllCaps="false"
                 android:textColor="#FFF"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                />
+                android:textSize="18sp" />
 
             <Button
                 android:id="@+id/button_ans2"
@@ -49,10 +49,11 @@
                 android:onClick="btnAnswerClick"
                 android:paddingBottom="10dp"
                 android:paddingLeft="20dp"
+                android:singleLine="true"
                 android:text="B: 2"
+                android:textAllCaps="false"
                 android:textColor="#FFF"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textSize="18sp" />
         </LinearLayout>
 
     </FrameLayout>
@@ -85,10 +86,11 @@
                 android:onClick="btnAnswerClick"
                 android:paddingBottom="10dp"
                 android:paddingLeft="20dp"
-                android:text="C: 3"
+                android:singleLine="true"
+                android:text="C: 3 hel2222222lo"
+                android:textAllCaps="false"
                 android:textColor="#FFF"
-                android:textSize="18sp"
-                android:textStyle="bold"/>
+                android:textSize="18sp" />
 
             <Button
                 android:id="@+id/button_ans4"
@@ -101,12 +103,14 @@
                 android:onClick="btnAnswerClick"
                 android:paddingBottom="10dp"
                 android:paddingLeft="20dp"
+                android:singleLine="true"
                 android:text="D: 4"
+                android:textAllCaps="false"
                 android:textColor="#FFF"
-                android:textSize="18sp"
-                android:textStyle="bold"/>
+                android:textSize="18sp" />
         </LinearLayout>
 
     </FrameLayout>
+
 
 </LinearLayout>
