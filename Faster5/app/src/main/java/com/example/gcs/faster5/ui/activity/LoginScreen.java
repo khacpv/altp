@@ -1,10 +1,13 @@
 package com.example.gcs.faster5.ui.activity;
 
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -12,9 +15,12 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -76,12 +82,15 @@ public class LoginScreen extends AppCompatActivity {
 
     private static final String TAG_CITY = "city";
     private static final String photoFileName = "cameraphoto.jpg";
+
+    private static final int PERMISSION_REQUEST_CODE = 1;
     public static final int IMAGE_FROM_CAMERA = 0;
     public static final int IMAGE_FROM_GALLERY = 1;
     public static final String prefixHOST = "http://ailatrieuphu.esy.es/imgupload/";
     public static final String DEFAULT_AVATAR = "http://ailatrieuphu.esy.es/imgupload/uploadedimages/avatar.png";
     private static String city;
     private static String url = "http://209.58.180.196/json/"; //URL to get JSON Array
+    private Activity activity;
     AccessToken mAccessToken;
     private AccessTokenTracker mAccessTokenTracker;
     private RelativeLayout mRelativeLayoutBg;
@@ -227,7 +236,7 @@ public class LoginScreen extends AppCompatActivity {
         PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_URL_AVATAR, mUser.avatar);
         PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_TOTAL_SCORE, mUser.totalScore);
         PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_LOGGED_IN, true);
-        Log.e("TAG", "LoginCallback: " + user.fbId + " " + user.id + " " + user.name + " " + user.address + " " + "\n" + user.avatar);
+        Log.e("TAG", "LoginCallback: " + user.totalScore + user.fbId + " " + user.id + " " + user.name + " " + user.address + " " + "\n" + user.avatar);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -435,7 +444,15 @@ public class LoginScreen extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-                captureImage();
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    if (checkPermission()) {
+                        captureImage();
+                    } else {
+                        requestPermission();
+                    }
+                } else {
+                    captureImage();
+                }
             }
         });
 
@@ -443,7 +460,17 @@ public class LoginScreen extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-                loadImagefromGallery();
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    if (checkPermission()) {
+                        loadImagefromGallery();
+
+                    } else {
+                        requestPermission();
+                    }
+                } else {
+                    loadImagefromGallery();
+
+                }
             }
         });
 
@@ -689,6 +716,52 @@ public class LoginScreen extends AppCompatActivity {
         startActivity(intent);
         overridePendingTransition(R.animator.right_in, R.animator.left_out);
         finish();
+    }
+
+
+    private boolean checkPermission() {
+        int resultWrite = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int resultRead = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
+        int resultCamera = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA);
+        if (resultWrite == PackageManager.PERMISSION_GRANTED && resultCamera == PackageManager.PERMISSION_GRANTED
+                && resultRead == PackageManager.PERMISSION_GRANTED) {
+            return true;
+
+        } else {
+            return false;
+
+        }
+    }
+
+    private void requestPermission() {
+
+        if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                && ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.READ_EXTERNAL_STORAGE)
+                && ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.CAMERA)) {
+
+        } else {
+
+            ActivityCompat.requestPermissions(activity, new String[]{
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            }, PERMISSION_REQUEST_CODE);
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                } else {
+
+                }
+                break;
+
+        }
     }
 
 

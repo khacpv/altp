@@ -91,6 +91,9 @@ public class MainActivity extends AppCompatActivity {
         sounds.add(R.raw.lose_d);
         sounds.add(R.raw.important);
         sounds.add(R.raw.sound5050);
+        sounds.add(R.raw.best_player);
+        sounds.add(R.raw.pass_good);
+        sounds.add(R.raw.lose);
 
         SoundPoolManager.getInstance().setSounds(sounds);
         SoundPoolManager.getInstance().setPlaySound(true);

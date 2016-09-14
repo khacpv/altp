@@ -73,6 +73,7 @@ public class AltpHelper {
             String address = user.getString("address");
             String fbId = user.getString("fbId");
             String room = user.getString("room");
+            int totalScore = user.getInt("totalScore");
 
             result.id = userId;
             result.name = name;
@@ -80,6 +81,7 @@ public class AltpHelper {
             result.address = address;
             result.room = room;
             result.fbId = fbId;
+            result.totalScore = totalScore;
         } catch (JSONException e) {
             e.printStackTrace();
         }
