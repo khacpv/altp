@@ -227,7 +227,7 @@ public class LoginScreen extends AppCompatActivity {
         PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_URL_AVATAR, mUser.avatar);
         PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_TOTAL_SCORE, mUser.totalScore);
         PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_LOGGED_IN, true);
-        Log.e("TAG", "LoginCallback: " + user.fbId + " " + user.id + " " + user.name + " " + user.address + " " + "\n" + user.avatar);
+        Log.e("TAG", "LoginCallback: "+ user.totalScore + user.fbId + " " + user.id + " " + user.name + " " + user.address + " " + "\n" + user.avatar);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

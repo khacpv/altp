@@ -1,5 +1,6 @@
 package com.example.gcs.faster5.ui.activity;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Typeface;
@@ -10,6 +11,7 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -69,7 +71,7 @@ public class InfoScreen extends AppCompatActivity {
     private boolean isEnemy = false;
     private Dialog connectionDiaglog;
     MediaPlayer mediaPlayer;
-    private Handler handler = new Handler();
+    private Handler handler;
     Runnable resetSearch;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -101,7 +103,6 @@ public class InfoScreen extends AppCompatActivity {
         @Override
         public void onEvent(String event, Object... args) {
             Pair<Room, ArrayList<User>> result = mAltpHelper.searchCallback(args);
-            handler.removeCallbacks(resetSearch);
             OnSearhCallbackEvent eventBus = new OnSearhCallbackEvent();
             eventBus.result = result;
             EventBus.getDefault().post(eventBus);
@@ -109,6 +110,7 @@ public class InfoScreen extends AppCompatActivity {
     };
 
     public void sendSearchRequest(User user) {
+        mButtonSearch.getHandler().postDelayed(resetSearch, 36000);
         if (searchTimes > 0) {
             for (int i = 0; i < 8; i++) {
                 mButtonPlayer[i].setText("NGƯỜI CHƠI");
@@ -117,8 +119,6 @@ public class InfoScreen extends AppCompatActivity {
         }
         this.mUser = user;
         mAltpHelper.search(mUser);
-        handler.postDelayed(resetSearch, 12000);
-
         Log.e("TAG", "searchRequest: " + mUser.id + " " + mUser.name + " " + mUser.address + "\n" + mUser.avatar);
     }
 
@@ -175,9 +175,12 @@ public class InfoScreen extends AppCompatActivity {
 
         popupConnection();
 
+        handler = new Handler();
+
         resetSearch = new Runnable() {
             @Override
             public void run() {
+                Log.e("TAG", "Search Button STOP ");
                 searchBg.stop();
                 searchBg.reset();
                 mButtonSearch.setClickable(true);
@@ -249,7 +252,7 @@ public class InfoScreen extends AppCompatActivity {
         username = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_NAME, "");
         location = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_LOCATION, "");
         linkAvatar = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_URL_AVATAR, "");
-        totalScore = Integer.toString(PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_TOTAL_SCORE, 0));
+        totalScore = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_TOTAL_SCORE, 0)+"";
         userId = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_USER_ID, "");
     }
 
@@ -294,7 +297,6 @@ public class InfoScreen extends AppCompatActivity {
         amanager.setStreamVolume(AudioManager.STREAM_ALARM, maxVolume, 0);
         mediaPlayer = MediaPlayer.create(InfoScreen.this, R.raw.bgsearch);
         mediaPlayer.setLooping(true);
-
     }
 
     public static void setTypeface(Typeface font, TextView... textviews) {
@@ -306,6 +308,7 @@ public class InfoScreen extends AppCompatActivity {
 
     @Subscribe
     public void onEventMainThread(OnSearhCallbackEvent event) {
+        handler.removeCallbacks(resetSearch);
         Pair<Room, ArrayList<User>> result = event.result;
         final Room room = result.first;
         final List<User> dummyUsers = result.second;
@@ -314,13 +317,15 @@ public class InfoScreen extends AppCompatActivity {
         isEnemy = false;
 
         for (User user : room.users) {
+            if (String.valueOf(user.id).equalsIgnoreCase(mUser.id)) {
+                mUser = user;
+            }
             // DO NOT use: user.id != mUser.id
             if (!String.valueOf(user.id).equalsIgnoreCase(mUser.id)) {
                 user.isDummy = false;
                 isEnemy = true;
                 updateEnemy(user);
                 dummyUsers.add(user);
-                break;
             }
         }
 

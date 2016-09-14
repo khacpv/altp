@@ -35,6 +35,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -81,17 +82,13 @@ public class PlayScreen extends AppCompatActivity {
     Dialog ruleDialog;
     MediaPlayer mediaPlayer;
     private int mStt = 1;
-    private int mMyScore = 0;
-    private int mEnemyScore = 0;
     private int answerRight;
-    private int myAnswerIndex = 0;
-    private int enemyAnswerIndex = 0;
     private boolean clickable = true;
     private boolean isCheckFifty = true;
     private long timeLeft;
-    private int mMoney = 0;
+    private String mMoney = "";
     private int mWinner;
-
+    private int mFifty = 0;
 
     private SockAltp.OnSocketEvent answerNextCallback = new SockAltp.OnSocketEvent() {
         @Override
@@ -125,20 +122,39 @@ public class PlayScreen extends AppCompatActivity {
             Pair<Integer, ArrayList<User>> result = mAltpHelper.gameOverCallback(args);
 
             List<User> userGameOver = result.second;
-            if (userGameOver.get(0).isWinner && !userGameOver.get(1).isWinner) {
-                mWinner = 0;
-            } else if (userGameOver.get(1).isWinner && !userGameOver.get(0).isWinner) {
-                mWinner = 1;
-            } else if (userGameOver.get(0).isWinner && userGameOver.get(1).isWinner
-                    || !userGameOver.get(0).isWinner && !userGameOver.get(1).isWinner) {
-                mWinner = -1;
+
+            User user1 = userGameOver.get(0);
+            User user2 = userGameOver.get(1);
+
+            // hoa
+            if (user1.isWinner == user2.isWinner) {
+                mWinner = GameOver.DRAW;
+            } else {
+
+                if ((user1.isWinner && user1.id.equalsIgnoreCase(mUser.id))
+                        || user2.isWinner && user2.id.equalsIgnoreCase(mUser.id)) {
+                    // thang
+                    mWinner = GameOver.WIN;
+                } else {
+                    // thua
+                    mWinner = GameOver.LOSE;
+                }
             }
+
+            if (user1.id.equalsIgnoreCase(mUser.id)) {
+                mUser = user1;
+                Log.e("TAG", "Score Gameover1: " + mUser.score);
+            } else {
+                mUser = user2;
+                Log.e("TAG", "Score Gameover2: " + mUser.score);
+            }
+
 
             boolean isLastQuestion = mAltpHelper.gameOverCallbackGetLastQuestion(args);
             Runnable moveGameOverScr = new Runnable() {
                 @Override
                 public void run() {
-                    startActivity(GameOver.createIntent(PlayScreen.this, mMyScore, mWinner));
+                    startActivity(GameOver.createIntent(PlayScreen.this, mUser.score, mWinner));
                     overridePendingTransition(R.animator.right_in, R.animator.left_out);
                     finish();
                 }
@@ -149,7 +165,7 @@ public class PlayScreen extends AppCompatActivity {
 
             if (isLastQuestion) {
                 handler.removeCallbacks(moveGameOverScr);
-                startActivity(GameOver.createIntent(PlayScreen.this, mMyScore, mWinner));
+                startActivity(GameOver.createIntent(PlayScreen.this, mUser.score, mWinner));
                 overridePendingTransition(R.animator.right_in, R.animator.left_out);
                 finish();
                 return;
@@ -159,6 +175,7 @@ public class PlayScreen extends AppCompatActivity {
 
     @Subscribe
     public void onEventMainThread(final OnGameOverCallbackEvent event) {
+        Log.e("TAG", "onEventMainThread: GAMEOVER");
         Pair<Integer, ArrayList<User>> result = event.result;
         if (result.first < 0) {
             return;
@@ -167,7 +184,7 @@ public class PlayScreen extends AppCompatActivity {
         final List<User> userGameOver = result.second;
         for (User user : userGameOver) {
             if (!String.valueOf(user.id).equalsIgnoreCase(mUser.id)) {
-                enemyAnswerIndex = mEnemy.answerIndex = user.answerIndex;
+                mEnemy.answerIndex = user.answerIndex;
                 mButtonAns[mEnemy.answerIndex].post(new Runnable() {
                     @Override
                     public void run() {
@@ -178,39 +195,39 @@ public class PlayScreen extends AppCompatActivity {
             }
         }
 
-        mButtonAns[myAnswerIndex].postDelayed(new Runnable() {
+        mButtonAns[mUser.answerIndex].postDelayed(new Runnable() {
             @Override
             public void run() {
                 AnimationDrawable btnAnswerDrawable = (AnimationDrawable)
                         getResources().getDrawable(R.drawable.xml_btn_anim);
 
 
-                if (!checkAns(enemyAnswerIndex)) {
-                    mButtonAns[enemyAnswerIndex].setBackgroundResource(R.drawable.answer_wrong);
+                if (!checkAns(mEnemy.answerIndex)) {
+                    mButtonAns[mEnemy.answerIndex].setBackgroundResource(R.drawable.answer_wrong);
                 } else {
                     //Add score for enemy user
 
                     mTextViewMyScore.post(new Runnable() {
                         @Override
                         public void run() {
-                            mEnemyScore = userGameOver.get(0).score;
-                            mTextViewEnemyScore.setText(String.valueOf(mEnemyScore));
+                            mEnemy.score = userGameOver.get(0).score;
+                            mTextViewEnemyScore.setText(String.valueOf(mEnemy.score));
                         }
                     });
                 }
 
-                if (checkAns(myAnswerIndex)) {
+                if (checkAns(mUser.answerIndex)) {
 
                     //Add score for user
                     mTextViewMyScore.post(new Runnable() {
                         @Override
                         public void run() {
-                            mMyScore = userGameOver.get(1).score;
-                            mTextViewMyScore.setText(String.valueOf(mMyScore));
+                            mUser.score = userGameOver.get(1).score;
+                            mTextViewMyScore.setText(String.valueOf(mUser.score));
                         }
                     });
 
-                    switch (myAnswerIndex) {
+                    switch (mUser.answerIndex) {
                         case 0:
                             SoundPoolManager.getInstance().playSound(R.raw.true_a);
                             break;
@@ -226,10 +243,10 @@ public class PlayScreen extends AppCompatActivity {
                     }
 
 
-                    mButtonAns[myAnswerIndex].setBackgroundDrawable(btnAnswerDrawable);
+                    mButtonAns[mUser.answerIndex].setBackgroundDrawable(btnAnswerDrawable);
                     btnAnswerDrawable.start();
                 } else {
-                    mButtonAns[myAnswerIndex].setBackgroundResource(R.drawable.answer_wrong);
+                    mButtonAns[mUser.answerIndex].setBackgroundResource(R.drawable.answer_wrong);
 
                     switch (answerRight) {
                         case 0:
@@ -264,16 +281,20 @@ public class PlayScreen extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            isCheckFifty = true;
                             clickable = true;
-                            setSoundQuestion(mQuestion.questionIndex + 1);
-                            setQA(mQuestion.questionIndex + 1);
+                            setSoundQuestion(mQuestion.questionIndex);
+                            setQA(mQuestion.questionIndex);
                         }
                     });
-                    if (mQuestion.questionIndex == 4) {
+                    if (mQuestion.questionIndex == 5
+                            || mQuestion.questionIndex == 10
+                            || mQuestion.questionIndex == 15) {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 SoundPoolManager.getInstance().playSound(R.raw.important);
+                                Log.e("TAG", "NHAC CAU 5, 10, 15 ");
                             }
                         }, 1000);
                     }
@@ -294,7 +315,7 @@ public class PlayScreen extends AppCompatActivity {
         for (User user : answerUserList) {
             if (!String.valueOf(user.id).equalsIgnoreCase(mUser.id)) {
                 Log.e("TAG", "mEnemyanswer: " + mEnemy.answerIndex);
-                enemyAnswerIndex = mEnemy.answerIndex = user.answerIndex;
+                mEnemy.answerIndex = user.answerIndex;
 
                 mAltpHelper.getNextQuestion(mUser, mRoom);
 
@@ -308,22 +329,22 @@ public class PlayScreen extends AppCompatActivity {
         }
 
         // Kiem tra cau tra loi
-        mButtonAns[myAnswerIndex].postDelayed(new Runnable() {
+        mButtonAns[mUser.answerIndex].postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (checkAns(myAnswerIndex)) {
+                if (checkAns(mUser.answerIndex)) {
                     //Add score for user
                     mTextViewMyScore.post(new Runnable() {
                         @Override
                         public void run() {
-                            mEnemyScore = answerUserList.get(0).score;
-                            mMyScore = answerUserList.get(1).score;
-                            mTextViewMyScore.setText(String.valueOf(mMyScore));
-                            mTextViewEnemyScore.setText(String.valueOf(mEnemyScore));
+                            mEnemy.score = answerUserList.get(0).score;
+                            mUser.score = answerUserList.get(1).score;
+                            mTextViewMyScore.setText(String.valueOf(mUser.score));
+                            mTextViewEnemyScore.setText(String.valueOf(mEnemy.score));
                         }
                     });
 
-                    switch (myAnswerIndex) {
+                    switch (mUser.answerIndex) {
                         case 0:
                             SoundPoolManager.getInstance().playSound(R.raw.true_a);
                             break;
@@ -340,7 +361,7 @@ public class PlayScreen extends AppCompatActivity {
 
                     AnimationDrawable btnAnswerDrawable = (AnimationDrawable)
                             getResources().getDrawable(R.drawable.xml_btn_anim);
-                    mButtonAns[myAnswerIndex].setBackgroundDrawable(btnAnswerDrawable);
+                    mButtonAns[mUser.answerIndex].setBackgroundDrawable(btnAnswerDrawable);
                     btnAnswerDrawable.start();
 
                     handler.postDelayed(new Runnable() {
@@ -411,7 +432,7 @@ public class PlayScreen extends AppCompatActivity {
 
         findViewById();
         setUserInfo();
-        setQA(0);
+        setQA(1);
         popupRule();
 
     }
@@ -555,7 +576,7 @@ public class PlayScreen extends AppCompatActivity {
 
     public void setQA(int stt) {
         this.mStt = stt;
-        setTxtRound(mStt + 1);
+        setTxtRound(mStt);
         mTextViewQuestion.setText(mQuestion.mQuestion);
         mTextViewAns1.setText("A: " + mQuestion.mAns.get(0));
         mTextViewAns2.setText("B: " + mQuestion.mAns.get(1));
@@ -619,12 +640,13 @@ public class PlayScreen extends AppCompatActivity {
     }
 
     public boolean checkEnemyAns(int answerIndex) {
-        return answerIndex == myAnswerIndex;
+        return answerIndex == mUser.answerIndex;
     }
 
     public void btnAnswerClick(final View btnAnswer) {
         if (clickable) {
             mediaPlayer.pause();
+            isCheckFifty = false;
             clickable = false;
             mTimeLeft.cancel();
             final int n = new Random().nextInt(2) + 1;
@@ -638,7 +660,7 @@ public class PlayScreen extends AppCompatActivity {
                             SoundPoolManager.getInstance().playSound(R.raw.ans_a2);
                             break;
                     }
-                    myAnswerIndex = 0;
+                    mUser.answerIndex = 0;
                     break;
                 case R.id.button_ans2:
                     switch (n) {
@@ -649,7 +671,7 @@ public class PlayScreen extends AppCompatActivity {
                             SoundPoolManager.getInstance().playSound(R.raw.ans_b2);
                             break;
                     }
-                    myAnswerIndex = 1;
+                    mUser.answerIndex = 1;
                     break;
                 case R.id.button_ans3:
                     switch (n) {
@@ -660,7 +682,7 @@ public class PlayScreen extends AppCompatActivity {
                             SoundPoolManager.getInstance().playSound(R.raw.ans_c2);
                             break;
                     }
-                    myAnswerIndex = 2;
+                    mUser.answerIndex = 2;
                     break;
                 case R.id.button_ans4:
                     switch (n) {
@@ -671,10 +693,10 @@ public class PlayScreen extends AppCompatActivity {
                             SoundPoolManager.getInstance().playSound(R.raw.ans_d2);
                             break;
                     }
-                    myAnswerIndex = 3;
+                    mUser.answerIndex = 3;
                     break;
             }
-            mAltpHelper.answer(mUser, mRoom, myAnswerIndex);
+            mAltpHelper.answer(mUser, mRoom, mUser.answerIndex);
 
             btnAnswer.setBackgroundResource(R.drawable.answer1);
         }
@@ -689,22 +711,52 @@ public class PlayScreen extends AppCompatActivity {
     private void setTxtRound(int round) {
         switch (round) {
             case 1:
-                mMoney = 200000;
+                mMoney = "200.000";
                 break;
             case 2:
-                mMoney = 400000;
+                mMoney = "400.000";
                 break;
             case 3:
-                mMoney = 600000;
+                mMoney = "600.000";
                 break;
             case 4:
-                mMoney = 1000000;
+                mMoney = "1.000.000";
                 break;
             case 5:
-                mMoney = 2000000;
+                mMoney = "2.000.000";
+                break;
+            case 6:
+                mMoney = "3.000.000";
+                break;
+            case 7:
+                mMoney = "6.000.000";
+                break;
+            case 8:
+                mMoney = "10.000.000";
+                break;
+            case 9:
+                mMoney = "14.000.000";
+                break;
+            case 10:
+                mMoney = "22.000.000";
+                break;
+            case 11:
+                mMoney = "30.000.000";
+                break;
+            case 12:
+                mMoney = "40.000.000";
+                break;
+            case 13:
+                mMoney = "60.000.000";
+                break;
+            case 14:
+                mMoney = "85.000.000";
+                break;
+            case 15:
+                mMoney = "150.000.000";
                 break;
         }
-        mTextViewMoneyQuestion.setText(String.valueOf(mMoney));
+        mTextViewMoneyQuestion.setText(mMoney);
         mTextViewRound.setText(String.valueOf(round));
     }
 
@@ -716,7 +768,8 @@ public class PlayScreen extends AppCompatActivity {
     }
 
     public void fifty(View fifty) {
-        if (isCheckFifty && clickable) {
+        if (isCheckFifty && clickable && mFifty == 0) {
+            mFifty = 1;
             SoundPoolManager.getInstance().playSound(R.raw.sound5050);
             isCheckFifty = false;
             mButtonAns[0].postDelayed(new Runnable() {
