@@ -62,7 +62,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/textview_money"
+                android:id="@+id/textview_total_score"
                 android:layout_width="220dp"
                 android:layout_height="45dp"
                 android:layout_alignLeft="@+id/imageview_useravatar"

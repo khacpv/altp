@@ -14,7 +14,7 @@ public class PrefUtils {
     public static final String KEY_LOGGED_IN = "logged_in";
     public static final String KEY_ACCESS_TOKEN_FB = "access_token";
     public static final String KEY_NAME = "name";
-    public static final String KEY_MONEY = "money";
+    public static final String KEY_TOTAL_SCORE = "total_score";
     public static final String KEY_URL_AVATAR = "url";
     public static final String KEY_LOCATION = "localtion";
     public static final String KEY_USER_ID = "id";

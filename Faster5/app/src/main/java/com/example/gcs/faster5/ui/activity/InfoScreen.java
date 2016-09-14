@@ -49,7 +49,7 @@ import io.socket.client.Socket;
  */
 public class InfoScreen extends AppCompatActivity {
     private TextView mTextViewNameUser;
-    private TextView mTextViewMoney;
+    private TextView mTextViewTotalScore;
     private TextView mTextViewCity;
     private ImageView mImageViewAvatar;
     private Button[] mButtonPlayer = new Button[8];
@@ -61,7 +61,7 @@ public class InfoScreen extends AppCompatActivity {
     private String username;
     private String linkAvatar;
     private String location;
-    private String money;
+    private String totalScore;
     private String userId;
     private final HexagonDrawable searchBg = new HexagonDrawable();
     private int searchTimes = 0;
@@ -117,7 +117,7 @@ public class InfoScreen extends AppCompatActivity {
         }
         this.mUser = user;
         mAltpHelper.search(mUser);
-        handler.postDelayed(resetSearch , 12000);
+        handler.postDelayed(resetSearch, 12000);
 
         Log.e("TAG", "searchRequest: " + mUser.id + " " + mUser.name + " " + mUser.address + "\n" + mUser.avatar);
     }
@@ -216,15 +216,11 @@ public class InfoScreen extends AppCompatActivity {
                 "fonts/roboto.ttf");
 
         mTextViewNameUser = (TextView) findViewById(R.id.textview_usernname);
-        mTextViewNameUser.setTypeface(font);
-
         mTextViewCity = (TextView) findViewById(R.id.textview_city_info);
-        mTextViewCity.setTypeface(font);
-
         mImageViewAvatar = (ImageView) findViewById(R.id.imageview_useravatar);
+        mTextViewTotalScore = (TextView) findViewById(R.id.textview_total_score);
 
-        mTextViewMoney = (TextView) findViewById(R.id.textview_money);
-        mTextViewMoney.setTypeface(font);
+        setTypeface(font, mTextViewCity, mTextViewNameUser, mTextViewTotalScore);
 
         connectionDiaglog = new Dialog(this);
 
@@ -253,7 +249,7 @@ public class InfoScreen extends AppCompatActivity {
         username = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_NAME, "");
         location = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_LOCATION, "");
         linkAvatar = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_URL_AVATAR, "");
-        money = Integer.toString(PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_MONEY, 0));
+        totalScore = Integer.toString(PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_TOTAL_SCORE, 0));
         userId = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_USER_ID, "");
     }
 
@@ -268,7 +264,7 @@ public class InfoScreen extends AppCompatActivity {
         mTextViewNameUser.setText(username);
         mTextViewCity.setText(location);
         Glide.with(getApplicationContext()).load(linkAvatar).into(mImageViewAvatar);
-        mTextViewMoney.setText(money);
+        mTextViewTotalScore.setText(totalScore);
     }
 
     public void buttonPlayer() {
@@ -300,6 +296,13 @@ public class InfoScreen extends AppCompatActivity {
         mediaPlayer.setLooping(true);
 
     }
+
+    public static void setTypeface(Typeface font, TextView... textviews) {
+        for (TextView textView : textviews) {
+            textView.setTypeface(font);
+        }
+    }
+
 
     @Subscribe
     public void onEventMainThread(OnSearhCallbackEvent event) {
