@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Pair;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -35,7 +36,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -831,7 +831,9 @@ public class PlayScreen extends AppCompatActivity {
 
     public static void autoFitText(TextView... textviews) {
         for (TextView textView : textviews) {
-            AutofitHelper.create(textView);
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,18);
+            AutofitHelper helper = AutofitHelper.create(textView);
+            helper.setTextSize(textView.getTextSize());
         }
     }
 
