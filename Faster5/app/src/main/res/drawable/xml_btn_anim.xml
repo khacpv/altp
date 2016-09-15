@@ -10,4 +10,5 @@
     <item android:drawable="@drawable/answer_right" android:duration="200" />
     <item android:drawable="@drawable/answer0" android:duration="200" />
     <item android:drawable="@drawable/answer_right" android:duration="200" />
+    <item android:drawable="@drawable/answer_right" android:duration="200" />
 </animation-list>
