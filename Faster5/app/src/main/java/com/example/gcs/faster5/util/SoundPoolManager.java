@@ -56,11 +56,11 @@ public class SoundPoolManager {
                     .build();
             soundPool = new SoundPool.Builder()
                     .setAudioAttributes(attributes)
-                    .setMaxStreams(45)
+                    .setMaxStreams(1)
                     .build();
 
         } else {
-            soundPool = new SoundPool(45, AudioManager.STREAM_MUSIC, 100);
+            soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 100);
         }
 
 
