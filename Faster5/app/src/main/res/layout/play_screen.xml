@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/background"
     android:orientation="vertical"
-    tools:context=".ui.activity.MainActivity">
+    tools:context="com.oic.game.ailatrieuphu.ui.activity.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -206,8 +206,8 @@
 
             <TextView
                 android:id="@+id/textview_tablequestion"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_marginTop="18dp"
@@ -217,7 +217,7 @@
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
                 android:paddingTop="5dp"
-                android:text="Một con vịt có 12312312312312?"
+                android:text="Một con vịtjhhhhhhhh có 12312312312312?"
                 android:textColor="#FFF"
                 android:textSize="20sp"
                 android:textStyle="bold" />

@@ -5,7 +5,7 @@ android {
     buildToolsVersion "23.0.3"
 
     defaultConfig {
-        applicationId "com.example.gcs.faster5"
+        applicationId "com.game.oic.ailatrieuphu"
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
@@ -44,6 +44,7 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'me.grantland:autofittextview:0.2.+'
     compile 'com.github.PhilJay:MPAndroidChart:v2.1.6'
+    compile 'com.inthecheesefactory.thecheeselibrary:adjustable-imageview:1.0.0'
     compile('io.socket:socket.io-client:0.7.0')
     {
         exclude group: 'org.json', module: 'json'

@@ -34,24 +34,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:maxLines="3"
-            android:text="Bạn muốn chọn \nảnh đại diện cho mình luôn chứ?"
+            android:text="Bạn muốn chọn ảnh đại diện cho mình luôn chứ?"
             android:textColor="#00366D"
-            android:textSize="16sp" />
+            android:textSize="24sp" />
 
         <Button
             android:id="@+id/button_camera"
-            android:layout_width="wrap_content"
+            android:layout_width="250dp"
             android:layout_height="50dp"
+            android:layout_gravity="center"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="30dp"
             android:background="@drawable/answer0"
-            android:gravity="center"
             android:paddingBottom="10dp"
             android:text="Từ Camera"
             android:textAllCaps="false"
@@ -61,14 +61,14 @@
 
         <Button
             android:id="@+id/button_gallery"
-            android:layout_width="wrap_content"
+            android:layout_width="250dp"
             android:layout_height="50dp"
+            android:layout_gravity="center"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:background="@drawable/answer0"
             android:clickable="true"
-            android:gravity="center"
             android:paddingBottom="10dp"
             android:text="Từ bộ sưu tập"
             android:textAllCaps="false"
@@ -78,14 +78,12 @@
 
         <Button
             android:id="@+id/button_later"
-            android:layout_width="wrap_content"
+            android:layout_width="250dp"
             android:layout_height="50dp"
+            android:layout_gravity="center"
             android:layout_marginBottom="10dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/btn_later"
-            android:gravity="center" />
+            android:layout_marginTop="5dp"
+            android:background="@drawable/btn_later" />
 
     </LinearLayout>
 </RelativeLayout>
