@@ -45,22 +45,38 @@
             android:textColor="#00366D"
             android:textSize="20sp" />
 
-        <Button
-            android:id="@+id/button_okay"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:layout_marginBottom="30dp"
-            android:layout_marginLeft="80dp"
-            android:layout_marginRight="80dp"
-            android:layout_marginTop="30dp"
-            android:background="@drawable/answer0"
-            android:paddingBottom="10dp"
-            android:text="Đồng ý"
-            android:textAllCaps="false"
-            android:textColor="#ffffff"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="30dp">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="3dp"
+                android:background="#00366D" />
+
+            <Button
+                android:id="@+id/button_okay"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="80dp"
+                android:layout_marginRight="80dp"
+                android:background="@drawable/answer0"
+                android:paddingBottom="10dp"
+                android:text="Đồng ý"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+
+        </FrameLayout>
+
 
 
     </LinearLayout>

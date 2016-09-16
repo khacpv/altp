@@ -43,47 +43,91 @@
             android:textColor="#00366D"
             android:textSize="24sp" />
 
-        <Button
-            android:id="@+id/button_camera"
-            android:layout_width="250dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="30dp"
-            android:background="@drawable/answer0"
-            android:paddingBottom="10dp"
-            android:text="Từ Camera"
-            android:textAllCaps="false"
-            android:textColor="#ffffff"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="30dp">
 
-        <Button
-            android:id="@+id/button_gallery"
-            android:layout_width="250dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/answer0"
-            android:clickable="true"
-            android:paddingBottom="10dp"
-            android:text="Từ bộ sưu tập"
-            android:textAllCaps="false"
-            android:textColor="#ffffff"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="3dp"
+                android:background="#00366D" />
 
-        <Button
-            android:id="@+id/button_later"
-            android:layout_width="250dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:layout_marginBottom="10dp"
+            <Button
+                android:id="@+id/button_camera"
+                android:layout_width="250dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:background="@drawable/answer0"
+                android:paddingBottom="10dp"
+                android:text="Từ Camera"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="5dp">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="3dp"
+                android:background="#00366D" />
+
+            <Button
+                android:id="@+id/button_gallery"
+                android:layout_width="250dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:background="@drawable/answer0"
+                android:clickable="true"
+                android:paddingBottom="10dp"
+                android:text="Từ bộ sưu tập"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:layout_marginTop="5dp"
-            android:background="@drawable/btn_later" />
+            android:layout_marginBottom="20dp">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="4dp"
+                android:background="#00366D" />
+
+            <Button
+                android:id="@+id/button_later"
+                android:layout_width="250dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:background="@drawable/btn_later" />
+
+
+        </FrameLayout>
+
 
     </LinearLayout>
 </RelativeLayout>

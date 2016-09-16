@@ -34,6 +34,7 @@ import com.oic.game.ailatrieuphu.util.SoundPoolManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,12 +119,42 @@ public class PlayScreen extends AppCompatActivity {
         }
     };
 
+    private SockAltp.OnSocketEvent quitCallback = new SockAltp.OnSocketEvent() {
+
+        @Override
+        public void onEvent(String event, Object... args) {
+            ArrayList<User> quitUser = mAltpHelper.quitCallback(args);
+
+            User user1 = quitUser.get(0);
+            User user2 = quitUser.get(1);
+            mWinner = GameOver.GIVEUP;
+
+            if (user1.id.equalsIgnoreCase(mUser.id)) {
+                mUser = user1;
+                Log.e("TAG", "Score Gameover1: " + mUser.score + mUser.name);
+            } else {
+                mUser = user2;
+                Log.e("TAG", "Score Gameover2: " + mUser.score + mUser.name);
+            }
+
+            startActivity(GameOver.createIntent(PlayScreen.this, mUser.score, mWinner));
+            overridePendingTransition(R.animator.right_in, R.animator.left_out);
+            finish();
+
+        }
+    };
 
     private SockAltp.OnSocketEvent gameOverCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
             OnGameOverCallbackEvent eventBus = new OnGameOverCallbackEvent();
             ArrayList<User> userGameOver = mAltpHelper.gameOverCallback(args);
+            boolean isLastQuesion = mAltpHelper.gameOverCallbackGetLastQuestion(args);
+            int timeMoveGameOver = 8000;
+            if (isLastQuesion) {
+                timeMoveGameOver = 2000;
+            }
+
             User user1 = userGameOver.get(0);
             User user2 = userGameOver.get(1);
 
@@ -158,8 +189,9 @@ public class PlayScreen extends AppCompatActivity {
                     finish();
                 }
             };
-            handler.postDelayed(moveGameOverScr, 8000 + timeQuestionImpor);
+            handler.postDelayed(moveGameOverScr, timeMoveGameOver + timeQuestionImpor);
             eventBus.result = userGameOver;
+            eventBus.isLastQuestion = isLastQuesion;
             EventBus.getDefault().post(eventBus);
         }
     };
@@ -168,6 +200,11 @@ public class PlayScreen extends AppCompatActivity {
     public void onEventMainThread(final OnGameOverCallbackEvent event) {
         Log.e("TAG", "onEventMainThread: GAMEOVER");
         final ArrayList<User> userGameOver = event.result;
+
+        if (event.isLastQuestion) {
+            return;
+        }
+
         for (User user : userGameOver) {
             if (!String.valueOf(user.id).equalsIgnoreCase(mUser.id)) {
                 mEnemy.answerIndex = user.answerIndex;
@@ -201,7 +238,6 @@ public class PlayScreen extends AppCompatActivity {
         if (mQuestion.questionIndex == 5 || mQuestion.questionIndex == 10 || mQuestion.questionIndex == 15) {
             handler.postDelayed(ansNow, timeQuestionImpor);
         }
-
         mButtonAns[mUser.answerIndex].postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -531,6 +567,7 @@ public class PlayScreen extends AppCompatActivity {
         mSocketAltp.addEvent("answer", answerCallback);
         mSocketAltp.addEvent("answerNext", answerNextCallback);
         mSocketAltp.addEvent("gameOver", gameOverCallback);
+        mSocketAltp.addEvent("quit", quitCallback);
 
         mTimeLeft = new CountDownTimer(11000, 1000) {
             public void onTick(long millisUntilFinished) {
@@ -721,16 +758,10 @@ public class PlayScreen extends AppCompatActivity {
         quitDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         quitDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 
-        Button quitBtn = (Button) quitDialog.findViewById(R.id.button_quit);
-        Button continueBtn = (Button) quitDialog.findViewById(R.id.button_continue);
+        final Button quitBtn = (Button) quitDialog.findViewById(R.id.button_quit);
+        final Button continueBtn = (Button) quitDialog.findViewById(R.id.button_continue);
 
-        quitBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-                mAltpHelper.quit(mUser, mRoom);
-            }
-        });
+        final TextView noti = (TextView) quitDialog.findViewById(R.id.noti);
 
         continueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -740,6 +771,17 @@ public class PlayScreen extends AppCompatActivity {
             }
         });
 
+        quitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                mAltpHelper.quit(mUser, mRoom);
+                noti.setText("Vui lòng đợi!");
+                quitBtn.setEnabled(false);
+                continueBtn.setEnabled(false);
+
+            }
+        });
     }
 
     private void setUserInfo() {
@@ -1013,6 +1055,7 @@ public class PlayScreen extends AppCompatActivity {
 
     public static class OnGameOverCallbackEvent {
         ArrayList<User> result;
+        boolean isLastQuestion;
     }
 
     public static class OnAnsCallbackEvent {

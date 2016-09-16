@@ -336,7 +336,7 @@ public class InfoScreen extends AppCompatActivity {
 
             searchBg.stop();
 
-            for (int i = 0; i < dummyUsers.size(); i++) {
+            for (int i = 0; i < Math.min(mButtonPlayer.length,dummyUsers.size()); i++) {
                 final int _i = i;
                 if (!dummyUsers.get(_i).isDummy) {
                     enemyNumberInList = _i;

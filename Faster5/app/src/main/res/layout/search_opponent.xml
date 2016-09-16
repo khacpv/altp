@@ -70,11 +70,11 @@
     <com.inthecheesefactory.thecheeselibrary.widget.AdjustableImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
-        android:src="@drawable/icon_opponent"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"/>
+        android:src="@drawable/icon_opponent" />
 
     <RelativeLayout
         android:id="@+id/layout_opponent2"
@@ -142,7 +142,7 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginBottom="1dp"
+            android:layout_marginTop="1dp"
             android:background="#FFF" />
 
         <Button
@@ -174,7 +174,7 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginBottom="1dp"
+            android:layout_marginTop="1dp"
             android:background="#FFF" />
 
         <Button

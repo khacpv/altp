@@ -33,6 +33,7 @@ public class GameOver extends AppCompatActivity {
     public static final int DRAW = -1;
     public static final int WIN = 1;
     public static final int LOSE = 0;
+    public static final int GIVEUP = 2;
 
     ImageView mImageViewUserAvatar;
     TextView mTextViewNameUser;
@@ -137,6 +138,11 @@ public class GameOver extends AppCompatActivity {
                 break;
             case LOSE:
                 mTextViewResultText.setText("CHÚC BẠN MAY MẮN");
+                SoundPoolManager.getInstance().playSound(R.raw.lose);
+                startMedia(3000);
+                break;
+            case GIVEUP:
+                mTextViewResultText.setText("BẠN RẤT TỈNH TÁO");
                 SoundPoolManager.getInstance().playSound(R.raw.lose);
                 startMedia(3000);
                 break;
