@@ -82,18 +82,31 @@ public class MainActivity extends AppCompatActivity {
         sounds.add(R.raw.ques14);
         sounds.add(R.raw.ques15);
         sounds.add(R.raw.true_a);
+        sounds.add(R.raw.true_a2);
+        sounds.add(R.raw.true_a3);
         sounds.add(R.raw.true_b);
+        sounds.add(R.raw.true_b2);
         sounds.add(R.raw.true_c);
-        sounds.add(R.raw.true_d);
+        sounds.add(R.raw.true_c2);
+        sounds.add(R.raw.true_c3);
+        sounds.add(R.raw.true_d2);
+        sounds.add(R.raw.true_d3);
         sounds.add(R.raw.lose_a);
         sounds.add(R.raw.lose_b);
         sounds.add(R.raw.lose_c);
+        sounds.add(R.raw.lose_c2);
         sounds.add(R.raw.lose_d);
+        sounds.add(R.raw.lose_d2);
         sounds.add(R.raw.important);
         sounds.add(R.raw.sound5050);
         sounds.add(R.raw.best_player);
         sounds.add(R.raw.pass_good);
         sounds.add(R.raw.lose);
+        sounds.add(R.raw.ans_now1);
+        sounds.add(R.raw.ans_now2);
+        sounds.add(R.raw.ans_now3);
+        sounds.add(R.raw.vuot_moc_1);
+        sounds.add(R.raw.vuot_moc_2);
 
         SoundPoolManager.getInstance().setSounds(sounds);
         SoundPoolManager.getInstance().setPlaySound(true);
@@ -106,13 +119,13 @@ public class MainActivity extends AppCompatActivity {
                         Intent myIntent = new Intent(getApplicationContext(), LoginScreen.class);
                         myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                         startActivity(myIntent);
-                        overridePendingTransition(0,0);
+                        overridePendingTransition(0, 0);
                         finish();
                     } else {
                         Intent myIntent = new Intent(getApplicationContext(), InfoScreen.class);
                         myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                         startActivity(myIntent);
-                        overridePendingTransition(0,0);
+                        overridePendingTransition(0, 0);
                         finish();
                     }
                 }

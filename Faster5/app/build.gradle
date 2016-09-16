@@ -21,6 +21,11 @@ android {
     useLibrary 'org.apache.http.legacy'
 }
 
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
@@ -38,7 +43,9 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'me.grantland:autofittextview:0.2.+'
-    compile('io.socket:socket.io-client:0.7.0') {
+    compile 'com.github.PhilJay:MPAndroidChart:v2.1.6'
+    compile('io.socket:socket.io-client:0.7.0')
+    {
         exclude group: 'org.json', module: 'json'
     }
 }

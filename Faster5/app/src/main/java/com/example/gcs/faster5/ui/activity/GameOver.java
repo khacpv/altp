@@ -168,6 +168,7 @@ public class GameOver extends AppCompatActivity {
 
     public void onBackPressed() {
         backInfo(getCurrentFocus());
+        super.onBackPressed();
     }
 
 
