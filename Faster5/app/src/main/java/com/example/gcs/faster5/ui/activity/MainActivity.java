@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
         sounds.add(R.raw.true_a3);
         sounds.add(R.raw.true_b);
         sounds.add(R.raw.true_b2);
-        sounds.add(R.raw.true_b3);
         sounds.add(R.raw.true_c);
         sounds.add(R.raw.true_c2);
         sounds.add(R.raw.true_c3);

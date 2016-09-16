@@ -2,7 +2,6 @@ package com.example.gcs.faster5.ui.activity;
 
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -43,7 +42,6 @@ import com.example.gcs.faster5.model.User;
 import com.example.gcs.faster5.sock.AltpHelper;
 import com.example.gcs.faster5.sock.SockAltp;
 import com.example.gcs.faster5.util.CameraUtils;
-import com.example.gcs.faster5.util.ISoundPoolLoaded;
 import com.example.gcs.faster5.util.JSONParser;
 import com.example.gcs.faster5.util.NetworkUtils;
 import com.example.gcs.faster5.util.PrefUtils;
@@ -67,10 +65,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import io.socket.client.Socket;
@@ -733,11 +728,11 @@ public class LoginScreen extends AppCompatActivity {
     }
 
     private void requestPermission() {
-
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 && ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 && ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
 
+            captureImage();
         } else {
 
             ActivityCompat.requestPermissions(this, new String[]{
@@ -754,9 +749,7 @@ public class LoginScreen extends AppCompatActivity {
         switch (requestCode) {
             case PERMISSION_REQUEST_CODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                } else {
-
+                    captureImage();
                 }
                 break;
 

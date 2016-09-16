@@ -65,23 +65,7 @@ public class AltpHelper {
                 return null;
             }
             Log.e("TAG", "login success");
-
-            JSONObject user = data.getJSONObject("user");
-            String userId = user.getString("id");
-            String name = user.getString("name");
-            String avatar = user.getString("avatar");
-            String address = user.getString("address");
-            String fbId = user.getString("fbId");
-            String room = user.getString("room");
-            int totalScore = user.getInt("totalScore");
-
-            result.id = userId;
-            result.name = name;
-            result.avatar = avatar;
-            result.address = address;
-            result.room = room;
-            result.fbId = fbId;
-            result.totalScore = totalScore;
+            return new Gson().fromJson(data.get("user").toString(), User.class);
         } catch (JSONException e) {
             e.printStackTrace();
         }
