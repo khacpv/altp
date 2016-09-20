@@ -60,26 +60,6 @@ public class SearchOpponent extends AppCompatActivity {
     Button mButtonSeach;
     Handler handler = new Handler();
 
-    private SockAltp.OnSocketEvent globalCallback = new SockAltp.OnSocketEvent() {
-        @Override
-        public void onEvent(String event, Object... args) {
-            switch (event) {
-                case Socket.EVENT_CONNECTING:
-                    Log.e("TAG_SeaOppo", "connecting");
-                    break;
-                case Socket.EVENT_CONNECT:  // auto call on connect to server
-                    Log.e("TAG_SeaOppo", "connect");
-                    break;
-                case Socket.EVENT_CONNECT_ERROR:
-                    Log.e("TAG_SeaOppo", "error");
-                    break;
-                case Socket.EVENT_CONNECT_TIMEOUT:
-                    Log.e("TAG_SeaOppo", "timeout");
-                    break;
-            }
-        }
-    };
-
     private SockAltp.OnSocketEvent playCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
@@ -129,7 +109,6 @@ public class SearchOpponent extends AppCompatActivity {
             mSocketAltp.connect();
         }
         mSocketAltp.addEvent("play", playCallback);
-        mSocketAltp.addGlobalEvent(globalCallback);
         findViewById();
         popupWait();
         setInfoUser();

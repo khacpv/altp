@@ -137,12 +137,20 @@ public class GameOver extends AppCompatActivity {
                 startMedia(6000);
                 break;
             case LOSE:
-                mTextViewResultText.setText("CHÚC BẠN MAY MẮN");
+                if (mScore == 0) {
+                    mTextViewResultText.setText("THẤT BẠI ĐAU ĐỚN");
+                } else {
+                    mTextViewResultText.setText("CHÚC BẠN MAY MẮN");
+                }
                 SoundPoolManager.getInstance().playSound(R.raw.lose);
                 startMedia(3000);
                 break;
             case GIVEUP:
-                mTextViewResultText.setText("BẠN RẤT TỈNH TÁO");
+                if (mScore == 0) {
+                    mTextViewResultText.setText("THẤT BẠI ĐAU ĐỚN");
+                } else {
+                    mTextViewResultText.setText("BẠN RẤT TỈNH TÁO");
+                }
                 SoundPoolManager.getInstance().playSound(R.raw.lose);
                 startMedia(3000);
                 break;

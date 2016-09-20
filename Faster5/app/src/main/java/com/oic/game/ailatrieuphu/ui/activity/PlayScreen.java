@@ -19,10 +19,18 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.oic.game.ailatrieuphu.MainApplication;
 import com.oic.game.ailatrieuphu.R;
 import com.oic.game.ailatrieuphu.model.Question;
@@ -34,12 +42,12 @@ import com.oic.game.ailatrieuphu.util.SoundPoolManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import io.socket.client.Socket;
 import me.grantland.widget.AutofitHelper;
 
 /**
@@ -80,9 +88,14 @@ public class PlayScreen extends AppCompatActivity {
     private Room mRoom;
     private Question mQuestion;
     Handler handler = new Handler();
+    Runnable hideRuleDialog;
+    Runnable offSoundVuotMoc;
+    Runnable musicImpor;
     Dialog ruleDialog;
     Dialog quitDialog;
+    Dialog barChartDialog;
     MediaPlayer mediaPlayer;
+    BarChart barChart;
     private boolean clickable = true;
     private boolean isCheckFifty = true;
     private long timeLeft;
@@ -92,8 +105,30 @@ public class PlayScreen extends AppCompatActivity {
     private int timeQuestionImpor = 0;
     private int timeQuestion15 = 0;
     boolean checkVuotMoc = false;
-    Runnable hideRuleDialog;
-    Runnable offSoundVuotMoc;
+
+    private SockAltp.OnSocketEvent globalCallback = new SockAltp.OnSocketEvent() {
+        @Override
+        public void onEvent(String event, Object... args) {
+            switch (event) {
+                case Socket.EVENT_CONNECTING:
+                    Log.e("TAG_PLAY", "connecting");
+                    break;
+                case Socket.EVENT_DISCONNECT:
+                    Log.e("TAG_PLAY", "disconnected");
+                    break;
+                case Socket.EVENT_CONNECT:  // auto call on connect to server
+                    Log.e("TAG_PLAY", "connect");
+                    break;
+                case Socket.EVENT_CONNECT_ERROR:
+                    Log.e("TAG_PLAY", "error");
+                    break;
+                case Socket.EVENT_CONNECT_TIMEOUT:
+                    mSocketAltp.connect();
+                    Log.e("TAG_PLAY", "timeout");
+                    break;
+            }
+        }
+    };
 
     private SockAltp.OnSocketEvent answerNextCallback = new SockAltp.OnSocketEvent() {
         @Override
@@ -136,11 +171,14 @@ public class PlayScreen extends AppCompatActivity {
                 mUser = user2;
                 Log.e("TAG", "Score Gameover2: " + mUser.score + mUser.name);
             }
-
-            startActivity(GameOver.createIntent(PlayScreen.this, mUser.score, mWinner));
-            overridePendingTransition(R.animator.right_in, R.animator.left_out);
-            finish();
-
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    startActivity(GameOver.createIntent(PlayScreen.this, mUser.score, mWinner));
+                    overridePendingTransition(R.animator.right_in, R.animator.left_out);
+                    finish();
+                }
+            });
         }
     };
 
@@ -189,9 +227,8 @@ public class PlayScreen extends AppCompatActivity {
                     finish();
                 }
             };
-            handler.postDelayed(moveGameOverScr, timeMoveGameOver + timeQuestionImpor);
+            handler.postDelayed(moveGameOverScr, timeMoveGameOver + timeQuestionImpor + timeQuestion15);
             eventBus.result = userGameOver;
-            eventBus.isLastQuestion = isLastQuesion;
             EventBus.getDefault().post(eventBus);
         }
     };
@@ -200,10 +237,6 @@ public class PlayScreen extends AppCompatActivity {
     public void onEventMainThread(final OnGameOverCallbackEvent event) {
         Log.e("TAG", "onEventMainThread: GAMEOVER");
         final ArrayList<User> userGameOver = event.result;
-
-        if (event.isLastQuestion) {
-            return;
-        }
 
         for (User user : userGameOver) {
             if (!String.valueOf(user.id).equalsIgnoreCase(mUser.id)) {
@@ -405,12 +438,13 @@ public class PlayScreen extends AppCompatActivity {
                     });
                     if (mQuestion.questionIndex == 5 || mQuestion.questionIndex == 10 || mQuestion.questionIndex == 15) {
                         timeQuestionImpor = 5000;
-                        handler.postDelayed(new Runnable() {
+                        musicImpor = new Runnable() {
                             @Override
                             public void run() {
                                 SoundPoolManager.getInstance().playSound(R.raw.important);
                             }
-                        }, 1500 + timeQuestion15);
+                        };
+                        handler.postDelayed(musicImpor, 1500 + timeQuestion15);
                     } else {
                         timeQuestionImpor = 0;
                     }
@@ -431,9 +465,9 @@ public class PlayScreen extends AppCompatActivity {
             if (!String.valueOf(user.id).equalsIgnoreCase(mUser.id)) {
                 Log.e("TAG", "mEnemyanswer: " + mEnemy.answerIndex);
                 mEnemy.answerIndex = user.answerIndex;
-
-                mAltpHelper.getNextQuestion(mUser, mRoom);
-
+                if (mQuestion.questionIndex < 15) {
+                    mAltpHelper.getNextQuestion(mUser, mRoom);
+                }
                 mButtonAns[mEnemy.answerIndex].post(new Runnable() {
                     @Override
                     public void run() {
@@ -563,7 +597,7 @@ public class PlayScreen extends AppCompatActivity {
         if (!mSocketAltp.isConnected()) {
             mSocketAltp.connect();
         }
-
+        mSocketAltp.addGlobalEvent(globalCallback);
         mSocketAltp.addEvent("answer", answerCallback);
         mSocketAltp.addEvent("answerNext", answerNextCallback);
         mSocketAltp.addEvent("gameOver", gameOverCallback);
@@ -577,7 +611,6 @@ public class PlayScreen extends AppCompatActivity {
                 } else {
                     mTextViewTimer.setText(TXT_TIME_OUT);
                     clickable = false;
-                    //gameOver();
                 }
             }
 
@@ -592,12 +625,14 @@ public class PlayScreen extends AppCompatActivity {
         setQA(1);
         popupRule();
         popupCheckQuit();
+        popupBarChart();
     }
 
     public void findViewById() {
 
         ruleDialog = new Dialog(this);
         quitDialog = new Dialog(this);
+        barChartDialog = new Dialog(this);
 
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/roboto.ttf");
         mButtonAns = new Button[4];
@@ -757,11 +792,19 @@ public class PlayScreen extends AppCompatActivity {
         quitDialog.getWindow().getAttributes().windowAnimations = R.style.DialogNoAnimation;
         quitDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         quitDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        quitDialog.setCancelable(false);
 
-        final Button quitBtn = (Button) quitDialog.findViewById(R.id.button_quit);
-        final Button continueBtn = (Button) quitDialog.findViewById(R.id.button_continue);
+        Button quitBtn = (Button) quitDialog.findViewById(R.id.button_quit);
+        Button continueBtn = (Button) quitDialog.findViewById(R.id.button_continue);
 
         final TextView noti = (TextView) quitDialog.findViewById(R.id.noti);
+
+        final FrameLayout quitLayout = (FrameLayout) quitDialog.findViewById(R.id.frame_layout_quit);
+        final FrameLayout continueLayout = (FrameLayout) quitDialog.findViewById(R.id.frame_layout_continue);
+
+        final ImageView loading = (ImageView) quitDialog.findViewById(R.id.imgView_loading);
+        Glide.with(this).load(R.drawable.loading).asGif().into(loading);
+        loading.setVisibility(View.GONE);
 
         continueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -775,13 +818,95 @@ public class PlayScreen extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-                mAltpHelper.quit(mUser, mRoom);
                 noti.setText("Vui lòng đợi!");
-                quitBtn.setEnabled(false);
-                continueBtn.setEnabled(false);
+                quitLayout.setVisibility(View.GONE);
+                continueLayout.setVisibility(View.GONE);
+                loading.setVisibility(View.VISIBLE);
+                mAltpHelper.quit(mUser, mRoom);
+            }
+        });
+    }
+
+    public void popupBarChart() {
+        barChartDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        barChartDialog.setContentView(R.layout.layout_bar_chart);
+        barChartDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        barChartDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        barChartDialog.setCancelable(false);
+
+        Button hideBtn = (Button) barChartDialog.findViewById(R.id.button_hide);
+        hideBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                barChartDialog.hide();
+                barChart.destroyDrawingCache();
 
             }
         });
+    }
+
+    public void barChart() {
+        int a = new Random().nextInt(100 - 50 + 1) + 50;
+        int b = new Random().nextInt(100 - a + 1) + 0;
+        int c = new Random().nextInt(100 - a - b + 1) + 0;
+        int d = 100 - a - b - c;
+
+        barChart = (BarChart) barChartDialog.findViewById(R.id.barchart);
+
+        barChart.setDescription("");
+        barChart.getLegend().setEnabled(false);
+        barChart.getAxisLeft().setEnabled(false);
+        barChart.getAxisRight().setEnabled(false);
+        barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        barChart.getXAxis().setGridColor(android.graphics.Color.TRANSPARENT);
+        barChart.getXAxis().setTextSize(20f);
+        barChart.setDrawGridBackground(false);
+        barChart.setTouchEnabled(false);
+
+        ArrayList<BarEntry> entries = new ArrayList<>();
+        entries.add(new BarEntry(a, 0));
+        entries.add(new BarEntry(b, 1));
+        entries.add(new BarEntry(c, 2));
+        entries.add(new BarEntry(d, 3));
+
+        BarDataSet dataSet = new BarDataSet(entries, "");
+        ArrayList<String> labels = new ArrayList<>();
+        labels.add("A");
+        labels.add("B");
+        labels.add("C");
+        labels.add("D");
+        dataSet.setColors(new int[]{getResources().getColor(R.color.ALTP)});
+
+        BarData data = new BarData(labels, dataSet);
+        data.setValueTextSize(16f);
+        data.setValueFormatter(new PercentFormatter());
+
+        barChart.setData(data);
+        barChart.animateXY(3000, 3000);
+        barChart.invalidate();
+    }
+
+    public void audience(View view) {
+        SoundPoolManager.getInstance().playSound(R.raw.khan_gia);
+        Button button = (Button) findViewById(R.id.button_save2);
+        button.setBackgroundResource(R.drawable.save2_dis);
+        final LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
+        linearLayout.setVisibility(View.INVISIBLE);
+        barChartDialog.show();
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                SoundPoolManager.getInstance().playSound(R.raw.khangia_bg);
+                linearLayout.setVisibility(View.VISIBLE);
+                barChart();
+            }
+        }, 6000);
+
+    }
+
+    public void showAnsRight(View view){
+
     }
 
     private void setUserInfo() {
@@ -868,6 +993,7 @@ public class PlayScreen extends AppCompatActivity {
 
     public void btnAnswerClick(final View btnAnswer) {
         if (clickable) {
+            handler.removeCallbacks(musicImpor);
             mediaPlayer.pause();
             isCheckFifty = false;
             clickable = false;
@@ -977,15 +1103,10 @@ public class PlayScreen extends AppCompatActivity {
         mTextViewRound.setText(String.valueOf(round));
     }
 
-    public void gameOver() {
-        Intent intent = new Intent(getApplicationContext(), GameOver.class);
-        startActivity(intent);
-        overridePendingTransition(R.animator.right_in, R.animator.left_out);
-        finish();
-    }
-
     public void fifty(View fifty) {
         if (isCheckFifty && clickable && mFifty == 0) {
+            Button button = (Button) findViewById(R.id.button_save1);
+            button.setBackgroundResource(R.drawable.save1_dis);
             mFifty = 1;
             SoundPoolManager.getInstance().playSound(R.raw.sound5050);
             isCheckFifty = false;
@@ -1055,13 +1176,15 @@ public class PlayScreen extends AppCompatActivity {
 
     public static class OnGameOverCallbackEvent {
         ArrayList<User> result;
-        boolean isLastQuestion;
     }
 
     public static class OnAnsCallbackEvent {
         boolean isFromNextQuestion = false;
         Pair<Integer, ArrayList<User>> result;
         Question mQuestion;
+    }
+
+    public void disconnect() {
     }
 
     @Override
@@ -1097,6 +1220,9 @@ public class PlayScreen extends AppCompatActivity {
         }
         if (quitDialog != null) {
             quitDialog.dismiss();
+        }
+        if (barChartDialog != null) {
+            barChartDialog.dismiss();
         }
         super.onDestroy();
         if (EventBus.getDefault().isRegistered(this)) {

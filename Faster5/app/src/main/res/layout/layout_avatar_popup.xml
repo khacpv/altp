@@ -51,9 +51,10 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="2dp"
+                android:layout_height="1dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginBottom="3dp"
+                android:layout_marginBottom="4dp"
+                android:alpha="0.85"
                 android:background="#00366D" />
 
             <Button
@@ -80,9 +81,10 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="2dp"
+                android:layout_height="1dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginBottom="3dp"
+                android:layout_marginBottom="4dp"
+                android:alpha="0.85"
                 android:background="#00366D" />
 
             <Button
@@ -108,14 +110,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="20dp">
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="5dp">
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="2dp"
+                android:layout_height="1dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginBottom="4dp"
+                android:alpha="0.85"
                 android:background="#00366D" />
 
             <Button

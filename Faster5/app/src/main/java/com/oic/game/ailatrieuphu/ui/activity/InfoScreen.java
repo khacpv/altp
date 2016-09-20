@@ -84,6 +84,9 @@ public class InfoScreen extends AppCompatActivity {
                 case Socket.EVENT_CONNECTING:
                     Log.e("TAG_INFO", "connecting");
                     break;
+                case Socket.EVENT_DISCONNECT:
+                    Log.e("TAG_INFO", "disconnected");
+                    break;
                 case Socket.EVENT_CONNECT:  // auto call on connect to server
                     Log.e("TAG_INFO", "connect");
                     break;
