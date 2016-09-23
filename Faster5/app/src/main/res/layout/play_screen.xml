@@ -36,11 +36,12 @@
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/imageview_useravatar1"
                 android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 android:layout_toEndOf="@+id/imageview_useravatar1"
                 android:layout_toRightOf="@+id/imageview_useravatar1"
                 android:ellipsize="end"
                 android:lines="1"
-                android:text="PLAYER"
+                android:text="@string/player"
                 android:textColor="#ffffff"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -54,7 +55,7 @@
                 android:layout_below="@+id/textview_username1"
                 android:ellipsize="end"
                 android:lines="1"
-                android:text="CITY"
+                android:text="@string/city"
                 android:textColor="#ffffff"
                 android:textSize="15sp"
                 android:textStyle="bold" />
@@ -71,7 +72,7 @@
                 android:background="@drawable/button_money"
                 android:gravity="center_horizontal"
                 android:paddingTop="5dp"
-                android:text="0"
+                android:text="@string/money_default"
                 android:textColor="#000000"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -86,10 +87,10 @@
             android:layout_gravity="center"
             android:background="@drawable/clock"
             android:gravity="center_horizontal|center_vertical"
-            android:paddingRight="2dp"
-            android:text="TIME \nOUT"
+            android:text="@string/money_default"
+            android:paddingBottom="1dp"
             android:textColor="#FFF"
-            android:textSize="14sp"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
         <RelativeLayout
@@ -104,6 +105,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="20dp"
+                android:layout_marginEnd="20dp"
                 android:layout_marginTop="30dp"
                 android:src="@drawable/avatar"
                 app:civ_border_color="#fff"
@@ -115,10 +117,12 @@
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/imageview_useravatar2"
                 android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
                 android:layout_toLeftOf="@+id/imageview_useravatar2"
+                android:layout_toStartOf="@+id/imageview_useravatar2"
                 android:ellipsize="end"
                 android:lines="1"
-                android:text="PLAYER"
+                android:text="@string/enemy"
                 android:textColor="#ffffff"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -131,7 +135,7 @@
                 android:layout_below="@+id/textview_username2"
                 android:ellipsize="end"
                 android:lines="1"
-                android:text="CITY"
+                android:text="@string/city"
                 android:textColor="#ffffff"
                 android:textSize="15sp"
                 android:textStyle="bold" />
@@ -141,13 +145,14 @@
                 android:layout_width="160dp"
                 android:layout_height="35dp"
                 android:layout_alignRight="@+id/imageview_useravatar2"
+                android:layout_alignEnd="@+id/imageview_useravatar2"
                 android:layout_below="@+id/imageview_useravatar2"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/button_money2"
                 android:gravity="center_horizontal"
                 android:paddingTop="5dp"
-                android:text="0"
+                android:text="@string/money_default"
                 android:textColor="#000000"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -167,24 +172,30 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginRight="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_toLeftOf="@+id/button_save2"
+            android:layout_toStartOf="@+id/button_save2"
             android:background="@drawable/save1"
-            android:onClick="fifty" />
+            android:onClick="fiftyHelp" />
 
         <Button
             android:id="@+id/button_save2"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_centerInParent="true"
-            android:background="@drawable/save2" />
+            android:background="@drawable/save2"
+            android:onClick="audienceHelp"/>
 
         <Button
             android:id="@+id/button_save3"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
             android:layout_toRightOf="@+id/button_save2"
-            android:background="@drawable/save3" />
+            android:layout_toEndOf="@+id/button_save2"
+            android:background="@drawable/save3"
+            android:onClick="showAnsRightHelp"/>
 
     </RelativeLayout>
 
@@ -207,7 +218,7 @@
             <TextView
                 android:id="@+id/textview_tablequestion"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="150dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_marginTop="18dp"
@@ -217,7 +228,7 @@
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
                 android:paddingTop="5dp"
-                android:text="Một con vịtjhhhhhhhh có 12312312312312?"
+                android:text="@string/question"
                 android:textColor="#FFF"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -233,7 +244,7 @@
             android:background="@drawable/money_question"
             android:gravity="center_horizontal|center_vertical"
             android:paddingBottom="5dp"
-            android:text="0"
+            android:text="@string/money_default"
             android:textColor="#FFF"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -243,12 +254,13 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignLeft="@+id/textview_moneyquestion"
+            android:layout_alignStart="@+id/textview_moneyquestion"
             android:layout_alignTop="@+id/textview_moneyquestion"
             android:background="@drawable/number_question"
             android:gravity="center_horizontal|center_vertical"
             android:paddingBottom="5dp"
             android:paddingRight="4dp"
-            android:text="1"
+            android:text="@string/no_question"
             android:textColor="#FFF"
             android:textSize="20sp"
             android:textStyle="bold" />

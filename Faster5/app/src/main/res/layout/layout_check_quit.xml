@@ -13,33 +13,49 @@
         android:background="@drawable/xml_popup_bg_white"
         android:orientation="vertical">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:text="@string/title_quit_popup"
+            android:textColor="#00366D"
+            android:textSize="30sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginTop="10dp"
+            android:background="#00366D" />
 
         <TextView
+            android:id="@+id/noti"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="30dp"
             android:gravity="center"
-            android:maxLines="3"
+            android:maxLines="2"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:text="Bạn thực sự muốn dừng  cuộc chơi tại đây?"
-            android:textColor="#00366D"
-            android:textSize="24sp" />
+            android:text="@string/question_quit_popup"
+            android:textColor="#EEA542"
+            android:textSize="22sp" />
+
 
         <Button
             android:id="@+id/button_continue"
-            android:layout_width="wrap_content"
+            android:layout_width="250dp"
             android:layout_height="50dp"
             android:layout_gravity="center"
-            android:layout_marginLeft="80dp"
-            android:layout_marginRight="80dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/answer0"
             android:paddingBottom="10dp"
-            android:text="Không"
+            android:text="@string/btnNo_quit_popup"
             android:textAllCaps="false"
             android:textColor="#ffffff"
             android:textSize="18sp"
@@ -48,21 +64,25 @@
 
         <Button
             android:id="@+id/button_quit"
-            android:layout_width="wrap_content"
+            android:layout_width="250dp"
             android:layout_height="50dp"
             android:layout_gravity="center"
-            android:layout_marginBottom="30dp"
-            android:layout_marginLeft="80dp"
-            android:layout_marginRight="80dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
             android:layout_marginTop="10dp"
             android:background="@drawable/answer0"
             android:paddingBottom="10dp"
-            android:text="Đồng ý"
+            android:text="@string/btnYes_quit_popup"
             android:textAllCaps="false"
             android:textColor="#ffffff"
             android:textSize="18sp"
             android:textStyle="bold" />
 
-
+        <ImageView
+            android:id="@+id/imgView_loading"
+            android:layout_width="200dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp" />
     </LinearLayout>
 </RelativeLayout>

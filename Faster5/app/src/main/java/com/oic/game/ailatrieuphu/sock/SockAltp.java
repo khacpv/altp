@@ -49,7 +49,9 @@ public class SockAltp {
      * */
     public SockAltp(String url, boolean autoConnect) {
         try {
-            mSocket = IO.socket(url);
+            IO.Options opts = new IO.Options();
+            opts.timeout = -1;
+            mSocket = IO.socket(url,opts);
 
             if (autoConnect) {
                 connect();

@@ -33,6 +33,7 @@ public class GameOver extends AppCompatActivity {
     public static final int DRAW = -1;
     public static final int WIN = 1;
     public static final int LOSE = 0;
+    public static final int GIVEUP = 2;
 
     ImageView mImageViewUserAvatar;
     TextView mTextViewNameUser;
@@ -136,7 +137,20 @@ public class GameOver extends AppCompatActivity {
                 startMedia(6000);
                 break;
             case LOSE:
-                mTextViewResultText.setText("CHÚC BẠN MAY MẮN");
+                if (mScore == 0) {
+                    mTextViewResultText.setText("THẤT BẠI ĐAU ĐỚN");
+                } else {
+                    mTextViewResultText.setText("CHÚC BẠN MAY MẮN");
+                }
+                SoundPoolManager.getInstance().playSound(R.raw.lose);
+                startMedia(3000);
+                break;
+            case GIVEUP:
+                if (mScore == 0) {
+                    mTextViewResultText.setText("THẤT BẠI ĐAU ĐỚN");
+                } else {
+                    mTextViewResultText.setText("BẠN RẤT TỈNH TÁO");
+                }
                 SoundPoolManager.getInstance().playSound(R.raw.lose);
                 startMedia(3000);
                 break;
@@ -153,17 +167,17 @@ public class GameOver extends AppCompatActivity {
     }
 
     public void backInfo(View view) {
-        SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-        mediaPlayer.stop();
-        Intent intent = new Intent(getApplicationContext(), InfoScreen.class);
-        startActivity(intent);
-        overridePendingTransition(R.animator.in_from_left, R.animator.out_to_right);
-        finish();
+        if (!isFinishing()) {
+            SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+            mediaPlayer.stop();
+            Intent intent = new Intent(getApplicationContext(), InfoScreen.class);
+            startActivity(intent);
+            overridePendingTransition(R.animator.in_from_left, R.animator.out_to_right);
+            finish();
+        }
     }
 
     public void onBackPressed() {
-        backInfo(getCurrentFocus());
-        super.onBackPressed();
     }
 
 
