@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -44,6 +43,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -56,7 +56,6 @@ import me.grantland.widget.AutofitHelper;
  */
 public class PlayScreen extends AppCompatActivity {
 
-    private final String TXT_TIME_OUT = "TIME\nOUT";
     private static final String EXTRA_USER = "user";
     private static final String EXTRA_ENEMY = "enemy";
     private static final String EXTRA_ROOM = "room";
@@ -78,9 +77,6 @@ public class PlayScreen extends AppCompatActivity {
     TextView mTextViewCityUser2;
     TextView mTextViewMoneyQuestion;
     Button[] mButtonAns;
-    CountDownTimer mTimeLeft;
-    CountDownTimer mWaitTimeNextQues;
-    CountDownTimer mWaitTime;
     private SockAltp mSocketAltp;
     private AltpHelper mAltpHelper;
     private User mUser;
@@ -94,17 +90,27 @@ public class PlayScreen extends AppCompatActivity {
     Dialog ruleDialog;
     Dialog quitDialog;
     Dialog barChartDialog;
+    Dialog disconnectDialog;
     MediaPlayer mediaPlayer;
     BarChart barChart;
+    Typeface font;
+    CountDownTimer timer, timerResume;
+    private int timeRemaining = 0;
+    boolean isPauseClock = false;
     private boolean clickable = true;
-    private boolean isCheckFifty = true;
-    private long timeLeft;
+    private boolean isCheckFiftyHelp = true;
+    private boolean isCheckAudienceHelp = true;
+    private boolean isCheckShowAnsRightHelp = true;
     private String mMoney = "";
     private int mWinner;
-    private int mFifty = 0;
+    private int mFiftyHelp = 0;
+    private int mAudienceHelp = 0;
+    private int mShowAnsRightHelp = 0;
     private int timeQuestionImpor = 0;
     private int timeQuestion15 = 0;
-    boolean checkVuotMoc = false;
+    private int rdIdxFifty = 0;
+    private boolean checkVuotMoc = false;
+
 
     private SockAltp.OnSocketEvent globalCallback = new SockAltp.OnSocketEvent() {
         @Override
@@ -114,16 +120,52 @@ public class PlayScreen extends AppCompatActivity {
                     Log.e("TAG_PLAY", "connecting");
                     break;
                 case Socket.EVENT_DISCONNECT:
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pauseTimer();
+                            if (!disconnectDialog.isShowing() && !isFinishing()) {
+                                disconnectDialog.show();
+                            }
+                        }
+                    });
+
                     Log.e("TAG_PLAY", "disconnected");
                     break;
                 case Socket.EVENT_CONNECT:  // auto call on connect to server
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            resumeTimer();
+                            if (disconnectDialog.isShowing() && !isFinishing()) {
+                                disconnectDialog.hide();
+                            }
+                        }
+                    });
                     Log.e("TAG_PLAY", "connect");
                     break;
                 case Socket.EVENT_CONNECT_ERROR:
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pauseTimer();
+                            if (!disconnectDialog.isShowing() && !isFinishing()) {
+                                disconnectDialog.show();
+                            }
+                        }
+                    });
                     Log.e("TAG_PLAY", "error");
                     break;
                 case Socket.EVENT_CONNECT_TIMEOUT:
-                    mSocketAltp.connect();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pauseTimer();
+                            if (!disconnectDialog.isShowing() && !isFinishing()) {
+                                disconnectDialog.show();
+                            }
+                        }
+                    });
                     Log.e("TAG_PLAY", "timeout");
                     break;
             }
@@ -174,9 +216,11 @@ public class PlayScreen extends AppCompatActivity {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    startActivity(GameOver.createIntent(PlayScreen.this, mUser.score, mWinner));
-                    overridePendingTransition(R.animator.right_in, R.animator.left_out);
-                    finish();
+                    if (!isFinishing()) {
+                        startActivity(GameOver.createIntent(PlayScreen.this, mUser.score, mWinner));
+                        overridePendingTransition(R.animator.right_in, R.animator.left_out);
+                        finish();
+                    }
                 }
             });
         }
@@ -393,8 +437,17 @@ public class PlayScreen extends AppCompatActivity {
                 @Override
                 public void run() {
                     mQuestion = event.mQuestion;
+                    startTimer();
+                    mTextViewMoneyQuestion.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mTextViewMoneyQuestion.setBackgroundResource(
+                                    (mQuestion.questionIndex == 5 || mQuestion.questionIndex == 10 || mQuestion.questionIndex == 15)
+                                            ? R.drawable.money_question2 : R.drawable.money_question);
+                        }
+                    });
                     if (mQuestion.questionIndex == 15) {
-                        timeQuestion15 = 5000;
+                        timeQuestion15 = 4000;
                     }
                     Log.e("TAG", "Index Question: " + mQuestion.questionIndex);
                     changBgMusic(mQuestion.questionIndex);
@@ -407,7 +460,9 @@ public class PlayScreen extends AppCompatActivity {
                                 mButtonAns[i].setTextSize(getResources().getDimensionPixelSize(R.dimen.text_size_large));
                                 mButtonAns[i].setEnabled(true);
                             }
-                            isCheckFifty = true;
+                            isCheckFiftyHelp = true;
+                            isCheckAudienceHelp = true;
+                            isCheckShowAnsRightHelp = true;
                             clickable = true;
                             if (mQuestion.questionIndex == 6 || mQuestion.questionIndex == 11) {
                                 checkVuotMoc = true;
@@ -603,24 +658,22 @@ public class PlayScreen extends AppCompatActivity {
         mSocketAltp.addEvent("gameOver", gameOverCallback);
         mSocketAltp.addEvent("quit", quitCallback);
 
-        mTimeLeft = new CountDownTimer(11000, 1000) {
+        timer = new CountDownTimer(30100, 1000) {
+            @Override
             public void onTick(long millisUntilFinished) {
-                timeLeft = (millisUntilFinished / 1000) - 1;
-                if (timeLeft > 0) {
-                    mTextViewTimer.setText("" + timeLeft);
-                } else {
-                    mTextViewTimer.setText(TXT_TIME_OUT);
-                    clickable = false;
-                }
+                mTextViewTimer.setText("" + (int) (millisUntilFinished / 1000));
+                timeRemaining = (int) millisUntilFinished;
             }
 
+            @Override
             public void onFinish() {
-                mTextViewTimer.setText(TXT_TIME_OUT);
-                clickable = false;
+                mTextViewTimer.setText("0");
+                timeOutandQuit();
             }
         };
 
         findViewById();
+        popupDisconnect();
         setUserInfo();
         setQA(1);
         popupRule();
@@ -629,12 +682,12 @@ public class PlayScreen extends AppCompatActivity {
     }
 
     public void findViewById() {
-
         ruleDialog = new Dialog(this);
         quitDialog = new Dialog(this);
-        barChartDialog = new Dialog(this);
+        barChartDialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        disconnectDialog = new Dialog(this);
 
-        Typeface font = Typeface.createFromAsset(getAssets(), "fonts/roboto.ttf");
+        font = Typeface.createFromAsset(getAssets(), "fonts/roboto.ttf");
         mButtonAns = new Button[4];
 
         mTextViewTimer = (TextView) findViewById(R.id.textview_timer);
@@ -725,6 +778,19 @@ public class PlayScreen extends AppCompatActivity {
         }
     }
 
+    public void popupDisconnect() {
+        disconnectDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        disconnectDialog.setContentView(R.layout.layout_popup_disconnect);
+        disconnectDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        disconnectDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        disconnectDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        disconnectDialog.setCancelable(false);
+
+        ImageView loading = (ImageView) disconnectDialog.findViewById(R.id.imgView_loading);
+
+        Glide.with(this).load(R.drawable.loading).asGif().into(loading);
+    }
+
     public void popupRule() {
         ruleDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         ruleDialog.setContentView(R.layout.layout_popup_rule);
@@ -754,6 +820,7 @@ public class PlayScreen extends AppCompatActivity {
                 }
                 ruleDialog.hide();
                 checkVuotMoc = false;
+                startTimer();
             }
         };
 
@@ -781,6 +848,7 @@ public class PlayScreen extends AppCompatActivity {
                 handler.removeCallbacks(hideRuleDialog);
                 ruleDialog.hide();
                 checkVuotMoc = false;
+                startTimer();
             }
         });
         ruleDialog.show();
@@ -794,13 +862,10 @@ public class PlayScreen extends AppCompatActivity {
         quitDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         quitDialog.setCancelable(false);
 
-        Button quitBtn = (Button) quitDialog.findViewById(R.id.button_quit);
-        Button continueBtn = (Button) quitDialog.findViewById(R.id.button_continue);
+        final Button quitBtn = (Button) quitDialog.findViewById(R.id.button_quit);
+        final Button continueBtn = (Button) quitDialog.findViewById(R.id.button_continue);
 
         final TextView noti = (TextView) quitDialog.findViewById(R.id.noti);
-
-        final FrameLayout quitLayout = (FrameLayout) quitDialog.findViewById(R.id.frame_layout_quit);
-        final FrameLayout continueLayout = (FrameLayout) quitDialog.findViewById(R.id.frame_layout_continue);
 
         final ImageView loading = (ImageView) quitDialog.findViewById(R.id.imgView_loading);
         Glide.with(this).load(R.drawable.loading).asGif().into(loading);
@@ -819,8 +884,8 @@ public class PlayScreen extends AppCompatActivity {
             public void onClick(View view) {
                 SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
                 noti.setText("Vui lòng đợi!");
-                quitLayout.setVisibility(View.GONE);
-                continueLayout.setVisibility(View.GONE);
+                quitBtn.setVisibility(View.GONE);
+                continueBtn.setVisibility(View.GONE);
                 loading.setVisibility(View.VISIBLE);
                 mAltpHelper.quit(mUser, mRoom);
             }
@@ -846,10 +911,7 @@ public class PlayScreen extends AppCompatActivity {
     }
 
     public void barChart() {
-        int a = new Random().nextInt(100 - 50 + 1) + 50;
-        int b = new Random().nextInt(100 - a + 1) + 0;
-        int c = new Random().nextInt(100 - a - b + 1) + 0;
-        int d = 100 - a - b - c;
+        List<Integer> percent = audienceSuggest(mQuestion.questionIndex, mQuestion.mCorrectAnsId, isCheckFiftyHelp);
 
         barChart = (BarChart) barChartDialog.findViewById(R.id.barchart);
 
@@ -864,10 +926,10 @@ public class PlayScreen extends AppCompatActivity {
         barChart.setTouchEnabled(false);
 
         ArrayList<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(a, 0));
-        entries.add(new BarEntry(b, 1));
-        entries.add(new BarEntry(c, 2));
-        entries.add(new BarEntry(d, 3));
+        entries.add(new BarEntry(percent.get(0), 0));
+        entries.add(new BarEntry(percent.get(1), 1));
+        entries.add(new BarEntry(percent.get(2), 2));
+        entries.add(new BarEntry(percent.get(3), 3));
 
         BarDataSet dataSet = new BarDataSet(entries, "");
         ArrayList<String> labels = new ArrayList<>();
@@ -880,43 +942,132 @@ public class PlayScreen extends AppCompatActivity {
         BarData data = new BarData(labels, dataSet);
         data.setValueTextSize(16f);
         data.setValueFormatter(new PercentFormatter());
+        data.setValueTypeface(font);
 
         barChart.setData(data);
         barChart.animateXY(3000, 3000);
         barChart.invalidate();
-    }
-
-    public void audience(View view) {
-        SoundPoolManager.getInstance().playSound(R.raw.khan_gia);
-        Button button = (Button) findViewById(R.id.button_save2);
-        button.setBackgroundResource(R.drawable.save2_dis);
-        final LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
-        linearLayout.setVisibility(View.INVISIBLE);
-        barChartDialog.show();
 
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                SoundPoolManager.getInstance().playSound(R.raw.khangia_bg);
-                linearLayout.setVisibility(View.VISIBLE);
-                barChart();
+                resumeTimer();
             }
-        }, 6000);
-
+        }, 2000);
     }
 
-    public void showAnsRight(View view){
+    //tro giup 50/50
+    public void fiftyHelp(View fifty) {
+        if (isCheckFiftyHelp && mFiftyHelp == 0) {
+            mFiftyHelp = 1;
+            isCheckFiftyHelp = false;
+            pauseTimer();
+            final LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
+            linearLayout.setVisibility(View.INVISIBLE);
+            barChartDialog.show();
+            handler.removeCallbacks(musicImpor);
+            Button button = (Button) findViewById(R.id.button_save1);
+            button.setBackgroundResource(R.drawable.save1_dis);
+            SoundPoolManager.getInstance().playSound(R.raw.sound5050);
+            mButtonAns[0].postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < 4; i++) {
+                        mButtonAns[i].setText("");
+                        mButtonAns[i].setEnabled(false);
+                    }
+                    int answerRight = mQuestion.mCorrectAnsId;
+                    rdIdxFifty = getFifty(answerRight);
+                    mButtonAns[rdIdxFifty].setText(tileQuestion(rdIdxFifty) + mQuestion.mAns.get(rdIdxFifty));
+                    mButtonAns[rdIdxFifty].setEnabled(true);
+                    mButtonAns[answerRight].setText(tileQuestion(answerRight) + mQuestion.mAns.get(answerRight));
+                    mButtonAns[answerRight].setEnabled(true);
+                    barChartDialog.hide();
+                    resumeTimer();
+                }
+            }, 3100);
+        }
+    }
 
+    //tro giup khan gia
+    public void audienceHelp(View view) {
+        if (isCheckAudienceHelp && mAudienceHelp == 0) {
+            pauseTimer();
+            handler.removeCallbacks(musicImpor);
+            mAudienceHelp = 1;
+            SoundPoolManager.getInstance().playSound(R.raw.khan_gia);
+            Button button = (Button) findViewById(R.id.button_save2);
+            button.setBackgroundResource(R.drawable.save2_dis);
+            final LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
+            linearLayout.setVisibility(View.INVISIBLE);
+            barChartDialog.show();
+
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    SoundPoolManager.getInstance().playSound(R.raw.khangia_bg);
+                    linearLayout.setVisibility(View.VISIBLE);
+                    barChart();
+                }
+            }, 6000);
+        }
+    }
+
+    //tro giup xem dap an
+    public void showAnsRightHelp(View view) {
+        if (isCheckShowAnsRightHelp && mShowAnsRightHelp == 0) {
+            handler.removeCallbacks(musicImpor);
+            mShowAnsRightHelp = 1;
+            LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
+            linearLayout.setVisibility(View.GONE);
+            barChartDialog.show();
+            int n = new Random().nextInt(3) + 1;
+            switch (n) {
+                case 1:
+                    SoundPoolManager.getInstance().playSound(R.raw.ans_now1);
+                    break;
+                case 2:
+                    SoundPoolManager.getInstance().playSound(R.raw.ans_now2);
+                    break;
+                case 3:
+                    SoundPoolManager.getInstance().playSound(R.raw.ans_now3);
+                    break;
+            }
+            Button showAnsRightBtn = (Button) findViewById(R.id.button_save3);
+            showAnsRightBtn.setBackgroundResource(R.drawable.save3_dis);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    barChartDialog.hide();
+                    switch (mQuestion.mCorrectAnsId) {
+                        case 0: //A
+                            findViewById(R.id.button_ans1).performClick();
+                            break;
+                        case 1: //B
+                            findViewById(R.id.button_ans2).performClick();
+                            break;
+                        case 2: //C
+                            findViewById(R.id.button_ans3).performClick();
+                            break;
+                        case 3: //D
+                            findViewById(R.id.button_ans4).performClick();
+                            break;
+                    }
+                }
+            }, 4500);
+        }
     }
 
     private void setUserInfo() {
         // my info
         mTextViewUserName1.setText(mUser.name);
         mTextViewCityUser1.setText(mUser.address);
-        Glide.with(getApplicationContext()).load(mUser.avatar).into(mImageViewUserAvatar1);
+        Glide.with(getApplicationContext()).load(mUser.avatar).placeholder(R.drawable.avatar_default)
+                .error(R.drawable.avatar_default).into(mImageViewUserAvatar1);
 
         // enemy info
-        Glide.with(getApplicationContext()).load(mEnemy.avatar).into(mImageViewUserAvatar2);
+        Glide.with(getApplicationContext()).load(mEnemy.avatar).placeholder(R.drawable.avatar_default)
+                .error(R.drawable.avatar_default).into(mImageViewUserAvatar2);
         mTextViewUserName2.setText(mEnemy.name);
         mTextViewCityUser2.setText(mEnemy.address);
     }
@@ -993,11 +1144,13 @@ public class PlayScreen extends AppCompatActivity {
 
     public void btnAnswerClick(final View btnAnswer) {
         if (clickable) {
+            pauseTimer();
             handler.removeCallbacks(musicImpor);
             mediaPlayer.pause();
-            isCheckFifty = false;
+            isCheckFiftyHelp = false;
+            isCheckShowAnsRightHelp = false;
+            isCheckAudienceHelp = false;
             clickable = false;
-            mTimeLeft.cancel();
             final int n = new Random().nextInt(2) + 1;
             switch (btnAnswer.getId()) {
                 case R.id.button_ans1:
@@ -1103,32 +1256,6 @@ public class PlayScreen extends AppCompatActivity {
         mTextViewRound.setText(String.valueOf(round));
     }
 
-    public void fifty(View fifty) {
-        if (isCheckFifty && clickable && mFifty == 0) {
-            Button button = (Button) findViewById(R.id.button_save1);
-            button.setBackgroundResource(R.drawable.save1_dis);
-            mFifty = 1;
-            SoundPoolManager.getInstance().playSound(R.raw.sound5050);
-            isCheckFifty = false;
-            mButtonAns[0].postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    for (int i = 0; i < 4; i++) {
-                        mButtonAns[i].setText("");
-                        mButtonAns[i].setEnabled(false);
-                    }
-
-                    int answerRight = mQuestion.mCorrectAnsId;
-                    int rdIdx = getFifty(answerRight);
-                    mButtonAns[rdIdx].setText(tileQuestion(rdIdx) + mQuestion.mAns.get(rdIdx));
-                    mButtonAns[rdIdx].setEnabled(true);
-                    mButtonAns[answerRight].setText(tileQuestion(answerRight) + mQuestion.mAns.get(answerRight));
-                    mButtonAns[answerRight].setEnabled(true);
-                }
-            }, 3100);
-        }
-    }
-
     public String tileQuestion(int indexAns) {
         String alphabet = "";
         switch (indexAns) {
@@ -1148,16 +1275,129 @@ public class PlayScreen extends AppCompatActivity {
         return alphabet;
     }
 
+    public List<Integer> audienceSuggest(int level, int rightIndex, boolean is50_50) {
+        List<Integer> result = new ArrayList<>();
+
+        if (!is50_50) {
+            Random rd = new Random();
+            int a = rd.nextInt(20) + 70;
+            int b = 100 - a;
+            int c = 0;
+            int d = 0;
+
+            result.add(a);
+            result.add(b);
+            result.add(c);
+            result.add(d);
+            Collections.sort(result);
+
+            int temp = result.get(2);
+            result.set(rightIndex, result.get(3));
+            result.set(rdIdxFifty, temp);
+
+            for (int i = 0; i < 4; i++) {
+                if (i != rightIndex && i != rdIdxFifty) {
+                    result.set(i, 0);
+                }
+            }
+
+            return result;
+        }
+        if (level < 5) {
+            Random rd = new Random();
+            int a = rd.nextInt(75 - 50 + 1) + 50;
+            int b = rd.nextInt(100 - a + 1);
+            int c = rd.nextInt(100 - a - b + 1);
+            int d = 100 - a - b - c;
+            result.add(a);
+            result.add(b);
+            result.add(c);
+            result.add(d);
+
+            Collections.sort(result);   // be -> lon    10, 20, 30, 40
+            int temp = result.get(rightIndex);
+            result.set(rightIndex, result.get(3));
+            result.set(3, temp);
+
+        } else {
+            Random rd = new Random();
+            int rndFlag = System.currentTimeMillis() % 3 == 2 ? -1 : 1;    // 1 or -1
+
+            int a = rd.nextInt(45 - 40) + 40; // 40-45
+            int b = a + (rd.nextInt(5) + 1) * rndFlag; // 40-45
+            int c = rd.nextInt(100 - a - b) + 1;
+            int d = 100 - a - b - c;
+
+            result.add(a);
+            result.add(b);
+            result.add(c);
+            result.add(d);
+
+            Collections.sort(result);   // be -> lon    10, 20, 30, 40
+            int temp = result.get(rightIndex);
+            result.set(rightIndex, result.get(3));
+            result.set(3, temp);
+        }
+
+
+        return result;
+    }
+
     public int getFifty(int rightIndex) {
         int randomIndex = 0;
         while (true) {
             randomIndex = new Random().nextInt(3);
-            Log.e("TAG", "50/50 idx:" + randomIndex + " RightIndex: " + rightIndex);
             if (randomIndex != rightIndex) {
                 break;
             }
         }
         return randomIndex;
+    }
+
+    public void startTimer() {
+        if (isPauseClock && timerResume != null) {
+            timerResume.cancel();
+        }
+        timer.start();
+        isPauseClock = false;
+    }
+
+    public void pauseTimer() {
+        if (!isPauseClock && timer != null) {
+            timer.cancel();
+        }
+        if (!isPauseClock) {
+            isPauseClock = true;
+        }
+        if (isPauseClock && timerResume != null) {
+            timerResume.cancel();
+        }
+    }
+
+    public void resumeTimer() {
+        if (isPauseClock) {
+            timerResume = new CountDownTimer(timeRemaining, 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    mTextViewTimer.setText("" + (int) (millisUntilFinished / 1000));
+                    timeRemaining = (int) millisUntilFinished;
+                }
+
+                @Override
+                public void onFinish() {
+                    timeOutandQuit();
+                    mTextViewTimer.setText("0");
+                }
+            }.start();
+        }
+    }
+
+    public void timeOutandQuit() {
+        SoundPoolManager.getInstance().playSound(R.raw.timesup);
+        mAltpHelper.quit(mUser, mRoom);
+        LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
+        linearLayout.setVisibility(View.GONE);
+        barChartDialog.show();
     }
 
     public static void setTypeface(Typeface font, TextView... textviews) {
@@ -1182,9 +1422,6 @@ public class PlayScreen extends AppCompatActivity {
         boolean isFromNextQuestion = false;
         Pair<Integer, ArrayList<User>> result;
         Question mQuestion;
-    }
-
-    public void disconnect() {
     }
 
     @Override
@@ -1223,6 +1460,9 @@ public class PlayScreen extends AppCompatActivity {
         }
         if (barChartDialog != null) {
             barChartDialog.dismiss();
+        }
+        if (disconnectDialog != null) {
+            disconnectDialog.dismiss();
         }
         super.onDestroy();
         if (EventBus.getDefault().isRegistered(this)) {

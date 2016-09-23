@@ -85,15 +85,46 @@ public class InfoScreen extends AppCompatActivity {
                     Log.e("TAG_INFO", "connecting");
                     break;
                 case Socket.EVENT_DISCONNECT:
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (searchBg.isAnimating() && !isFinishing()) {
+                                searchBg.stop();
+                                searchBg.reset();
+                                mButtonSearch.setClickable(true);
+                            }
+                        }
+                    });
+
                     Log.e("TAG_INFO", "disconnected");
                     break;
                 case Socket.EVENT_CONNECT:  // auto call on connect to server
                     Log.e("TAG_INFO", "connect");
                     break;
                 case Socket.EVENT_CONNECT_ERROR:
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (searchBg.isAnimating() && !isFinishing()) {
+                                searchBg.stop();
+                                searchBg.reset();
+                                mButtonSearch.setClickable(true);
+                            }
+                        }
+                    });
                     Log.e("TAG_INFO", "error");
                     break;
                 case Socket.EVENT_CONNECT_TIMEOUT:
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (searchBg.isAnimating() && !isFinishing()) {
+                                searchBg.stop();
+                                searchBg.reset();
+                                mButtonSearch.setClickable(true);
+                            }
+                        }
+                    });
                     Log.e("TAG_INFO", "timeout");
                     break;
             }
@@ -106,11 +137,19 @@ public class InfoScreen extends AppCompatActivity {
             OnSearhCallbackEvent eventBus = new OnSearhCallbackEvent();
             eventBus.result = result;
             EventBus.getDefault().post(eventBus);
+
         }
     };
 
     public void sendSearchRequest(User user) {
-        mButtonSearch.getHandler().postDelayed(resetSearch, 36000);
+        //mButtonSearch.getHandler().postDelayed(resetSearch, 36000);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                handler.postDelayed(resetSearch, 36000);
+            }
+        });
+
         if (searchTimes > 0) {
             for (int i = 0; i < 8; i++) {
                 mButtonPlayer[i].setText("NGƯỜI CHƠI");
@@ -252,7 +291,7 @@ public class InfoScreen extends AppCompatActivity {
         username = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_NAME, "");
         location = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_LOCATION, "");
         linkAvatar = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_URL_AVATAR, "");
-        totalScore = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_TOTAL_SCORE, 0)+"";
+        totalScore = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_TOTAL_SCORE, 0) + "";
         userId = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_USER_ID, "");
     }
 
@@ -266,7 +305,8 @@ public class InfoScreen extends AppCompatActivity {
     public void setView() {
         mTextViewNameUser.setText(username);
         mTextViewCity.setText(location);
-        Glide.with(getApplicationContext()).load(linkAvatar).into(mImageViewAvatar);
+        Glide.with(getApplicationContext()).load(linkAvatar).placeholder(R.drawable.avatar_default)
+                .error(R.drawable.avatar_default).into(mImageViewAvatar);
         mTextViewTotalScore.setText(totalScore);
     }
 
@@ -308,7 +348,7 @@ public class InfoScreen extends AppCompatActivity {
 
     @Subscribe
     public void onEventMainThread(OnSearhCallbackEvent event) {
-        handler.removeCallbacks(resetSearch);
+
         Pair<Room, ArrayList<User>> result = event.result;
         final Room room = result.first;
         final List<User> dummyUsers = result.second;
@@ -339,7 +379,7 @@ public class InfoScreen extends AppCompatActivity {
 
             searchBg.stop();
 
-            for (int i = 0; i < Math.min(mButtonPlayer.length,dummyUsers.size()); i++) {
+            for (int i = 0; i < Math.min(mButtonPlayer.length, dummyUsers.size()); i++) {
                 final int _i = i;
                 if (!dummyUsers.get(_i).isDummy) {
                     enemyNumberInList = _i;
@@ -369,8 +409,9 @@ public class InfoScreen extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-
-                    moveSearchOpponent(room);
+                    if (!isFinishing()) {
+                        moveSearchOpponent(room);
+                    }
                 }
             }, 4000);
             Log.e("TAG", "join room: " + room.roomId);
@@ -379,13 +420,19 @@ public class InfoScreen extends AppCompatActivity {
     }
 
     public void moveSearchOpponent(Room room) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                handler.removeCallbacks(resetSearch);
+            }
+        });
+
         startActivity(SearchOpponent.createIntent(InfoScreen.this, mUser, mEnemy, room));
         overridePendingTransition(R.animator.right_in, R.animator.left_out);
         finish();
     }
 
     public void onBackPressed() {
-        super.onBackPressed();
     }
 
     @Override

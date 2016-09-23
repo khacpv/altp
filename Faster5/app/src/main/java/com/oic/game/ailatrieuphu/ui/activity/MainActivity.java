@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
         sounds.add(R.raw.vuot_moc_2);
         sounds.add(R.raw.khan_gia);
         sounds.add(R.raw.khangia_bg);
+        sounds.add(R.raw.timesup);
 
         SoundPoolManager.getInstance().setSounds(sounds);
         SoundPoolManager.getInstance().setPlaySound(true);

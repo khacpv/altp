@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#5fff">
+    android:background="@android:color/transparent">
 
     <LinearLayout
         android:id="@+id/trogiup_khangia"
@@ -17,19 +17,20 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textColor="#00366D"
-            android:textStyle="bold"
-            android:text="Trợ giúp khán giả"
             android:layout_gravity="center"
-            android:layout_marginTop="20dp"/>
+            android:layout_marginTop="10dp"
+            android:text="@string/trogiup_khangia"
+            android:textColor="#00366D"
+            android:textSize="30sp"
+            android:ellipsize="end"
+            android:lines="1"/>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="3dp"
-            android:layout_marginTop="20dp"
             android:layout_gravity="center_vertical"
             android:layout_marginBottom="4dp"
+            android:layout_marginTop="10dp"
             android:background="#00366D" />
 
 
@@ -38,42 +39,28 @@
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:layout_gravity="center"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="10dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="20dp" />
 
-        <FrameLayout
-            android:id="@+id/frame_layout_continue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+
+        <Button
+            android:id="@+id/button_hide"
+            android:layout_width="250dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
             android:layout_marginBottom="20dp"
-            android:layout_marginTop="5dp">
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginBottom="4dp"
-                android:alpha="0.85"
-                android:background="#00366D" />
-
-            <Button
-                android:id="@+id/button_hide"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:layout_gravity="center"
-                android:layout_marginLeft="80dp"
-                android:layout_marginRight="80dp"
-                android:background="@drawable/answer0"
-                android:paddingBottom="10dp"
-                android:text="Đóng"
-                android:textAllCaps="false"
-                android:textColor="#ffffff"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-        </FrameLayout>
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/answer0"
+            android:paddingBottom="10dp"
+            android:text="@string/btn_close"
+            android:textAllCaps="false"
+            android:textColor="#ffffff"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 </RelativeLayout>

@@ -11,6 +11,7 @@
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
         android:background="@drawable/xml_popup_bg_white"
+        android:gravity="center"
         android:orientation="vertical">
 
         <TextView
@@ -18,11 +19,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
-            android:ellipsize="end"
-            android:lines="1"
-            android:text="@string/title_login_popup"
+            android:text="@string/title_disconnect_popup"
             android:textColor="#00366D"
-            android:textSize="30sp" />
+            android:textSize="30sp"
+            android:ellipsize="end"
+            android:lines="1"/>
 
         <View
             android:layout_width="match_parent"
@@ -35,27 +36,22 @@
             android:layout_width="200dp"
             android:layout_height="100dp"
             android:layout_gravity="center"
-            android:layout_marginTop="30dp" />
+            android:layout_marginTop="20dp" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="50dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="20dp"
-            android:ellipsize="end"
             android:gravity="center"
-            android:lines="1"
-            android:maxLines="3"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:text="@string/wait_text"
+            android:text="@string/reconnect_text"
             android:textColor="#EEA542"
             android:textSize="20sp"
-            android:textStyle="bold" />
-
+            android:textStyle="bold"
+            android:ellipsize="end"
+            android:lines="1"/>
 
     </LinearLayout>
 </RelativeLayout>

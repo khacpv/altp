@@ -167,17 +167,17 @@ public class GameOver extends AppCompatActivity {
     }
 
     public void backInfo(View view) {
-        SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-        mediaPlayer.stop();
-        Intent intent = new Intent(getApplicationContext(), InfoScreen.class);
-        startActivity(intent);
-        overridePendingTransition(R.animator.in_from_left, R.animator.out_to_right);
-        finish();
+        if (!isFinishing()) {
+            SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+            mediaPlayer.stop();
+            Intent intent = new Intent(getApplicationContext(), InfoScreen.class);
+            startActivity(intent);
+            overridePendingTransition(R.animator.in_from_left, R.animator.out_to_right);
+            finish();
+        }
     }
 
     public void onBackPressed() {
-        backInfo(getCurrentFocus());
-        super.onBackPressed();
     }
 
 

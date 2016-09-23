@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +18,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.oic.game.ailatrieuphu.R;
 import com.bumptech.glide.Glide;
 import com.oic.game.ailatrieuphu.MainApplication;
@@ -54,6 +57,7 @@ public class SearchOpponent extends AppCompatActivity {
     private TextView mTextViewUserName2;
     private TextView mTextViewScore1;
     private TextView mTextViewScore2;
+    private TextView mTextViewReady;
     private ImageView mImageViewUserAvatar1;
     private ImageView mImageViewUserAvatar2;
     Button mButtonPlay;
@@ -112,7 +116,6 @@ public class SearchOpponent extends AppCompatActivity {
         findViewById();
         popupWait();
         setInfoUser();
-
     }
 
 
@@ -133,19 +136,37 @@ public class SearchOpponent extends AppCompatActivity {
             return;
         }
 
+        mTextViewReady.getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                mTextViewReady.setText("Đã sẵn sàng");
+                if (Build.VERSION.SDK_INT < 23) {
+                    mTextViewReady.setTextColor(getResources().getColor(R.color.RED));
+                } else {
+                    mTextViewReady.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.RED));
+                }
+
+            }
+        });
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                waitDialog.setCancelable(false);
+            }
+        });
         Question mQuestion = event.mQuestion;
         final Intent playScrnIntent = PlayScreen.createIntent(SearchOpponent.this, mUser, enemyUser, mRoom, mQuestion);
         SoundPoolManager.getInstance().playSound(R.raw.ready);
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-
-                startActivity(playScrnIntent);
-                overridePendingTransition(R.animator.right_in, R.animator.left_out);
-                finish();
+                if (!isFinishing()) {
+                    startActivity(playScrnIntent);
+                    overridePendingTransition(R.animator.right_in, R.animator.left_out);
+                    finish();
+                }
             }
         }, 5000);
-
     }
 
     /**
@@ -160,13 +181,15 @@ public class SearchOpponent extends AppCompatActivity {
     public void setInfoUser() {
         // my info
         mTextViewUserName1.setText(mUser.name);
-        Glide.with(getApplicationContext()).load(mUser.avatar).into(mImageViewUserAvatar1);
+        Glide.with(getApplicationContext()).load(mUser.avatar).placeholder(R.drawable.avatar_default)
+                .error(R.drawable.avatar_default).into(mImageViewUserAvatar1);
         mTextViewCityUser1.setText(mUser.address);
         mTextViewScore1.setText(Integer.toString(mUser.totalScore));
 
         // enemy user
         mTextViewUserName2.setText(enemyUser.name);
-        Glide.with(getApplicationContext()).load(enemyUser.avatar).into(mImageViewUserAvatar2);
+        Glide.with(getApplicationContext()).load(enemyUser.avatar).placeholder(R.drawable.avatar_default)
+                .error(R.drawable.avatar_default).into(mImageViewUserAvatar2);
         mTextViewCityUser2.setText(enemyUser.address);
         mTextViewScore2.setText(Integer.toString(enemyUser.totalScore));
 
@@ -209,10 +232,7 @@ public class SearchOpponent extends AppCompatActivity {
         waitDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         waitDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         waitDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-
-        ImageView loading = (ImageView) waitDialog.findViewById(R.id.imgView_loading);
-
-        Glide.with(this).load(R.drawable.loading).asGif().into(loading);
+        mTextViewReady = (TextView) waitDialog.findViewById(R.id.textview_ready);
     }
 
     public void btnSearch(View view) {
@@ -226,7 +246,7 @@ public class SearchOpponent extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        btnSearch(getCurrentFocus());
+
     }
 
     public void btnPlay(View view) {
