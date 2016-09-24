@@ -30,13 +30,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:paddingBottom="30dp"
-        android:paddingTop="30dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="15dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="30dp"
         android:singleLine="true"
         android:text="80%"
+        android:background="@drawable/btn_loading"
         android:layout_below="@id/imageview_online"
         android:textColor="#FFF"
-        android:textSize="36sp"
+        android:textSize="30sp"
         android:textStyle="bold"/>
 
     <com.oicmap.game.multiparalaxview.ParallaxView
