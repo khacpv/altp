@@ -389,7 +389,7 @@ public class PlayScreen extends AppCompatActivity {
                             if (n == 1 || n == 3) {
                                 SoundPoolManager.getInstance().playSound(R.raw.true_d3);
                             } else if (n == 2) {
-                                SoundPoolManager.getInstance().playSound(R.raw.true_c2);
+                                SoundPoolManager.getInstance().playSound(R.raw.true_d2);
                             }
                             break;
                     }
@@ -1463,6 +1463,12 @@ public class PlayScreen extends AppCompatActivity {
         }
         if (disconnectDialog != null) {
             disconnectDialog.dismiss();
+        }
+        if (timer != null) {
+            timer.cancel();
+        }
+        if (timerResume != null) {
+            timerResume.cancel();
         }
         super.onDestroy();
         if (EventBus.getDefault().isRegistered(this)) {

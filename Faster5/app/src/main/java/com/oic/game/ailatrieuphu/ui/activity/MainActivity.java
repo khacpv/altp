@@ -14,6 +14,8 @@ import com.oic.game.ailatrieuphu.R;
 import com.oic.game.ailatrieuphu.util.ISoundPoolLoaded;
 import com.oic.game.ailatrieuphu.util.PrefUtils;
 import com.oic.game.ailatrieuphu.util.SoundPoolManager;
+import com.oicmap.game.multiparalaxview.DataItem;
+import com.oicmap.game.multiparalaxview.ParallaxView;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -35,8 +37,9 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        Glide.with(this).load(R.drawable.loading);
 
+        Glide.with(this).load(R.drawable.loading);
+        
         userId = PrefUtils.getInstance(this).get(PrefUtils.KEY_USER_ID, "");
         username = PrefUtils.getInstance(this).get(PrefUtils.KEY_NAME, "");
         linkAvatar = PrefUtils.getInstance(this).get(PrefUtils.KEY_URL_AVATAR, "");
@@ -45,8 +48,6 @@ public class MainActivity extends AppCompatActivity {
         loadSound();
 
         Log.e("TAG", String.format("user: {id=%s,name:%s,location:%s}", userId, username, location));
-
-
     }
 
     public void loadSound() {
@@ -120,17 +121,17 @@ public class MainActivity extends AppCompatActivity {
                 public void onSuccess() {
                     if (TextUtils.isEmpty(userId) || TextUtils.isEmpty(username) || TextUtils.isEmpty(linkAvatar)
                             || TextUtils.isEmpty(location)) {
-                        Intent myIntent = new Intent(getApplicationContext(), LoginScreen.class);
-                        myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        startActivity(myIntent);
-                        overridePendingTransition(0, 0);
-                        finish();
+//                        Intent myIntent = new Intent(getApplicationContext(), LoginScreen.class);
+//                        myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+//                        startActivity(myIntent);
+//                        overridePendingTransition(0, 0);
+//                        finish();
                     } else {
-                        Intent myIntent = new Intent(getApplicationContext(), InfoScreen.class);
-                        myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        startActivity(myIntent);
-                        overridePendingTransition(0, 0);
-                        finish();
+//                        Intent myIntent = new Intent(getApplicationContext(), InfoScreen.class);
+//                        myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+//                        startActivity(myIntent);
+//                        overridePendingTransition(0, 0);
+//                        finish();
                     }
                 }
             });

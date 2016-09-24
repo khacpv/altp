@@ -1,9 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:orientation="vertical"
     tools:context="com.oic.game.ailatrieuphu.ui.activity.MainActivity">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:gravity="center">
 
-</RelativeLayout>
+        <ImageView
+            android:id="@+id/imageview_altp"
+            android:layout_width="320dp"
+            android:layout_height="55dp"
+            android:src="@drawable/altp" />
+
+        <ImageView
+            android:id="@+id/imageview_online"
+            android:layout_width="65dp"
+            android:layout_height="30dp"
+            android:layout_alignEnd="@+id/imageview_altp"
+            android:layout_alignRight="@+id/imageview_altp"
+            android:layout_below="@+id/imageview_altp"
+            android:src="@drawable/online" />
+    </RelativeLayout>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingBottom="30dp"
+        android:paddingTop="30dp"
+        android:text="80%"
+        android:textColor="#FFF"
+        android:textSize="36sp"
+        android:textStyle="bold" />
+
+    <com.oicmap.game.multiparalaxview.ParallaxView
+        android:id="@+id/parallax"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>
