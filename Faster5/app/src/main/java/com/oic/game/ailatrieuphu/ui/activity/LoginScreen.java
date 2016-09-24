@@ -78,6 +78,8 @@ public class LoginScreen extends AppCompatActivity {
     private static final String TAG_CITY = "city";
     private static final String photoFileName = "cameraphoto.jpg";
 
+    public static final int MY_PERMISSIONS_REQUEST_NETWORK_STATE = 0;
+
     private static final int PERMISSION_REQUEST_CODE = 1;
     public static final int IMAGE_FROM_CAMERA = 0;
     public static final int IMAGE_FROM_GALLERY = 1;
@@ -150,13 +152,10 @@ public class LoginScreen extends AppCompatActivity {
 
     public void sendLoginRequest(User user) {
         this.mUser = user;
-        // this.mUser.id = NetworkUtils.getMacAddress(this).replaceAll(":", "");
-        // this.mUser.id = NetworkUtils.getDeviceId();
         this.mUser.id = NetworkUtils.getUniqueID(this).replaceAll("-", "");
         mAltpHelper.login(mUser);
         Log.e("TAG", "loginRequest: " + mUser.fbId + " " + mUser.name + " " + mUser.address + "\n" + mUser.avatar);
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -716,8 +715,10 @@ public class LoginScreen extends AppCompatActivity {
         int resultWrite = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
         int resultRead = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
         int resultCamera = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA);
+        int resultPhoneState = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_PHONE_STATE);
         if (resultWrite == PackageManager.PERMISSION_GRANTED && resultCamera == PackageManager.PERMISSION_GRANTED
-                && resultRead == PackageManager.PERMISSION_GRANTED) {
+                && resultRead == PackageManager.PERMISSION_GRANTED && resultPhoneState ==
+                PackageManager.PERMISSION_GRANTED) {
             return true;
 
         } else {
@@ -729,7 +730,8 @@ public class LoginScreen extends AppCompatActivity {
     private void requestPermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 && ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                && ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+                && ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)
+                && ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)) {
 
             captureImage();
         } else {
@@ -737,7 +739,8 @@ public class LoginScreen extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{
                     Manifest.permission.CAMERA,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_PHONE_STATE
             }, PERMISSION_REQUEST_CODE);
         }
     }
@@ -746,7 +749,9 @@ public class LoginScreen extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager
+                        .PERMISSION_GRANTED && grantResults[3] == PackageManager
+                        .PERMISSION_GRANTED) {
                     captureImage();
                 }
                 break;

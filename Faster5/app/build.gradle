@@ -11,6 +11,7 @@ android {
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -42,10 +43,10 @@ dependencies {
     compile 'com.squareup.okhttp3:logging-interceptor:3.2.0'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     compile 'org.greenrobot:eventbus:3.0.0'
-    compile 'me.grantland:autofittextview:0.2.+'
+    compile 'me.grantland:autofittextview:0.2.0'
     compile 'com.github.PhilJay:MPAndroidChart:v2.1.6'
     compile 'com.inthecheesefactory.thecheeselibrary:adjustable-imageview:1.0.0'
-    compile 'com.github.khacpv:multiple-parallax-view:-SNAPSHOT'
+    compile 'com.github.khacpv:multiple-parallax-view:43956df'
     compile('io.socket:socket.io-client:0.7.0')
     {
         exclude group: 'org.json', module: 'json'

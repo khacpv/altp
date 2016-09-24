@@ -88,6 +88,7 @@ public class SoundPoolManager {
             index++;
             int loadResId = soundPool.load(activity, entry.getKey(), index);
             entry.getValue().setSampleId(loadResId);
+            callback.onLoadUpdate(hashMap.size(),index);
         }
     }
 

@@ -2,13 +2,14 @@ package com.oic.game.ailatrieuphu.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.WorkerThread;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
-
-import com.bumptech.glide.Glide;
+import android.widget.TextView;
 
 import com.oic.game.ailatrieuphu.R;
 import com.oic.game.ailatrieuphu.util.ISoundPoolLoaded;
@@ -26,6 +27,18 @@ public class MainActivity extends AppCompatActivity {
 
     String userId, username, linkAvatar, location;
 
+    TextView textviewLoading;
+
+    ParallaxView mParallaxView;
+
+    List<DataItem> data = new ArrayList<>();
+
+    final long LOAD_MAX_TIME = 2000;    // 2 seconds
+
+    long startTime = 0;
+
+    Handler handler = new Handler();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,22 +50,148 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
+        setContentView(R.layout.activity_main);
 
-        Glide.with(this).load(R.drawable.loading);
-        
+        textviewLoading = (TextView) findViewById(R.id.textview_loading);
+
+        startTime = System.currentTimeMillis();
+
+        loadParallaxView();
+
+        Log.e("TAG", String.format("user: {id=%s,name:%s,location:%s}", userId, username,
+                location));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
         userId = PrefUtils.getInstance(this).get(PrefUtils.KEY_USER_ID, "");
         username = PrefUtils.getInstance(this).get(PrefUtils.KEY_NAME, "");
         linkAvatar = PrefUtils.getInstance(this).get(PrefUtils.KEY_URL_AVATAR, "");
         location = PrefUtils.getInstance(this).get(PrefUtils.KEY_LOCATION, "");
 
-        loadSound();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                loadSound();
+            }
+        }).start();
 
-        Log.e("TAG", String.format("user: {id=%s,name:%s,location:%s}", userId, username, location));
     }
 
+    public void loadParallaxView() {
+        mParallaxView = (ParallaxView) findViewById(R.id.parallax);
+
+        {
+            DataItem item = DataItem.Builder.make("Nhất cử lưỡng tiện", DataItem.Builder
+                    .MODE_DEFAULT)
+                    .setXPercent(0)
+                    .setYPercent(0)
+                    .build();
+            data.add(item);
+        }
+
+        {
+            DataItem item = DataItem.Builder.make("Xôi hỏng bỏng không", DataItem.Builder.MODE_HIGH)
+                    .setXPercent(10)
+                    .setYPercent(10)
+                    .build();
+            data.add(item);
+        }
+
+        {
+            DataItem item = DataItem.Builder.make("\"Đói cho sạch, rách cho ...\"", DataItem
+                    .Builder.MODE_LOW)
+                    .setXPercent(20)
+                    .setYPercent(30)
+                    .build();
+            data.add(item);
+        }
+
+        {
+            DataItem item = DataItem.Builder.make("\"Mật ngọt chết ...\"?", DataItem.Builder
+                    .MODE_DEFAULT)
+                    .setXPercent(30)
+                    .setYPercent(50)
+                    .build();
+            data.add(item);
+        }
+
+        {
+            DataItem item = DataItem.Builder.make("\"Phép ... thua lệ làng\"?", DataItem.Builder
+                    .MODE_HIGH)
+                    .setXPercent(40)
+                    .setYPercent(65)
+                    .build();
+            data.add(item);
+        }
+
+        {
+            DataItem item = DataItem.Builder.make("\"Chim sa ... lặn\"?", DataItem.Builder.MODE_LOW)
+                    .setXPercent(50)
+                    .setYPercent(75)
+                    .build();
+            data.add(item);
+        }
+
+        {
+            DataItem item = DataItem.Builder.make("Nước uống nhớ nguồn", DataItem.Builder
+                    .MODE_DEFAULT)
+                    .setXPercent(60)
+                    .setYPercent(20)
+                    .build();
+            data.add(item);
+        }
+
+        {
+            DataItem item = DataItem.Builder.make("\"Ăn bờ ở ...\"?", DataItem.Builder.MODE_DEFAULT)
+                    .setXPercent(70)
+                    .setYPercent(35)
+                    .build();
+            data.add(item);
+        }
+
+        {
+            DataItem item = DataItem.Builder.make("Nem công chả phượng", DataItem.Builder.MODE_HIGH)
+                    .setXPercent(80)
+                    .setYPercent(55)
+                    .build();
+            data.add(item);
+        }
+
+        {
+            DataItem item = DataItem.Builder.make("\"Xa mặt cách ...\"?", DataItem.Builder.MODE_LOW)
+                    .setXPercent(90)
+                    .setYPercent(70)
+                    .build();
+            data.add(item);
+        }
+
+        {
+            DataItem item = DataItem.Builder.make("\"Đất rộng trời ...\"?", DataItem.Builder
+                    .MODE_DEFAULT)
+                    .setXPercent(10)
+                    .setYPercent(80)
+                    .build();
+            data.add(item);
+        }
+
+        {
+            DataItem item = DataItem.Builder.make("\"Ăn nên làm ...\"?", DataItem.Builder.MODE_LOW)
+                    .setXPercent(20)
+                    .setYPercent(90)
+                    .build();
+            data.add(item);
+        }
+
+        mParallaxView.setData(data);
+    }
+
+    @WorkerThread
     public void loadSound() {
         SoundPoolManager.CreateInstance();
-        List<Integer> sounds = new ArrayList<Integer>();
+        List<Integer> sounds = new ArrayList<>();
         sounds.add(R.raw.touch_sound);
         sounds.add(R.raw.enemy_selected);
         sounds.add(R.raw.search_finish);
@@ -119,20 +258,43 @@ public class MainActivity extends AppCompatActivity {
             SoundPoolManager.getInstance().InitializeSoundPool(this, new ISoundPoolLoaded() {
                 @Override
                 public void onSuccess() {
-                    if (TextUtils.isEmpty(userId) || TextUtils.isEmpty(username) || TextUtils.isEmpty(linkAvatar)
-                            || TextUtils.isEmpty(location)) {
-//                        Intent myIntent = new Intent(getApplicationContext(), LoginScreen.class);
-//                        myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-//                        startActivity(myIntent);
-//                        overridePendingTransition(0, 0);
-//                        finish();
-                    } else {
-//                        Intent myIntent = new Intent(getApplicationContext(), InfoScreen.class);
-//                        myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-//                        startActivity(myIntent);
-//                        overridePendingTransition(0, 0);
-//                        finish();
-                    }
+                    textviewLoading.setText("99%");
+
+                    Log.e("TAG", "load time delay:" + Math.max(LOAD_MAX_TIME, LOAD_MAX_TIME -
+                            (System.currentTimeMillis() - startTime)) + "");
+
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            textviewLoading.setText("100%");
+                            Intent myIntent;
+                            if (TextUtils.isEmpty(userId) || TextUtils.isEmpty(username) ||
+                                    TextUtils.isEmpty(linkAvatar)
+                                    || TextUtils.isEmpty(location)) {
+                                myIntent = new Intent(getApplicationContext(), LoginScreen.class);
+                            } else {
+                                myIntent = new Intent(getApplicationContext(), InfoScreen.class);
+                            }
+
+                            startActivity(myIntent);
+                            overridePendingTransition(R.anim.xml_fade_in, R.anim.xml_fade_out);
+                            finish();
+                        }
+                    }, Math.max(LOAD_MAX_TIME, LOAD_MAX_TIME - (System.currentTimeMillis()
+                            - startTime)));
+                }
+
+                @Override
+                public void onLoadUpdate(final int totalSound, final int itemLoad) {
+                    handler.postAtFrontOfQueue(new Runnable() {
+                        @Override
+                        public void run() {
+                            int percent = (int)(itemLoad * 1f / totalSound * 100);
+                            if(percent<99) {
+                                textviewLoading.setText(percent + "%");
+                            }
+                        }
+                    });
                 }
             });
         } catch (Exception e) {
@@ -148,4 +310,3 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
-

@@ -5,4 +5,5 @@ package com.oic.game.ailatrieuphu.util;
  */
 public interface ISoundPoolLoaded {
     void onSuccess();
+    void onLoadUpdate(int totalSound, int itemLoad);
 }
