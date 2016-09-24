@@ -46,7 +46,7 @@ dependencies {
     compile 'me.grantland:autofittextview:0.2.0'
     compile 'com.github.PhilJay:MPAndroidChart:v2.1.6'
     compile 'com.inthecheesefactory.thecheeselibrary:adjustable-imageview:1.0.0'
-    compile 'com.github.khacpv:multiple-parallax-view:43956df'
+    compile 'com.github.khacpv:multiple-parallax-view:8c83f48'
     compile('io.socket:socket.io-client:0.7.0')
     {
         exclude group: 'org.json', module: 'json'

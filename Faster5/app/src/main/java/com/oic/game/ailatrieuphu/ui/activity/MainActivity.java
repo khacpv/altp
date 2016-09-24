@@ -88,23 +88,30 @@ public class MainActivity extends AppCompatActivity {
                     .MODE_DEFAULT)
                     .setXPercent(0)
                     .setYPercent(0)
+                    .setAlpha(0.3f)
+                    .setSize(45)
                     .build();
             data.add(item);
         }
 
         {
-            DataItem item = DataItem.Builder.make("Xôi hỏng bỏng không", DataItem.Builder.MODE_HIGH)
-                    .setXPercent(10)
+            DataItem item = DataItem.Builder.make("Xôi hỏng bỏng không", DataItem.Builder
+                    .MODE_DEFAULT)
+                    .setXPercent(0)
                     .setYPercent(10)
+                    .setAlpha(0.5f)
+                    .setSize(45)
                     .build();
             data.add(item);
         }
 
         {
             DataItem item = DataItem.Builder.make("\"Đói cho sạch, rách cho ...\"", DataItem
-                    .Builder.MODE_LOW)
+                    .Builder.MODE_DEFAULT)
                     .setXPercent(20)
                     .setYPercent(30)
+                    .setAlpha(0.1f)
+                    .setSize(45)
                     .build();
             data.add(item);
         }
@@ -112,25 +119,32 @@ public class MainActivity extends AppCompatActivity {
         {
             DataItem item = DataItem.Builder.make("\"Mật ngọt chết ...\"?", DataItem.Builder
                     .MODE_DEFAULT)
-                    .setXPercent(30)
+                    .setXPercent(5)
                     .setYPercent(50)
+                    .setAlpha(0.3f)
+                    .setSize(45)
                     .build();
             data.add(item);
         }
 
         {
             DataItem item = DataItem.Builder.make("\"Phép ... thua lệ làng\"?", DataItem.Builder
-                    .MODE_HIGH)
-                    .setXPercent(40)
+                    .MODE_DEFAULT)
+                    .setXPercent(15)
                     .setYPercent(65)
+                    .setAlpha(0.5f)
+                    .setSize(45)
                     .build();
             data.add(item);
         }
 
         {
-            DataItem item = DataItem.Builder.make("\"Chim sa ... lặn\"?", DataItem.Builder.MODE_LOW)
-                    .setXPercent(50)
+            DataItem item = DataItem.Builder.make("\"Chim sa ... lặn\"?", DataItem.Builder
+                    .MODE_DEFAULT)
+                    .setXPercent(30)
                     .setYPercent(75)
+                    .setAlpha(0.1f)
+                    .setSize(45)
                     .build();
             data.add(item);
         }
@@ -138,32 +152,42 @@ public class MainActivity extends AppCompatActivity {
         {
             DataItem item = DataItem.Builder.make("Nước uống nhớ nguồn", DataItem.Builder
                     .MODE_DEFAULT)
-                    .setXPercent(60)
+                    .setXPercent(50)
                     .setYPercent(20)
+                    .setAlpha(0.3f)
+                    .setSize(45)
                     .build();
             data.add(item);
         }
 
         {
             DataItem item = DataItem.Builder.make("\"Ăn bờ ở ...\"?", DataItem.Builder.MODE_DEFAULT)
-                    .setXPercent(70)
+                    .setXPercent(58)
                     .setYPercent(35)
+                    .setAlpha(0.5f)
+                    .setSize(45)
                     .build();
             data.add(item);
         }
 
         {
-            DataItem item = DataItem.Builder.make("Nem công chả phượng", DataItem.Builder.MODE_HIGH)
-                    .setXPercent(80)
+            DataItem item = DataItem.Builder.make("Nem công chả phượng", DataItem.Builder
+                    .MODE_DEFAULT)
+                    .setXPercent(30)
                     .setYPercent(55)
+                    .setAlpha(0.5f)
+                    .setSize(45)
                     .build();
             data.add(item);
         }
 
         {
-            DataItem item = DataItem.Builder.make("\"Xa mặt cách ...\"?", DataItem.Builder.MODE_LOW)
-                    .setXPercent(90)
+            DataItem item = DataItem.Builder.make("\"Xa mặt cách ...\"?", DataItem.Builder
+                    .MODE_DEFAULT)
+                    .setXPercent(50)
                     .setYPercent(70)
+                    .setAlpha(0.1f)
+                    .setSize(45)
                     .build();
             data.add(item);
         }
@@ -173,14 +197,18 @@ public class MainActivity extends AppCompatActivity {
                     .MODE_DEFAULT)
                     .setXPercent(10)
                     .setYPercent(80)
+                    .setAlpha(0.3f)
+                    .setSize(45)
                     .build();
             data.add(item);
         }
 
         {
-            DataItem item = DataItem.Builder.make("\"Ăn nên làm ...\"?", DataItem.Builder.MODE_LOW)
-                    .setXPercent(20)
+            DataItem item = DataItem.Builder.make("\"Ăn nên làm ...\"?", DataItem.Builder.MODE_DEFAULT)
+                    .setXPercent(80)
                     .setYPercent(90)
+                    .setAlpha(0.3f)
+                    .setSize(45)
                     .build();
             data.add(item);
         }
