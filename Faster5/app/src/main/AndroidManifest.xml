@@ -12,6 +12,9 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.CAMERA"/>
 
+    <uses-feature android:name="android.hardware.sensor.gyroscope"
+                  android:required="true" />
+
     <application
         android:name="com.oic.game.ailatrieuphu.MainApplication"
         android:allowBackup="true"
