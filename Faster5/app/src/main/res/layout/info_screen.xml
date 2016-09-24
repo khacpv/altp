@@ -42,7 +42,7 @@
                 android:layout_toRightOf="@+id/imageview_useravatar"
                 android:ellipsize="end"
                 android:lines="1"
-                android:text="PLAYER"
+                android:text="@string/player"
                 android:textColor="#ffffff"
                 android:textSize="24sp"
                 android:textStyle="bold" />
@@ -56,7 +56,7 @@
                 android:layout_below="@+id/textview_usernname"
                 android:ellipsize="end"
                 android:lines="1"
-                android:text="CITY"
+                android:text="@string/city"
                 android:textColor="#ffffff"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -66,13 +66,14 @@
                 android:layout_width="220dp"
                 android:layout_height="45dp"
                 android:layout_alignLeft="@+id/imageview_useravatar"
+                android:layout_alignStart="@+id/imageview_useravatar"
                 android:layout_below="@+id/imageview_useravatar"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/button_money"
                 android:gravity="center_horizontal"
                 android:paddingTop="7dp"
-                android:text="000.000.000"
+                android:text="@string/money_default"
                 android:textColor="#000000"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -83,8 +84,8 @@
             android:id="@+id/button_search"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_alignParentRight="true"
             android:layout_marginRight="5dp"
+            android:layout_marginEnd="5dp"
             android:layout_marginTop="40dp">
 
             <ImageView
@@ -101,8 +102,7 @@
     <RelativeLayout
         android:id="@+id/layout_button_dangnhap"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/layout_city">
+        android:layout_height="wrap_content">
 
         <View
             android:layout_width="match_parent"
@@ -120,7 +120,7 @@
             android:layout_marginTop="5dp"
             android:background="@drawable/answer0"
             android:paddingBottom="7dp"
-            android:text="Đối Thủ"
+            android:text="@string/imageview_doithu"
             android:textAllCaps="false"
             android:textColor="#ffffff"
             android:textSize="15sp"

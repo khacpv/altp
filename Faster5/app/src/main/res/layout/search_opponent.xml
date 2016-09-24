@@ -30,7 +30,7 @@
             android:layout_marginStart="20dp"
             android:layout_toEndOf="@+id/imageview_useravatar1"
             android:layout_toRightOf="@+id/imageview_useravatar1"
-            android:text="PLAYER"
+            android:text="@string/player"
             android:textColor="#ffffff"
             android:textSize="30sp"
             android:textStyle="bold" />
@@ -42,7 +42,7 @@
             android:layout_alignLeft="@+id/textview_username1"
             android:layout_alignStart="@+id/textview_username1"
             android:layout_below="@+id/textview_username1"
-            android:text="CITY"
+            android:text="@string/city"
             android:textColor="#ffffff"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -59,7 +59,7 @@
             android:background="@drawable/button_money"
             android:gravity="center_horizontal"
             android:paddingTop="6dp"
-            android:text="000.000.000"
+            android:text="@string/money_default"
             android:textColor="#000000"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -70,11 +70,11 @@
     <com.inthecheesefactory.thecheeselibrary.widget.AdjustableImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
-        android:src="@drawable/icon_opponent"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"/>
+        android:src="@drawable/icon_opponent" />
 
     <RelativeLayout
         android:id="@+id/layout_opponent2"
@@ -88,6 +88,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_marginRight="20dp"
+            android:layout_marginEnd="20dp"
             android:src="@drawable/avatar"
             app:civ_border_color="#fff"
             app:civ_border_width="2dp" />
@@ -98,8 +99,10 @@
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/imageview_useravatar2"
             android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"
             android:layout_toLeftOf="@+id/imageview_useravatar2"
-            android:text="PLAYER"
+            android:layout_toStartOf="@+id/imageview_useravatar2"
+            android:text="@string/enemy"
             android:textColor="#ffffff"
             android:textSize="30sp"
             android:textStyle="bold" />
@@ -109,8 +112,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignRight="@+id/textview_username2"
+            android:layout_alignEnd="@+id/textview_username2"
             android:layout_below="@+id/textview_username2"
-            android:text="CITY"
+            android:text="@string/city"
             android:textColor="#ffffff"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -120,13 +124,14 @@
             android:layout_width="220dp"
             android:layout_height="45dp"
             android:layout_alignRight="@+id/imageview_useravatar2"
+            android:layout_alignEnd="@+id/imageview_useravatar2"
             android:layout_below="@+id/imageview_useravatar2"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
             android:background="@drawable/button_money2"
             android:gravity="center_horizontal"
             android:paddingTop="6dp"
-            android:text="000.000.000"
+            android:text="@string/money_default"
             android:textColor="#000000"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -142,7 +147,7 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginBottom="1dp"
+            android:layout_marginTop="1dp"
             android:background="#FFF" />
 
         <Button
@@ -156,7 +161,7 @@
             android:background="@drawable/answer0"
             android:onClick="btnSearch"
             android:paddingBottom="10dp"
-            android:text="Tìm kiếm"
+            android:text="@string/btn_timkiem"
             android:textAllCaps="false"
             android:textColor="#ffffff"
             android:textSize="20sp"
@@ -174,7 +179,7 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginBottom="1dp"
+            android:layout_marginTop="1dp"
             android:background="#FFF" />
 
         <Button
@@ -188,7 +193,7 @@
             android:background="@drawable/answer0"
             android:onClick="btnPlay"
             android:paddingBottom="10dp"
-            android:text="CHƠI"
+            android:text="@string/btn_play"
             android:textAllCaps="false"
             android:textColor="#ffffff"
             android:textSize="20sp"

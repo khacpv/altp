@@ -18,15 +18,15 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
-            android:text="Đặt avatar"
+            android:text="@string/set_Avatar"
             android:textColor="#00366D"
-            android:textSize="30sp" />
+            android:textSize="30sp"
+            android:ellipsize="end"
+            android:lines="1"/>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginLeft="50dp"
-            android:layout_marginRight="50dp"
+            android:layout_height="3dp"
             android:layout_marginTop="10dp"
             android:background="#00366D" />
 
@@ -36,12 +36,14 @@
             android:layout_gravity="center"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="30dp"
             android:gravity="center"
-            android:maxLines="3"
-            android:text="Bạn muốn chọn ảnh đại diện cho mình luôn chứ?"
-            android:textColor="#00366D"
-            android:textSize="24sp" />
+            android:maxLines="2"
+            android:text="@string/question_Avatar"
+            android:textColor="#EEA542"
+            android:textSize="18sp"
+            android:layout_marginBottom="20dp"/>
+
 
         <Button
             android:id="@+id/button_camera"
@@ -50,14 +52,15 @@
             android:layout_gravity="center"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
-            android:layout_marginTop="30dp"
             android:background="@drawable/answer0"
             android:paddingBottom="10dp"
-            android:text="Từ Camera"
+            android:text="@string/avatar_from_camera"
             android:textAllCaps="false"
             android:textColor="#ffffff"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"/>
+
 
         <Button
             android:id="@+id/button_gallery"
@@ -66,24 +69,25 @@
             android:layout_gravity="center"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
-            android:layout_marginTop="5dp"
             android:background="@drawable/answer0"
             android:clickable="true"
             android:paddingBottom="10dp"
-            android:text="Từ bộ sưu tập"
+            android:text="@string/avatar_from_gallery"
             android:textAllCaps="false"
             android:textColor="#ffffff"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"/>
+
 
         <Button
             android:id="@+id/button_later"
             android:layout_width="250dp"
             android:layout_height="50dp"
             android:layout_gravity="center"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/btn_later" />
+            android:background="@drawable/btn_later"
+            android:layout_marginBottom="10dp"/>
+
 
     </LinearLayout>
 </RelativeLayout>

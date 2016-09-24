@@ -18,15 +18,15 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
-            android:text="Đăng Nhập"
+            android:ellipsize="end"
+            android:lines="1"
+            android:text="@string/title_login_popup"
             android:textColor="#00366D"
             android:textSize="30sp" />
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginLeft="50dp"
-            android:layout_marginRight="50dp"
+            android:layout_height="3dp"
             android:layout_marginTop="10dp"
             android:background="#00366D" />
 
@@ -34,25 +34,27 @@
             android:id="@+id/imgView_loading"
             android:layout_width="200dp"
             android:layout_height="100dp"
-            android:layout_marginTop="30dp"
             android:layout_gravity="center"
-            />
+            android:layout_marginTop="30dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginBottom="40dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="40dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:lines="1"
+            android:maxLines="3"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:gravity="center"
-            android:maxLines="3"
-            android:text="Vui lòng đợi ..."
-            android:textColor="#00366D"
-            android:textSize="20sp" />
+            android:text="@string/wait_text"
+            android:textColor="#EEA542"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
 
     </LinearLayout>

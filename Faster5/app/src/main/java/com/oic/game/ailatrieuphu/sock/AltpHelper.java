@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by FRAMGIA\pham.van.khac on 8/11/16.
@@ -176,7 +177,6 @@ public class AltpHelper {
         }
 
 
-
         try {
             int answerRight = data.getInt("answerRight");
             JSONArray answerUsers = data.getJSONArray("answerUsers");
@@ -208,7 +208,7 @@ public class AltpHelper {
     public Question answerNextCallback(Object... args) {
         Question question = new Question();
         JSONObject data = (JSONObject) args[0];
-        Log.e("TAG","answerNextCallback:"+data.toString());
+        Log.e("TAG", "answerNextCallback:" + data.toString());
         try {
             question = new Gson().fromJson(data.getJSONObject("question").toString(), Question.class);
         } catch (JSONException e) {
@@ -220,8 +220,8 @@ public class AltpHelper {
     /*
     * @return list users with score
     * */
-    public  ArrayList<User> gameOverCallback(Object... args) {
-        ArrayList <User> answerUserList = new ArrayList<>();
+    public ArrayList<User> gameOverCallback(Object... args) {
+        ArrayList<User> answerUserList = new ArrayList<>();
         JSONObject data = (JSONObject) args[0];
         try {
             JSONArray users = data.getJSONArray("users");
@@ -238,7 +238,7 @@ public class AltpHelper {
     public boolean gameOverCallbackGetLastQuestion(Object... args) {
         JSONObject data = (JSONObject) args[0];
         boolean isLastQuestion = false;
-        if(data.has("lastQuestion")){
+        if (data.has("lastQuestion")) {
             try {
                 isLastQuestion = data.getBoolean("lastQuestion");
             } catch (JSONException e) {
@@ -268,17 +268,19 @@ public class AltpHelper {
     /**
      * fire when an user has loss connection
      */
-    public Pair<Room, User> quitCallback(Object... args) {
-        Pair<Room, User> result = new Pair<>(new Room(), null);
+    public ArrayList<User> quitCallback(Object... args) {
+        ArrayList<User> userQuit = new ArrayList<>();
         JSONObject data = (JSONObject) args[0];
 
         try {
-            Room room = new Gson().fromJson(data.getString("room"), Room.class);
-            User user = new Gson().fromJson(data.getString("user"), User.class);
-            result = new Pair<>(room, user);
+            JSONArray users = data.getJSONArray("users");
+            for (int i = 0; i < users.length(); i++) {
+                User userAnswer = new Gson().fromJson(users.get(i).toString(), User.class);
+                userQuit.add(userAnswer);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return result;
+        return userQuit;
     }
 }
