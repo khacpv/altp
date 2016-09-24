@@ -1,10 +1,56 @@
 <resources>
     <string name="app_name">ALTP Online</string>
     <string name="facebook_app_id">513017002219486</string>
-    <string name="username1">Nguyen Van A</string>
 
+    <string name="player">PLAYER</string>
+    <string name="enemy">ENEMY</string>
+    <string name="city">CITY</string>
+    <string name="money_default">0</string>
     <string name="connect">Connected</string>
     <string name="disconnect">Disconnected, Please check your internet connection</string>
     <string name="error_connect">Failed to connect</string>
     <string name="timeout_connect">Timeout to connect</string>
+    <string name="btnLogin">Đăng nhập</string>
+    <string name="timeout">TIME\nOUT</string>
+    <string name="question">Question?</string>
+    <string name="no_question">1</string>
+    <string name="btn_timkiem">Tìm kiếm</string>
+    <string name="btn_play">CHƠI</string>
+
+
+
+    <string name="title_gameover">CHÚC MỪNG CHIẾN THẮNG</string>
+    <string name="btn_tieptuc">TIẾP TỤC</string>
+    <string name="imageview_doithu">Đối thủ</string>
+    <string name="answ_A">A:</string>
+    <string name="answ_B">B:</string>
+    <string name="answ_C">C:</string>
+    <string name="answ_D">D:</string>
+    <string name="set_Avatar">Đặt Avatar</string>
+    <string name="question_Avatar">Bạn muốn chọn ảnh đại diện\ncho mình luôn chứ?</string>
+    <string name="avatar_from_camera">Từ Camera</string>
+    <string name="avatar_from_gallery">Từ Camera</string>
+    <string name="trogiup_khangia">Trợ giúp khán giả</string>
+    <string name="btn_close">Đóng</string>
+    <string name="list_player">Người chơi</string>
+    <string name="title_quit_popup">Dừng chơi</string>
+    <string name="question_quit_popup">Bạn thực sự muốn dừng  cuộc chơi tại đây?</string>
+    <string name="btnNo_quit_popup">Không</string>
+    <string name="btnYes_quit_popup">Đồng ý</string>
+    <string name="title_edittex_popup">Lỗi</string>
+    <string name="noti_edittex_popup">Tên đăng nhập \n phải lớn hơn 3 ký tự</string>
+    <string name="title_login_popup">Đăng Nhập</string>
+    <string name="wait_text">Vui lòng đợi ...</string>
+    <string name="try_again_text">Thử Lại</string>
+    <string name="skip_text">Bỏ Qua</string>
+    <string name="reconnect_text">Đang kết nối lại.\nVui lòng đợi...</string>
+    <string name="title_disconnect_popup">Mất kết nối</string>
+    <string name="hint_edittex_login">Choose username</string>
+    <string name="title_wait_popup">Chưa sẵn sàng</string>
+    <string name="text_wait_popup">Vui lòng đợi đối thủ</string>
+    <string name="second_wait_popup">30</string>
+    <string name="help4_wait_popup">30 giây mỗi câu hỏi</string>
+    <string name="help1_wait_popup">Trợ giúp 50/50</string>
+    <string name="help2_wait_popup">Hỏi ý kiến khán giả</string>
+    <string name="help3_wait_popup">Đáp án từ chương trình</string>
 </resources>

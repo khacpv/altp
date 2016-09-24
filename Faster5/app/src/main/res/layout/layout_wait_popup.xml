@@ -13,31 +13,165 @@
         android:background="@drawable/xml_popup_bg_white"
         android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/textview_ready"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:lines="1"
+            android:text="@string/title_wait_popup"
+            android:textColor="#00366D"
+            android:textSize="30sp" />
 
-        <ImageView
-            android:id="@+id/imgView_loading"
-            android:layout_width="200dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="30dp"
-            android:layout_gravity="center"
-            />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginTop="10dp"
+            android:background="#00366D" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp">
+
+            <Button
+                android:id="@+id/btn_guide1"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp"
+                android:background="@drawable/number_question"
+                android:paddingBottom="3dp"
+                android:paddingRight="3dp"
+                android:text="@string/second_wait_popup"
+                android:textColor="#fff"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/btn_guide1"
+                android:layout_alignStart="@+id/btn_guide1"
+                android:layout_marginLeft="70dp"
+                android:layout_marginStart="70dp"
+                android:ellipsize="end"
+                android:lines="1"
+                android:paddingTop="10dp"
+                android:text="@string/help4_wait_popup"
+                android:textColor="#00366D"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btn_guide2"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp"
+                android:background="@drawable/save1"
+                android:paddingBottom="3dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/btn_guide2"
+                android:layout_alignStart="@+id/btn_guide2"
+                android:layout_marginLeft="70dp"
+                android:layout_marginStart="70dp"
+                android:ellipsize="end"
+                android:lines="1"
+                android:paddingTop="10dp"
+                android:text="@string/help1_wait_popup"
+                android:textColor="#00366D"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btn_guide3"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp"
+                android:background="@drawable/save2"
+                android:paddingBottom="3dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/btn_guide3"
+                android:layout_alignStart="@+id/btn_guide3"
+                android:layout_marginLeft="70dp"
+                android:layout_marginStart="70dp"
+                android:ellipsize="end"
+                android:lines="1"
+                android:paddingTop="10dp"
+                android:text="@string/help2_wait_popup"
+                android:textColor="#00366D"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btn_guide4"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp"
+                android:background="@drawable/save3"
+                android:paddingBottom="3dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/btn_guide4"
+                android:layout_alignStart="@+id/btn_guide4"
+                android:layout_marginLeft="70dp"
+                android:layout_marginStart="70dp"
+                android:lines="2"
+                android:paddingTop="10dp"
+                android:text="@string/help3_wait_popup"
+                android:textColor="#00366D"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginBottom="20dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="50dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:lines="1"
+            android:maxLines="3"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:gravity="center"
-            android:maxLines="3"
-            android:text="Vui lòng đợi đối thủ..."
-            android:textColor="#00366D"
-            android:textSize="20sp" />
-
+            android:text="@string/text_wait_popup"
+            android:textColor="#EEA542"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
 
     </LinearLayout>

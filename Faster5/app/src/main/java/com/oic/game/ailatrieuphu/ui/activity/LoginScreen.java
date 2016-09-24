@@ -143,12 +143,10 @@ public class LoginScreen extends AppCompatActivity {
     private SockAltp.OnSocketEvent loginCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
-
             OnLoginCallbackEvent eventBus = new OnLoginCallbackEvent();
             User user = mAltpHelper.loginCallback(args);
             eventBus.user = user;
             EventBus.getDefault().post(eventBus);
-
         }
     };
 
@@ -233,7 +231,9 @@ public class LoginScreen extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                loggedAndMoveInfoScreen();
+                if (!isFinishing()) {
+                    loggedAndMoveInfoScreen();
+                }
             }
         });
     }
@@ -501,6 +501,7 @@ public class LoginScreen extends AppCompatActivity {
         loginDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         loginDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         loginDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        loginDialog.setCancelable(false);
 
         ImageView loading = (ImageView) loginDialog.findViewById(R.id.imgView_loading);
 
@@ -656,7 +657,6 @@ public class LoginScreen extends AppCompatActivity {
         User user;
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -711,7 +711,6 @@ public class LoginScreen extends AppCompatActivity {
         finish();
     }
 
-
     private boolean checkPermission() {
         int resultWrite = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
         int resultRead = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -746,7 +745,6 @@ public class LoginScreen extends AppCompatActivity {
         }
     }
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
@@ -760,7 +758,6 @@ public class LoginScreen extends AppCompatActivity {
 
         }
     }
-
 
     @Override
     protected void onPause() {

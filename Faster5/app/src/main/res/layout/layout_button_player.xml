@@ -26,7 +26,7 @@
             android:layout_marginRight="50dp"
             android:background="@drawable/answer0"
             android:paddingBottom="8dp"
-            android:text="Người chơi"
+            android:text="@string/list_player"
             android:textColor="#FFF"/>
     </FrameLayout>
 
