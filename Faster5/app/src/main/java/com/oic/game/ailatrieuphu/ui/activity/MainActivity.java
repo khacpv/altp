@@ -1,6 +1,8 @@
 package com.oic.game.ailatrieuphu.ui.activity;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.WorkerThread;
@@ -10,10 +12,13 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
 
+import com.oic.game.ailatrieuphu.MainApplication;
 import com.oic.game.ailatrieuphu.BuildConfig;
 import com.oic.game.ailatrieuphu.R;
+import com.oic.game.ailatrieuphu.sock.SockAltp;
 import com.oic.game.ailatrieuphu.util.ISoundPoolLoaded;
 import com.oic.game.ailatrieuphu.util.PrefUtils;
 import com.oic.game.ailatrieuphu.util.SoundPoolManager;
@@ -24,6 +29,8 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.socket.client.Socket;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,6 +49,60 @@ public class MainActivity extends AppCompatActivity {
 
     Handler handler = new Handler();
 
+    private SockAltp mSocketAltp;
+    private Dialog maintainDialog;
+
+
+    private SockAltp.OnSocketEvent globalCallback = new SockAltp.OnSocketEvent() {
+        @Override
+        public void onEvent(String event, Object... args) {
+            switch (event) {
+                case Socket.EVENT_CONNECTING:
+                    break;
+                case Socket.EVENT_DISCONNECT:
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!maintainDialog.isShowing() && !isFinishing()) {
+                                maintainDialog.show();
+                            }
+                        }
+                    });
+                    break;
+                case Socket.EVENT_CONNECT:  // auto call on connect to server
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (maintainDialog.isShowing() && !isFinishing()) {
+                                maintainDialog.hide();
+                            }
+                        }
+                    });
+                    break;
+                case Socket.EVENT_CONNECT_ERROR:
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!maintainDialog.isShowing() && !isFinishing()) {
+                                maintainDialog.show();
+                            }
+                        }
+                    });
+                    break;
+                case Socket.EVENT_CONNECT_TIMEOUT:
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!maintainDialog.isShowing() && !isFinishing()) {
+                                maintainDialog.show();
+                            }
+                        }
+                    });
+                    break;
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +115,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_main);
+        mSocketAltp = MainApplication.sockAltp();
+        mSocketAltp.addGlobalEvent(globalCallback);
+        if (!mSocketAltp.isConnected()) {
+            mSocketAltp.connect();
+        }
+        maintainDialog = new Dialog(this);
+        setMaintainDiaglog();
 
         textviewLoading = (TextView) findViewById(R.id.textview_loading);
         textviewDebug = (TextView) findViewById(R.id.debug);
@@ -62,17 +130,6 @@ public class MainActivity extends AppCompatActivity {
 
         loadParallaxView();
 
-        Log.e("TAG", String.format("user: {id=%s,name:%s,location:%s}", userId, username,
-                location));
-
-        if (!BuildConfig.DEBUG) {
-            textviewDebug.setVisibility(View.GONE);
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
 
         userId = PrefUtils.getInstance(this).get(PrefUtils.KEY_USER_ID, "");
         username = PrefUtils.getInstance(this).get(PrefUtils.KEY_NAME, "");
@@ -86,7 +143,34 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
 
+        Log.e("TAG", String.format("user: {id=%s,name:%s,location:%s}", userId, username,
+                location));
+
+        if (!BuildConfig.DEBUG) {
+            textviewDebug.setVisibility(View.GONE);
+        }
     }
+
+
+    public void setMaintainDiaglog() {
+        maintainDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        maintainDialog.setContentView(R.layout.layout_maintain_popup);
+        maintainDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        maintainDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        maintainDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        maintainDialog.setCancelable(false);
+        Button okBtn = (Button) maintainDialog.findViewById(R.id.button_okay);
+
+        okBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                maintainDialog.hide();
+                finish();
+            }
+        });
+
+    }
+
 
     public void loadParallaxView() {
         mParallaxView = (ParallaxView) findViewById(R.id.parallax);
@@ -311,10 +395,11 @@ public class MainActivity extends AppCompatActivity {
                             } else {
                                 myIntent = new Intent(getApplicationContext(), InfoScreen.class);
                             }
-
+                            mSocketAltp.removeEvent();
                             startActivity(myIntent);
                             overridePendingTransition(R.anim.xml_fade_in, R.anim.xml_fade_out);
                             finish();
+
                         }
                     }, Math.max(LOAD_MAX_TIME, LOAD_MAX_TIME - (System.currentTimeMillis()
                             - startTime)));
@@ -325,8 +410,8 @@ public class MainActivity extends AppCompatActivity {
                     handler.postAtFrontOfQueue(new Runnable() {
                         @Override
                         public void run() {
-                            int percent = (int)(itemLoad * 1f / totalSound * 100);
-                            if(percent<99) {
+                            int percent = (int) (itemLoad * 1f / totalSound * 100);
+                            if (percent < 99) {
                                 textviewLoading.setText(percent + "%");
                             }
                         }
@@ -340,10 +425,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        if (maintainDialog != null) {
+            maintainDialog.dismiss();
+        }
         super.onDestroy();
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
     }
 }
-

@@ -67,6 +67,8 @@ public class InfoScreen extends AppCompatActivity {
     private int enemyNumberInList;
     private boolean isEnemy = false;
     private Dialog connectionDiaglog;
+
+    private Dialog searchAgainDialog;
     MediaPlayer mediaPlayer;
     private Handler handler;
     Runnable resetSearch;
@@ -141,6 +143,79 @@ public class InfoScreen extends AppCompatActivity {
         }
     };
 
+    @Subscribe
+    public void onEventMainThread(OnSearhCallbackEvent event) {
+
+        Pair<Room, ArrayList<User>> result = event.result;
+        final Room room = result.first;
+        final List<User> dummyUsers = result.second;
+
+        searchTimes = 1;
+        isEnemy = false;
+
+        for (User user : room.users) {
+            if (String.valueOf(user.id).equalsIgnoreCase(mUser.id)) {
+                mUser = user;
+            }
+            // DO NOT use: user.id != mUser.id
+            if (!String.valueOf(user.id).equalsIgnoreCase(mUser.id)) {
+                user.isDummy = false;
+                isEnemy = true;
+                updateEnemy(user);
+                dummyUsers.add(user);
+            }
+        }
+
+        Collections.shuffle(dummyUsers);
+
+        if (isEnemy) {
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.stop();
+            }
+            SoundPoolManager.getInstance().playSound(R.raw.search_finish);
+
+            searchBg.stop();
+
+            for (int i = 0; i < Math.min(mButtonPlayer.length, dummyUsers.size()); i++) {
+                final int _i = i;
+                if (!dummyUsers.get(_i).isDummy) {
+                    enemyNumberInList = _i;
+
+                    mButtonPlayer[enemyNumberInList].postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            AnimationDrawable btnAnswerDrawable = (AnimationDrawable)
+                                    getResources().getDrawable(R.drawable.xml_btn_anim);
+                            mButtonPlayer[enemyNumberInList].setBackgroundDrawable(btnAnswerDrawable);
+                            btnAnswerDrawable.start();
+                            SoundPoolManager.getInstance().playSound(R.raw.enemy_selected);
+
+                        }
+                    }, 2000);
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mButtonPlayer[_i].setText(dummyUsers.get(_i).name);
+                    }
+                });
+                Log.e("TAG", "dummy user: " + dummyUsers.get(i).name);
+            }
+            if (!isFinishing()) {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        moveSearchOpponent(room);
+
+                    }
+                }, 4000);
+            }
+            Log.e("TAG", "join room: " + room.roomId);
+            Log.e("TAG", "dummy user: " + dummyUsers.size());
+        }
+    }
+
     public void sendSearchRequest(User user) {
         //mButtonSearch.getHandler().postDelayed(resetSearch, 36000);
         runOnUiThread(new Runnable() {
@@ -212,7 +287,8 @@ public class InfoScreen extends AppCompatActivity {
         setView();
         buttonPlayer();
 
-        popupConnection();
+        setConnectionDiaglog();
+        setSearchAgainDialog();
 
         handler = new Handler();
 
@@ -223,6 +299,7 @@ public class InfoScreen extends AppCompatActivity {
                 searchBg.stop();
                 searchBg.reset();
                 mButtonSearch.setClickable(true);
+                searchAgainDialog.show();
             }
         };
 
@@ -239,7 +316,7 @@ public class InfoScreen extends AppCompatActivity {
                                              @Override
                                              public void onClick(View v) {
                                                  SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-                                                 if (NetworkUtils.checkInternetConnection(InfoScreen.this)) {
+                                                 if (NetworkUtils.checkInternetConnection(InfoScreen.this) && mSocketAltp.isConnected()) {
                                                      setUserInfo();
                                                      sendSearchRequest(mUser);
                                                      mButtonSearch.setClickable(false);
@@ -265,10 +342,12 @@ public class InfoScreen extends AppCompatActivity {
         setTypeface(font, mTextViewCity, mTextViewNameUser, mTextViewTotalScore);
 
         connectionDiaglog = new Dialog(this);
+        searchAgainDialog = new Dialog(this);
+
 
     }
 
-    public void popupConnection() {
+    public void setConnectionDiaglog() {
         connectionDiaglog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         connectionDiaglog.setContentView(R.layout.layout_popup_connection);
         connectionDiaglog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
@@ -281,6 +360,24 @@ public class InfoScreen extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 connectionDiaglog.hide();
+            }
+        });
+
+    }
+
+    public void setSearchAgainDialog() {
+        searchAgainDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        searchAgainDialog.setContentView(R.layout.layout_search_tryagain);
+        searchAgainDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        searchAgainDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        searchAgainDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+        Button okBtn = (Button) searchAgainDialog.findViewById(R.id.button_okay);
+
+        okBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                searchAgainDialog.hide();
             }
         });
 
@@ -345,80 +442,6 @@ public class InfoScreen extends AppCompatActivity {
         }
     }
 
-
-    @Subscribe
-    public void onEventMainThread(OnSearhCallbackEvent event) {
-
-        Pair<Room, ArrayList<User>> result = event.result;
-        final Room room = result.first;
-        final List<User> dummyUsers = result.second;
-
-        searchTimes = 1;
-        isEnemy = false;
-
-        for (User user : room.users) {
-            if (String.valueOf(user.id).equalsIgnoreCase(mUser.id)) {
-                mUser = user;
-            }
-            // DO NOT use: user.id != mUser.id
-            if (!String.valueOf(user.id).equalsIgnoreCase(mUser.id)) {
-                user.isDummy = false;
-                isEnemy = true;
-                updateEnemy(user);
-                dummyUsers.add(user);
-            }
-        }
-
-        Collections.shuffle(dummyUsers);
-
-        if (isEnemy) {
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();
-            }
-            SoundPoolManager.getInstance().playSound(R.raw.search_finish);
-
-            searchBg.stop();
-
-            for (int i = 0; i < Math.min(mButtonPlayer.length, dummyUsers.size()); i++) {
-                final int _i = i;
-                if (!dummyUsers.get(_i).isDummy) {
-                    enemyNumberInList = _i;
-
-                    mButtonPlayer[enemyNumberInList].postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            AnimationDrawable btnAnswerDrawable = (AnimationDrawable)
-                                    getResources().getDrawable(R.drawable.xml_btn_anim);
-                            mButtonPlayer[enemyNumberInList].setBackgroundDrawable(btnAnswerDrawable);
-                            btnAnswerDrawable.start();
-                            SoundPoolManager.getInstance().playSound(R.raw.enemy_selected);
-
-                        }
-                    }, 2000);
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mButtonPlayer[_i].setText(dummyUsers.get(_i).name);
-                    }
-                });
-                Log.e("TAG", "dummy user: " + dummyUsers.get(i).name);
-            }
-
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (!isFinishing()) {
-                        moveSearchOpponent(room);
-                    }
-                }
-            }, 4000);
-            Log.e("TAG", "join room: " + room.roomId);
-            Log.e("TAG", "dummy user: " + dummyUsers.size());
-        }
-    }
-
     public void moveSearchOpponent(Room room) {
         runOnUiThread(new Runnable() {
             @Override
@@ -437,10 +460,8 @@ public class InfoScreen extends AppCompatActivity {
 
     @Override
     public void onPause() {
-        if (mediaPlayer != null) {
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.pause();
-            }
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
         }
         super.onPause();
     }
@@ -448,10 +469,8 @@ public class InfoScreen extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        if (mediaPlayer != null) {
-            if (!mediaPlayer.isPlaying()) {
-                mediaPlayer.start();
-            }
+        if (mediaPlayer !=null && !mediaPlayer.isPlaying()) {
+            mediaPlayer.start();
         }
         super.onResume();
     }
@@ -465,9 +484,16 @@ public class InfoScreen extends AppCompatActivity {
         if (connectionDiaglog != null) {
             connectionDiaglog.dismiss();
         }
+
+        if (searchAgainDialog != null) {
+            searchAgainDialog.dismiss();
+        }
+
+
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();
+            mediaPlayer = null;
         }
 
         super.onDestroy();

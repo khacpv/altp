@@ -24,72 +24,147 @@
         android:textSize="25sp"
         android:textStyle="bold" />
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="30dp">
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
 
-        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/imageview_useravatarwin"
-            android:layout_alignLeft="@+id/textview_money_win"
-            android:layout_alignStart="@+id/textview_money_win"
-            android:layout_width="50dp"
-            android:layout_height="60dp"
-            android:src="@drawable/avatar"
-            app:civ_border_color="#fff"
-            app:civ_border_width="1dp" />
-
-        <TextView
-            android:id="@+id/textview_usernnamewin"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/imageview_useravatarwin"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="20dp"
-            android:layout_toEndOf="@+id/imageview_useravatarwin"
-            android:layout_toRightOf="@+id/imageview_useravatarwin"
-            android:ellipsize="end"
-            android:lines="1"
-            android:text="@string/player"
-            android:textColor="#ffffff"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:layout_weight="1">
 
-        <TextView
-            android:id="@+id/textview_city_win"
-            android:layout_width="wrap_content"
+            <de.hdodenhof.circleimageview.CircleImageView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/imageview_useravatar1"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="30dp"
+                android:src="@drawable/avatar"
+                app:civ_border_color="#fff"
+                app:civ_border_width="1dp" />
+
+            <TextView
+                android:id="@+id/textview_username1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/imageview_useravatar1"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_toEndOf="@+id/imageview_useravatar1"
+                android:layout_toRightOf="@+id/imageview_useravatar1"
+                android:ellipsize="end"
+                android:lines="1"
+                android:text="@string/player"
+                android:textColor="#ffffff"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textview_city_user1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/textview_username1"
+                android:layout_alignStart="@+id/textview_username1"
+                android:layout_below="@+id/textview_username1"
+                android:ellipsize="end"
+                android:lines="1"
+                android:text="@string/city"
+                android:textColor="#ffffff"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textview_money1"
+                android:layout_width="140dp"
+                android:layout_height="35dp"
+                android:layout_alignLeft="@+id/imageview_useravatar1"
+                android:layout_alignStart="@+id/imageview_useravatar1"
+                android:layout_below="@+id/imageview_useravatar1"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/button_money"
+                android:gravity="center_horizontal"
+                android:paddingTop="6dp"
+                android:text="@string/money_default"
+                android:textColor="#000000"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/textview_usernnamewin"
-            android:layout_alignStart="@+id/textview_usernnamewin"
-            android:layout_below="@+id/textview_usernnamewin"
-            android:ellipsize="end"
-            android:lines="1"
-            android:text="@string/city"
-            android:textColor="#ffffff"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:layout_weight="1">
 
+            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/imageview_useravatar2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="30dp"
+                android:src="@drawable/avatar"
+                app:civ_border_color="#fff"
+                app:civ_border_width="1dp" />
 
-        <TextView
-            android:id="@+id/textview_money_win"
-            android:layout_width="300dp"
-            android:layout_height="60dp"
-            android:layout_below="@+id/imageview_useravatarwin"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/button_money"
-            android:foregroundGravity="center"
-            android:gravity="center_horizontal"
-            android:paddingTop="11dp"
-            android:text="@string/money_default"
-            android:textColor="#000000"
-            android:textSize="25sp"
-            android:textStyle="bold" />
+            <TextView
+                android:id="@+id/textview_username2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/imageview_useravatar2"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_toLeftOf="@+id/imageview_useravatar2"
+                android:layout_toStartOf="@+id/imageview_useravatar2"
+                android:ellipsize="end"
+                android:lines="1"
+                android:text="@string/enemy"
+                android:textColor="#ffffff"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
-    </RelativeLayout>
+            <TextView
+                android:id="@+id/textview_city_user2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignRight="@+id/textview_username2"
+                android:layout_below="@+id/textview_username2"
+                android:ellipsize="end"
+                android:lines="1"
+                android:text="@string/city"
+                android:textColor="#ffffff"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
+            <TextView
+                android:id="@+id/textview_money2"
+                android:layout_width="140dp"
+                android:layout_height="35dp"
+                android:layout_alignRight="@+id/imageview_useravatar2"
+                android:layout_alignEnd="@+id/imageview_useravatar2"
+                android:layout_below="@+id/imageview_useravatar2"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/button_money2"
+                android:gravity="center_horizontal"
+                android:paddingTop="6dp"
+                android:text="@string/money_default"
+                android:textColor="#000000"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+            />
+        </RelativeLayout>
+
+    </LinearLayout>
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -119,6 +194,5 @@
             android:textSize="20sp"
             android:textStyle="bold" />
     </FrameLayout>
-
 
 </LinearLayout>

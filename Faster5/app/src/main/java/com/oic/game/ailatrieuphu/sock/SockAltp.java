@@ -79,7 +79,11 @@ public class SockAltp {
      * */
     public void disconnect() {
         mSocket.disconnect();
+        removeEvent();
+        isConnected = false;
+    }
 
+    public void removeEvent(){
         mSocket.off(Socket.EVENT_CONNECT, onConnect);
         mSocket.off(Socket.EVENT_DISCONNECT, onDisconnect);
         mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
@@ -91,7 +95,7 @@ public class SockAltp {
 
         eventListeners.clear();
 
-        isConnected = false;
+
     }
 
     /**
