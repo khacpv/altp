@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.oic.game.ailatrieuphu.MainApplication;
+import com.oic.game.ailatrieuphu.BuildConfig;
 import com.oic.game.ailatrieuphu.R;
 import com.oic.game.ailatrieuphu.sock.SockAltp;
 import com.oic.game.ailatrieuphu.util.ISoundPoolLoaded;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     String userId, username, linkAvatar, location;
 
     TextView textviewLoading;
+    TextView textviewDebug;
 
     ParallaxView mParallaxView;
 
@@ -122,10 +124,12 @@ public class MainActivity extends AppCompatActivity {
         setMaintainDiaglog();
 
         textviewLoading = (TextView) findViewById(R.id.textview_loading);
+        textviewDebug = (TextView) findViewById(R.id.debug);
 
         startTime = System.currentTimeMillis();
 
         loadParallaxView();
+
 
         userId = PrefUtils.getInstance(this).get(PrefUtils.KEY_USER_ID, "");
         username = PrefUtils.getInstance(this).get(PrefUtils.KEY_NAME, "");
@@ -141,7 +145,12 @@ public class MainActivity extends AppCompatActivity {
 
         Log.e("TAG", String.format("user: {id=%s,name:%s,location:%s}", userId, username,
                 location));
+
+        if (!BuildConfig.DEBUG) {
+            textviewDebug.setVisibility(View.GONE);
+        }
     }
+
 
     public void setMaintainDiaglog() {
         maintainDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -162,11 +171,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
 
     public void loadParallaxView() {
         mParallaxView = (ParallaxView) findViewById(R.id.parallax);
