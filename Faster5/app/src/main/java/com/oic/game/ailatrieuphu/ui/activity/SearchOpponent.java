@@ -33,8 +33,6 @@ import com.oic.game.ailatrieuphu.util.SoundPoolManager;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import io.socket.client.Socket;
-
 /**
  * Created by Kien on 07/12/2016.
  */
@@ -58,6 +56,7 @@ public class SearchOpponent extends AppCompatActivity {
     private TextView mTextViewScore1;
     private TextView mTextViewScore2;
     private TextView mTextViewReady;
+    private TextView mTextViewWaitText;
     private ImageView mImageViewUserAvatar1;
     private ImageView mImageViewUserAvatar2;
     Button mButtonPlay;
@@ -114,10 +113,9 @@ public class SearchOpponent extends AppCompatActivity {
         }
         mSocketAltp.addEvent("play", playCallback);
         findViewById();
-        popupWait();
+        setWaitDialog();
         setInfoUser();
     }
-
 
     @Subscribe
     public void onEventMainThread(OnPlayCallbackEvent event) {
@@ -148,25 +146,27 @@ public class SearchOpponent extends AppCompatActivity {
 
             }
         });
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 waitDialog.setCancelable(false);
+                mTextViewWaitText.setVisibility(View.GONE);
             }
         });
         Question mQuestion = event.mQuestion;
         final Intent playScrnIntent = PlayScreen.createIntent(SearchOpponent.this, mUser, enemyUser, mRoom, mQuestion);
         SoundPoolManager.getInstance().playSound(R.raw.ready);
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!isFinishing()) {
+        if (!isFinishing()) {
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
                     startActivity(playScrnIntent);
                     overridePendingTransition(R.animator.right_in, R.animator.left_out);
                     finish();
                 }
-            }
-        }, 5000);
+            }, 5000);
+        }
     }
 
     /**
@@ -225,14 +225,15 @@ public class SearchOpponent extends AppCompatActivity {
         }
     }
 
-
-    public void popupWait() {
+    public void setWaitDialog() {
         waitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         waitDialog.setContentView(R.layout.layout_wait_popup);
         waitDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         waitDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         waitDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         mTextViewReady = (TextView) waitDialog.findViewById(R.id.textview_ready);
+        mTextViewWaitText = (TextView) waitDialog.findViewById(R.id.textview_wait_text);
+
     }
 
     public void btnSearch(View view) {
@@ -253,8 +254,8 @@ public class SearchOpponent extends AppCompatActivity {
         SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
         waitDialog.show();
         mAltpHelper.play(mUser, mRoom);
-    }
 
+    }
 
     @Override
     protected void onDestroy() {

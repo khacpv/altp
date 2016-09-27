@@ -102,7 +102,6 @@ public class PlayScreen extends AppCompatActivity {
     private boolean isCheckAudienceHelp = true;
     private boolean isCheckShowAnsRightHelp = true;
     private String mMoney = "";
-    private int mWinner;
     private int mFiftyHelp = 0;
     private int mAudienceHelp = 0;
     private int mShowAnsRightHelp = 0;
@@ -110,7 +109,7 @@ public class PlayScreen extends AppCompatActivity {
     private int timeQuestion15 = 0;
     private int rdIdxFifty = 0;
     private boolean checkVuotMoc = false;
-
+    private boolean moveGameOver = false;
 
     private SockAltp.OnSocketEvent globalCallback = new SockAltp.OnSocketEvent() {
         @Override
@@ -123,8 +122,8 @@ public class PlayScreen extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            pauseTimer();
                             if (!disconnectDialog.isShowing() && !isFinishing()) {
+                                pauseTimer();
                                 disconnectDialog.show();
                             }
                         }
@@ -136,9 +135,9 @@ public class PlayScreen extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            resumeTimer();
                             if (disconnectDialog.isShowing() && !isFinishing()) {
                                 disconnectDialog.hide();
+                                resumeTimer();
                             }
                         }
                     });
@@ -148,9 +147,9 @@ public class PlayScreen extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            pauseTimer();
                             if (!disconnectDialog.isShowing() && !isFinishing()) {
                                 disconnectDialog.show();
+                                pauseTimer();
                             }
                         }
                     });
@@ -160,9 +159,9 @@ public class PlayScreen extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            pauseTimer();
                             if (!disconnectDialog.isShowing() && !isFinishing()) {
                                 disconnectDialog.show();
+                                pauseTimer();
                             }
                         }
                     });
@@ -204,25 +203,21 @@ public class PlayScreen extends AppCompatActivity {
 
             User user1 = quitUser.get(0);
             User user2 = quitUser.get(1);
-            mWinner = GameOver.GIVEUP;
 
-            if (user1.id.equalsIgnoreCase(mUser.id)) {
-                mUser = user1;
-                Log.e("TAG", "Score Gameover1: " + mUser.score + mUser.name);
-            } else {
-                mUser = user2;
-                Log.e("TAG", "Score Gameover2: " + mUser.score + mUser.name);
-            }
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (!isFinishing()) {
-                        startActivity(GameOver.createIntent(PlayScreen.this, mUser.score, mWinner));
+            if (!isFinishing() && !moveGameOver) {
+                moveGameOver = true;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        SoundPoolManager.getInstance().stop();
+                        mSocketAltp.removeEvent();
+                        startActivity(GameOver.createIntent(PlayScreen.this, mUser, mEnemy));
                         overridePendingTransition(R.animator.right_in, R.animator.left_out);
                         finish();
+
                     }
-                }
-            });
+                });
+            }
         }
     };
 
@@ -240,38 +235,29 @@ public class PlayScreen extends AppCompatActivity {
             User user1 = userGameOver.get(0);
             User user2 = userGameOver.get(1);
 
-            // hoa
-            if (user1.isWinner == user2.isWinner) {
-                mWinner = GameOver.DRAW;
-            } else {
-
-                if ((user1.isWinner && user1.id.equalsIgnoreCase(mUser.id))
-                        || user2.isWinner && user2.id.equalsIgnoreCase(mUser.id)) {
-                    // thang
-                    mWinner = GameOver.WIN;
-                } else {
-                    // thua
-                    mWinner = GameOver.LOSE;
-                }
-            }
 
             if (user1.id.equalsIgnoreCase(mUser.id)) {
                 mUser = user1;
-                Log.e("TAG", "Score Gameover1: " + mUser.score + mUser.name);
+                mEnemy = user2;
             } else {
                 mUser = user2;
-                Log.e("TAG", "Score Gameover2: " + mUser.score + mUser.name);
+                mEnemy = user1;
             }
 
             Runnable moveGameOverScr = new Runnable() {
                 @Override
                 public void run() {
-                    startActivity(GameOver.createIntent(PlayScreen.this, mUser.score, mWinner));
+                    mSocketAltp.removeEvent();
+                    SoundPoolManager.getInstance().stop();
+                    startActivity(GameOver.createIntent(PlayScreen.this, mUser, mEnemy));
                     overridePendingTransition(R.animator.right_in, R.animator.left_out);
                     finish();
                 }
             };
-            handler.postDelayed(moveGameOverScr, timeMoveGameOver + timeQuestionImpor + timeQuestion15);
+            if (!isFinishing() && !moveGameOver) {
+                moveGameOver = true;
+                handler.postDelayed(moveGameOverScr, timeMoveGameOver + timeQuestionImpor + timeQuestion15);
+            }
             eventBus.result = userGameOver;
             EventBus.getDefault().post(eventBus);
         }
@@ -668,17 +654,24 @@ public class PlayScreen extends AppCompatActivity {
             @Override
             public void onFinish() {
                 mTextViewTimer.setText("0");
-                timeOutandQuit();
+                if (!moveGameOver) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            timeOutandQuit();
+                        }
+                    });
+                }
             }
         };
 
         findViewById();
-        popupDisconnect();
+        setDisconnectDialog();
         setUserInfo();
         setQA(1);
-        popupRule();
-        popupCheckQuit();
-        popupBarChart();
+        setRuleDialog();
+        setCheckQuitDialog();
+        setBarChartDialog();
     }
 
     public void findViewById() {
@@ -778,7 +771,7 @@ public class PlayScreen extends AppCompatActivity {
         }
     }
 
-    public void popupDisconnect() {
+    public void setDisconnectDialog() {
         disconnectDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         disconnectDialog.setContentView(R.layout.layout_popup_disconnect);
         disconnectDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
@@ -791,7 +784,7 @@ public class PlayScreen extends AppCompatActivity {
         Glide.with(this).load(R.drawable.loading).asGif().into(loading);
     }
 
-    public void popupRule() {
+    public void setRuleDialog() {
         ruleDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         ruleDialog.setContentView(R.layout.layout_popup_rule);
         ruleDialog.getWindow().getAttributes().windowAnimations = R.style.DialogNoAnimation;
@@ -854,7 +847,7 @@ public class PlayScreen extends AppCompatActivity {
         ruleDialog.show();
     }
 
-    public void popupCheckQuit() {
+    public void setCheckQuitDialog() {
         quitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         quitDialog.setContentView(R.layout.layout_check_quit);
         quitDialog.getWindow().getAttributes().windowAnimations = R.style.DialogNoAnimation;
@@ -892,7 +885,7 @@ public class PlayScreen extends AppCompatActivity {
         });
     }
 
-    public void popupBarChart() {
+    public void setBarChartDialog() {
         barChartDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         barChartDialog.setContentView(R.layout.layout_bar_chart);
         barChartDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
@@ -957,14 +950,16 @@ public class PlayScreen extends AppCompatActivity {
     }
 
     //tro giup 50/50
-    public void fiftyHelp(View fifty) {
+    public void fiftyHelp(View view) {
         if (isCheckFiftyHelp && mFiftyHelp == 0) {
             mFiftyHelp = 1;
             isCheckFiftyHelp = false;
             pauseTimer();
             final LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
             linearLayout.setVisibility(View.INVISIBLE);
-            barChartDialog.show();
+            if (!moveGameOver) {
+                barChartDialog.show();
+            }
             handler.removeCallbacks(musicImpor);
             Button button = (Button) findViewById(R.id.button_save1);
             button.setBackgroundResource(R.drawable.save1_dis);
@@ -1000,7 +995,9 @@ public class PlayScreen extends AppCompatActivity {
             button.setBackgroundResource(R.drawable.save2_dis);
             final LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
             linearLayout.setVisibility(View.INVISIBLE);
-            barChartDialog.show();
+            if (!moveGameOver) {
+
+                barChartDialog.show();}
 
             handler.postDelayed(new Runnable() {
                 @Override
@@ -1020,7 +1017,9 @@ public class PlayScreen extends AppCompatActivity {
             mShowAnsRightHelp = 1;
             LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
             linearLayout.setVisibility(View.GONE);
-            barChartDialog.show();
+            if (!moveGameOver) {
+
+                barChartDialog.show();}
             int n = new Random().nextInt(3) + 1;
             switch (n) {
                 case 1:
@@ -1146,7 +1145,9 @@ public class PlayScreen extends AppCompatActivity {
         if (clickable) {
             pauseTimer();
             handler.removeCallbacks(musicImpor);
-            mediaPlayer.pause();
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+            }
             isCheckFiftyHelp = false;
             isCheckShowAnsRightHelp = false;
             isCheckAudienceHelp = false;
@@ -1275,6 +1276,7 @@ public class PlayScreen extends AppCompatActivity {
         return alphabet;
     }
 
+    //lay ti le tro giup khan gia
     public List<Integer> audienceSuggest(int level, int rightIndex, boolean is50_50) {
         List<Integer> result = new ArrayList<>();
 
@@ -1343,6 +1345,7 @@ public class PlayScreen extends AppCompatActivity {
         return result;
     }
 
+    //lay 2 dap an 50/50
     public int getFifty(int rightIndex) {
         int randomIndex = 0;
         while (true) {
@@ -1385,8 +1388,16 @@ public class PlayScreen extends AppCompatActivity {
 
                 @Override
                 public void onFinish() {
-                    timeOutandQuit();
+                    timer.cancel();
                     mTextViewTimer.setText("0");
+                    if (!moveGameOver) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                timeOutandQuit();
+                            }
+                        });
+                    }
                 }
             }.start();
         }
@@ -1397,7 +1408,13 @@ public class PlayScreen extends AppCompatActivity {
         mAltpHelper.quit(mUser, mRoom);
         LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
         linearLayout.setVisibility(View.GONE);
-        barChartDialog.show();
+        if (!moveGameOver) {
+            try {
+                barChartDialog.show();
+            } catch (WindowManager.BadTokenException e) {
+                e.printStackTrace();
+            }
+        }//loi
     }
 
     public static void setTypeface(Typeface font, TextView... textviews) {
@@ -1427,20 +1444,29 @@ public class PlayScreen extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-        quitDialog.show();
+        if (!moveGameOver) {
+
+            quitDialog.show();}
+
     }
 
     @Override
     protected void onPause() {
-        if (mediaPlayer.isPlaying()) {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
+        }
+        if (timer != null) {
+            timer.cancel();
+        }
+        if (timerResume != null) {
+            timerResume.cancel();
         }
         super.onPause();
     }
 
     @Override
     protected void onResume() {
-        if (mediaPlayer != null) {
+        if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
             mediaPlayer.start();
         }
         super.onResume();
@@ -1451,6 +1477,7 @@ public class PlayScreen extends AppCompatActivity {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();
+            mediaPlayer = null;
         }
         if (ruleDialog != null) {
             ruleDialog.dismiss();

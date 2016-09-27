@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.oic.game.ailatrieuphu.R;
+import com.oic.game.ailatrieuphu.model.User;
 import com.oic.game.ailatrieuphu.util.PrefUtils;
 import com.oic.game.ailatrieuphu.util.SoundPoolManager;
 
@@ -28,26 +29,29 @@ import org.greenrobot.eventbus.EventBus;
  */
 public class GameOver extends AppCompatActivity {
 
-    public static final String EXTRA_SCORE = "score";
     public static final String EXTRA_WINNER = "winner";
+    private static final String EXTRA_USER = "user";
+    private static final String EXTRA_ENEMY = "enemy";
     public static final int DRAW = -1;
     public static final int WIN = 1;
     public static final int LOSE = 0;
     public static final int GIVEUP = 2;
 
-    ImageView mImageViewUserAvatar;
-    TextView mTextViewNameUser;
-    TextView mTextViewScore;
+    ImageView mImageViewMyAvatar;
+    ImageView mImageViewEnemyAvatar;
+    TextView mTextViewMyName;
+    TextView mTextViewEnemyName;
+    TextView mTextViewMyScore;
+    TextView mTextViewEnemyScore;
+    TextView mTextViewMyCity;
+    TextView mTextViewEnemyCity;
     TextView mTextViewResultText;
-    TextView mTextViewCity;
     Button mButtonBack;
-    private int mScore = 0;
     private int mTotalScore;
     private int mWinner;
-    private String username;
-    private String location;
-    private String linkAvatar;
     private MediaPlayer mediaPlayer;
+    User mUser;
+    User mEnemy;
 
     @Override
 
@@ -61,8 +65,8 @@ public class GameOver extends AppCompatActivity {
         }
         setContentView(R.layout.game_over);
         findViewById();
-        setUserInfo();
         getBundle();
+        setUserInfo();
         bgMusic();
     }
 
@@ -71,24 +75,20 @@ public class GameOver extends AppCompatActivity {
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/roboto.ttf");
 
         mTextViewResultText = (TextView) findViewById(R.id.textview_result);
-        mImageViewUserAvatar = (ImageView) findViewById(R.id.imageview_useravatarwin);
-        mTextViewNameUser = (TextView) findViewById(R.id.textview_usernnamewin);
-        mTextViewScore = (TextView) findViewById(R.id.textview_money_win);
-        mTextViewCity = (TextView) findViewById(R.id.textview_city_win);
+        mImageViewMyAvatar = (ImageView) findViewById(R.id.imageview_useravatar1);
+        mTextViewMyName = (TextView) findViewById(R.id.textview_username1);
+        mTextViewMyScore = (TextView) findViewById(R.id.textview_money1);
+        mTextViewMyCity = (TextView) findViewById(R.id.textview_city_user1);
 
-        setTypeface(font, mTextViewNameUser, mTextViewResultText, mTextViewScore, mTextViewCity);
+        mImageViewEnemyAvatar = (ImageView) findViewById(R.id.imageview_useravatar2);
+        mTextViewEnemyName = (TextView) findViewById(R.id.textview_username2);
+        mTextViewEnemyScore = (TextView) findViewById(R.id.textview_money2);
+        mTextViewEnemyCity = (TextView) findViewById(R.id.textview_city_user2);
+
+        setTypeface(font, mTextViewResultText, mTextViewMyName, mTextViewMyScore, mTextViewMyCity,
+                mTextViewEnemyName, mTextViewEnemyScore, mTextViewEnemyCity);
     }
 
-    public void setUserInfo() {
-        username = PrefUtils.getInstance(GameOver.this).get(PrefUtils.KEY_NAME, "");
-        location = PrefUtils.getInstance(GameOver.this).get(PrefUtils.KEY_LOCATION, "");
-        linkAvatar = PrefUtils.getInstance(GameOver.this).get(PrefUtils.KEY_URL_AVATAR, "");
-
-        Log.e("TAG", "setUserInfo: " + username + location + linkAvatar);
-        mTextViewNameUser.setText(username);
-        mTextViewCity.setText(location);
-        Glide.with(getApplicationContext()).load(linkAvatar).into(mImageViewUserAvatar);
-    }
 
     public void bgMusic() {
         AudioManager amanager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
@@ -119,51 +119,52 @@ public class GameOver extends AppCompatActivity {
         }
     }
 
-    public static Intent createIntent(Context context, int score, int isWinner) {
+    public static Intent createIntent(Context context, User mUser, User enemyUser) {
         Intent intent = new Intent(context, GameOver.class);
-        intent.putExtra(EXTRA_SCORE, score);
-        intent.putExtra(EXTRA_WINNER, isWinner);
+        intent.putExtra(EXTRA_USER, mUser);
+        intent.putExtra(EXTRA_ENEMY, enemyUser);
         return intent;
     }
 
     private void getBundle() {
-        mScore = getIntent().getIntExtra(EXTRA_SCORE, 0);
-        mTextViewScore.setText(Integer.toString(mScore));
-        mWinner = getIntent().getIntExtra(EXTRA_WINNER, 0);
-        switch (mWinner) {
-            case DRAW:
-                mTextViewResultText.setText("BẤT PHÂN THẮNG BẠI");
-                SoundPoolManager.getInstance().playSound(R.raw.pass_good);
-                startMedia(6000);
-                break;
-            case LOSE:
-                if (mScore == 0) {
-                    mTextViewResultText.setText("THẤT BẠI ĐAU ĐỚN");
-                } else {
-                    mTextViewResultText.setText("CHÚC BẠN MAY MẮN");
-                }
-                SoundPoolManager.getInstance().playSound(R.raw.lose);
-                startMedia(3000);
-                break;
-            case GIVEUP:
-                if (mScore == 0) {
-                    mTextViewResultText.setText("THẤT BẠI ĐAU ĐỚN");
-                } else {
-                    mTextViewResultText.setText("BẠN RẤT TỈNH TÁO");
-                }
-                SoundPoolManager.getInstance().playSound(R.raw.lose);
-                startMedia(3000);
-                break;
-            case WIN:
-                mTextViewResultText.setText("CHÚC MỪNG CHIẾN THẮNG");
-                SoundPoolManager.getInstance().playSound(R.raw.best_player);
-                startMedia(12000);
-                break;
-        }
+        mUser = (User) getIntent().getSerializableExtra(EXTRA_USER);
+        mEnemy = (User) getIntent().getSerializableExtra(EXTRA_ENEMY);
 
+        if (mUser.score == mEnemy.score) {
+            mTextViewResultText.setText("BẤT PHÂN THẮNG BẠI");
+            SoundPoolManager.getInstance().playSound(R.raw.pass_good);
+            startMedia(6000);
+        } else if (mUser.score < mEnemy.score) {
+            if (mUser.score == 0) {
+                mTextViewResultText.setText("THẤT BẠI ĐAU ĐỚN");
+            } else {
+                mTextViewResultText.setText("CHÚC BẠN MAY MẮN");
+            }
+            SoundPoolManager.getInstance().playSound(R.raw.lose);
+            startMedia(3000);
+        } else if (mUser.score > mEnemy.score) {
+            mTextViewResultText.setText("CHÚC MỪNG CHIẾN THẮNG");
+            SoundPoolManager.getInstance().playSound(R.raw.best_player);
+            startMedia(12000);
+        }
         mTotalScore = PrefUtils.getInstance(GameOver.this).get(PrefUtils.KEY_TOTAL_SCORE, 0);
-        mTotalScore += mScore;
+        mTotalScore = mUser.totalScore + mUser.score;
         PrefUtils.getInstance(GameOver.this).set(PrefUtils.KEY_TOTAL_SCORE, mTotalScore);
+    }
+
+    public void setUserInfo() {
+        mTextViewMyName.setText(mUser.name);
+        mTextViewMyCity.setText(mUser.address);
+        mTextViewMyScore.setText(""+mUser.score);
+        Glide.with(getApplicationContext()).load(mUser.avatar).placeholder(R.drawable.avatar_default)
+                .error(R.drawable.avatar_default).into(mImageViewMyAvatar);
+
+
+        mTextViewEnemyName.setText(mEnemy.name);
+        mTextViewEnemyCity.setText(mEnemy.address);
+        mTextViewEnemyScore.setText(""+mEnemy.score);
+        Glide.with(getApplicationContext()).load(mEnemy.avatar).placeholder(R.drawable.avatar_default)
+                .error(R.drawable.avatar_default).into(mImageViewEnemyAvatar);
     }
 
     public void backInfo(View view) {
@@ -183,7 +184,7 @@ public class GameOver extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        if (mediaPlayer.isPlaying()) {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
         }
         super.onPause();
@@ -191,13 +192,15 @@ public class GameOver extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        mediaPlayer.start();
+        if (mediaPlayer !=null && !mediaPlayer.isPlaying()) {
+        mediaPlayer.start();}
         super.onResume();
     }
 
     @Override
     protected void onDestroy() {
         if (mediaPlayer != null) {
+            mediaPlayer.stop();
             mediaPlayer.release();
             mediaPlayer = null;
         }

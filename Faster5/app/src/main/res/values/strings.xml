@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">ALTP Online</string>
-    <string name="facebook_app_id">513017002219486</string>
+    <string name="facebook_app_id">1120563777999580</string>
 
     <string name="player">PLAYER</string>
     <string name="enemy">ENEMY</string>
@@ -16,6 +16,9 @@
     <string name="no_question">1</string>
     <string name="btn_timkiem">Tìm kiếm</string>
     <string name="btn_play">CHƠI</string>
+    <string name="title_baotri">THÔNG BÁO</string>
+    <string name="text_baotri">Hệ thống đang bảo trì\nVui lòng quay lại sau!</string>
+    <string name="text_search_tryagain">Không tìm thấy đối thủ\nVui lòng tìm kiếm lại!</string>
 
 
 

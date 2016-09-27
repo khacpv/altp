@@ -77,9 +77,6 @@ public class LoginScreen extends AppCompatActivity {
 
     private static final String TAG_CITY = "city";
     private static final String photoFileName = "cameraphoto.jpg";
-
-    public static final int MY_PERMISSIONS_REQUEST_NETWORK_STATE = 0;
-
     private static final int PERMISSION_REQUEST_CODE = 1;
     public static final int IMAGE_FROM_CAMERA = 0;
     public static final int IMAGE_FROM_GALLERY = 1;
@@ -105,41 +102,23 @@ public class LoginScreen extends AppCompatActivity {
     private Dialog avatarDialog;
     private Dialog edittexDialog;
     private Dialog loginDialog;
-    private Dialog connectionDiaglog;
+    private Dialog connectionDialog;
     private String mStringUserName;
     private String imgPath;
     private String fileName;
     private String imgUrl;
     private Uri uriPhoto;
     MediaPlayer mediaPlayer;
-    private boolean uploadResult,
-            isCheckPickImage = false,
-            isCheckBtnLater = true;
+    private boolean uploadResult;
+    private boolean isCheckPickImage = false;
+    private boolean isCheckBtnLater = true;
     private UploadPhotoUtils uploadPhotoUtils = new UploadPhotoUtils();
-    int uploadFail = 0;
+    private int uploadFail = 0;
 
     /**
      * global events
      */
-    private SockAltp.OnSocketEvent globalCallback = new SockAltp.OnSocketEvent() {
-        @Override
-        public void onEvent(String event, Object... args) {
-            switch (event) {
-                case Socket.EVENT_CONNECTING:
-                    Log.e("TAG_LOGIN", "connecting");
-                    break;
-                case Socket.EVENT_CONNECT:  // auto call on connect to server
-                    Log.e("TAG_LOGIN", "connect");
-                    break;
-                case Socket.EVENT_CONNECT_ERROR:
-                    Log.e("TAG_LOGIN", "error");
-                    break;
-                case Socket.EVENT_CONNECT_TIMEOUT:
-                    Log.e("TAG_LOGIN", "timeout");
-                    break;
-            }
-        }
-    };
+
     private SockAltp.OnSocketEvent loginCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
@@ -186,8 +165,6 @@ public class LoginScreen extends AppCompatActivity {
         if (!mSocketAltp.isConnected()) {
             mSocketAltp.connect();
         }
-
-        mSocketAltp.addGlobalEvent(globalCallback);
         mSocketAltp.addEvent("login", loginCallback);
 
         strictMode();
@@ -195,13 +172,13 @@ public class LoginScreen extends AppCompatActivity {
         editTexConfig();
         setAvatar();
         getLocation();
-        popupLogin();
+        setLoginDialog();
         loginFB();
         fakeBtnFb();
         loginManualClicked();
-        popUpPickAvatar();
-        popUpEdittex();
-        popupConnection();
+        setPickAvatarDialog();
+        setEdittexDialog();
+        setConnectDialog();
 
         if (TextUtils.isEmpty(city)) {
             city = "VIETNAM";
@@ -228,21 +205,22 @@ public class LoginScreen extends AppCompatActivity {
         PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_TOTAL_SCORE, mUser.totalScore);
         PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_LOGGED_IN, true);
         Log.e("TAG", "LoginCallback: " + user.totalScore + user.fbId + " " + user.id + " " + user.name + " " + user.address + " " + "\n" + user.avatar);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (!isFinishing()) {
+        if (!isFinishing()) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
                     loggedAndMoveInfoScreen();
                 }
-            }
-        });
+
+            });
+        }
     }
 
     public void findViewbyId() {
         avatarDialog = new Dialog(this);
         edittexDialog = new Dialog(this);
         loginDialog = new Dialog(this);
-        connectionDiaglog = new Dialog(this);
+        connectionDialog = new Dialog(this);
         prgDialog = new ProgressDialog(this);
         prgDialog.setCancelable(false);
         font = Typeface.createFromAsset(getAssets(), "fonts/roboto.ttf");
@@ -303,7 +281,7 @@ public class LoginScreen extends AppCompatActivity {
             try {
                 city = json.getString(TAG_CITY).toUpperCase();
             } catch (JSONException e) {
-                e.printStackTrace();
+                city = "VIETNAM";
             }
         }
     }
@@ -316,7 +294,7 @@ public class LoginScreen extends AppCompatActivity {
                 if (NetworkUtils.checkInternetConnection(LoginScreen.this) && mSocketAltp.isConnected()) {
                     mLoginButtonFb.performClick();
                 } else {
-                    connectionDiaglog.show();
+                    connectionDialog.show();
                 }
             }
         });
@@ -403,7 +381,7 @@ public class LoginScreen extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-                if (NetworkUtils.checkInternetConnection(LoginScreen.this)) {
+                if (NetworkUtils.checkInternetConnection(LoginScreen.this) && mSocketAltp.isConnected()) {
                     mStringUserName = mEditText.getText().toString();
                     if (mStringUserName.length() <= 3) {
                         edittexDialog.show();
@@ -416,13 +394,14 @@ public class LoginScreen extends AppCompatActivity {
                         }
                     }
                 } else {
-                    connectionDiaglog.show();
+                    connectionDialog.show();
                 }
             }
         });
     }
 
-    public void popUpPickAvatar() {
+
+    public void setPickAvatarDialog() {
         avatarDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         avatarDialog.setContentView(R.layout.layout_avatar_popup);
         avatarDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
@@ -476,7 +455,7 @@ public class LoginScreen extends AppCompatActivity {
         });
     }
 
-    public void popUpEdittex() {
+    public void setEdittexDialog() {
         edittexDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         edittexDialog.setContentView(R.layout.layout_edittex_popup);
         edittexDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
@@ -495,7 +474,7 @@ public class LoginScreen extends AppCompatActivity {
         });
     }
 
-    public void popupLogin() {
+    public void setLoginDialog() {
         loginDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         loginDialog.setContentView(R.layout.layout_login_popup);
         loginDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
@@ -509,21 +488,21 @@ public class LoginScreen extends AppCompatActivity {
 
     }
 
-    public void popupConnection() {
-        connectionDiaglog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        connectionDiaglog.setContentView(R.layout.layout_popup_connection);
-        connectionDiaglog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        connectionDiaglog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
-        connectionDiaglog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+    public void setConnectDialog() {
+        connectionDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        connectionDialog.setContentView(R.layout.layout_popup_connection);
+        connectionDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        connectionDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        connectionDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 
-        Button tryAgain = (Button) connectionDiaglog.findViewById(R.id.btn_tryagain);
+        Button tryAgain = (Button) connectionDialog.findViewById(R.id.btn_tryagain);
 
         tryAgain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-                connectionDiaglog.hide();
+                connectionDialog.hide();
             }
         });
 
@@ -761,7 +740,7 @@ public class LoginScreen extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        if (mediaPlayer.isPlaying()) {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
         }
         super.onPause();
@@ -769,7 +748,7 @@ public class LoginScreen extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        if (!mediaPlayer.isPlaying()) {
+        if (mediaPlayer !=null && !mediaPlayer.isPlaying()) {
             mediaPlayer.start();
         }
         super.onResume();
@@ -789,8 +768,8 @@ public class LoginScreen extends AppCompatActivity {
         if (avatarDialog != null) {
             avatarDialog.dismiss();
         }
-        if (connectionDiaglog != null) {
-            connectionDiaglog.dismiss();
+        if (connectionDialog != null) {
+            connectionDialog.dismiss();
         }
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
@@ -798,6 +777,7 @@ public class LoginScreen extends AppCompatActivity {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();
+            mediaPlayer = null;
         }
 
         super.onDestroy();

@@ -4,7 +4,7 @@
     android:id="@+id/background"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/background"
+    android:background="@drawable/xml_bg"
     android:focusable="true"
     android:focusableInTouchMode="true"
     tools:context="com.oic.game.ailatrieuphu.ui.activity.MainActivity">
