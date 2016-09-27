@@ -7,10 +7,12 @@ import android.support.annotation.WorkerThread;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.oic.game.ailatrieuphu.BuildConfig;
 import com.oic.game.ailatrieuphu.R;
 import com.oic.game.ailatrieuphu.util.ISoundPoolLoaded;
 import com.oic.game.ailatrieuphu.util.PrefUtils;
@@ -28,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     String userId, username, linkAvatar, location;
 
     TextView textviewLoading;
+    TextView textviewDebug;
 
     ParallaxView mParallaxView;
 
@@ -53,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         textviewLoading = (TextView) findViewById(R.id.textview_loading);
+        textviewDebug = (TextView) findViewById(R.id.debug);
 
         startTime = System.currentTimeMillis();
 
@@ -60,6 +64,10 @@ public class MainActivity extends AppCompatActivity {
 
         Log.e("TAG", String.format("user: {id=%s,name:%s,location:%s}", userId, username,
                 location));
+
+        if (!BuildConfig.DEBUG) {
+            textviewDebug.setVisibility(View.GONE);
+        }
     }
 
     @Override

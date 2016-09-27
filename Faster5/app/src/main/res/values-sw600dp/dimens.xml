@@ -1,6 +1,5 @@
 <resources>
-
-    <string name="debug">w820dp</string>
+    <string name="debug">sw600dp</string>
 
     <!-- Example customization of dimensions originally defined in res/values/dimens.xml
          (such as screen margins) for screens with more than 820dp of available width. This
