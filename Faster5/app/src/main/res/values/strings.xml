@@ -47,10 +47,12 @@
     <string name="try_again_text">Thử Lại</string>
     <string name="skip_text">Bỏ Qua</string>
     <string name="reconnect_text">Đang kết nối lại.\nVui lòng đợi...</string>
+    <string name="connect_erro_text">Lỗi mạng.\nVui lòng kiểm tra lại...</string>
     <string name="title_disconnect_popup">Mất kết nối</string>
     <string name="hint_edittex_login">Choose username</string>
     <string name="title_wait_popup">Chưa sẵn sàng</string>
     <string name="text_wait_popup">Vui lòng đợi đối thủ</string>
+    <string name="btn_cancel_wait_popup">THOÁT</string>
     <string name="second_wait_popup">30</string>
     <string name="help4_wait_popup">30 giây mỗi câu hỏi</string>
     <string name="help1_wait_popup">Trợ giúp 50/50</string>

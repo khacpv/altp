@@ -139,6 +139,9 @@ public class PlayScreen extends AppCompatActivity {
                                 disconnectDialog.hide();
                                 if (clickable) {
                                     resumeTimer();
+                                } else {
+                                    Log.e("TAG", "RECONNECT & REANSWER" );
+                                    mAltpHelper.answer(mUser, mRoom, mUser.answerIndex);
                                 }
                             }
                         }
@@ -1365,7 +1368,7 @@ public class PlayScreen extends AppCompatActivity {
         if (isPauseClock && timerResume != null) {
             timerResume.cancel();
         }
-       // timer.start();
+        // timer.start();
         isPauseClock = false;
     }
 

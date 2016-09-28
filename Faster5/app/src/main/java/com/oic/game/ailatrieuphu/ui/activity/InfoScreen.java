@@ -9,6 +9,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -67,11 +68,12 @@ public class InfoScreen extends AppCompatActivity {
     private int enemyNumberInList;
     private boolean isEnemy = false;
     private Dialog connectionDiaglog;
-
-    private Dialog searchAgainDialog;
     MediaPlayer mediaPlayer;
     private Handler handler;
     Runnable resetSearch;
+    ImageView mImageviewIconSearch;
+    TextView mTextViewTimeSearch;
+    CountDownTimer timeSearch;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -173,7 +175,7 @@ public class InfoScreen extends AppCompatActivity {
                 mediaPlayer.stop();
             }
             SoundPoolManager.getInstance().playSound(R.raw.search_finish);
-
+            timeSearch.cancel();
             searchBg.stop();
 
             for (int i = 0; i < Math.min(mButtonPlayer.length, dummyUsers.size()); i++) {
@@ -220,7 +222,7 @@ public class InfoScreen extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                handler.postDelayed(resetSearch, 36000);
+                handler.postDelayed(resetSearch, 30000);
             }
         });
 
@@ -260,11 +262,9 @@ public class InfoScreen extends AppCompatActivity {
         mSocketAltp = MainApplication.sockAltp();
         mAltpHelper = new AltpHelper(mSocketAltp);
 
-
         if (!mSocketAltp.isConnected()) {
             mSocketAltp.connect();
         }
-
 
         mSocketAltp.addGlobalEvent(globalCallback);
         mSocketAltp.addEvent("search", searchCallback);
@@ -287,9 +287,21 @@ public class InfoScreen extends AppCompatActivity {
         buttonPlayer();
 
         setConnectionDiaglog();
-        setSearchAgainDialog();
-
         handler = new Handler();
+
+        timeSearch = new CountDownTimer(30100, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                mTextViewTimeSearch.setText("" + (int) (millisUntilFinished / 1000));
+            }
+
+            @Override
+            public void onFinish() {
+                timeSearch.cancel();
+                mTextViewTimeSearch.setVisibility(View.GONE);
+                mImageviewIconSearch.setVisibility(View.VISIBLE);
+            }
+        };
 
         resetSearch = new Runnable() {
             @Override
@@ -298,7 +310,6 @@ public class InfoScreen extends AppCompatActivity {
                 searchBg.stop();
                 searchBg.reset();
                 mButtonSearch.setClickable(true);
-                searchAgainDialog.show();
             }
         };
 
@@ -318,6 +329,7 @@ public class InfoScreen extends AppCompatActivity {
                                                  if (NetworkUtils.checkInternetConnection(InfoScreen.this) && mSocketAltp.isConnected()) {
                                                      setUserInfo();
                                                      sendSearchRequest(mUser);
+                                                     setSearchTimes();
                                                      mButtonSearch.setClickable(false);
                                                      searchBg.start();
                                                  } else {
@@ -337,13 +349,13 @@ public class InfoScreen extends AppCompatActivity {
         mTextViewCity = (TextView) findViewById(R.id.textview_city_info);
         mImageViewAvatar = (ImageView) findViewById(R.id.imageview_useravatar);
         mTextViewTotalScore = (TextView) findViewById(R.id.textview_total_score);
+        mImageviewIconSearch = (ImageView) findViewById(R.id.imageview_icon_search);
+        mTextViewTimeSearch = (TextView) findViewById(R.id.textview_time_search);
+        mTextViewTimeSearch.setVisibility(View.GONE);
 
-        setTypeface(font, mTextViewCity, mTextViewNameUser, mTextViewTotalScore);
+        setTypeface(font, mTextViewCity, mTextViewNameUser, mTextViewTotalScore, mTextViewTimeSearch);
 
         connectionDiaglog = new Dialog(this);
-        searchAgainDialog = new Dialog(this);
-
-
     }
 
     public void setConnectionDiaglog() {
@@ -364,22 +376,10 @@ public class InfoScreen extends AppCompatActivity {
 
     }
 
-    public void setSearchAgainDialog() {
-        searchAgainDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        searchAgainDialog.setContentView(R.layout.layout_search_tryagain);
-        searchAgainDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        searchAgainDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
-        searchAgainDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-
-        Button okBtn = (Button) searchAgainDialog.findViewById(R.id.button_okay);
-
-        okBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                searchAgainDialog.hide();
-            }
-        });
-
+    public void setSearchTimes() {
+        mImageviewIconSearch.setVisibility(View.GONE);
+        mTextViewTimeSearch.setVisibility(View.VISIBLE);
+        timeSearch.start();
     }
 
 
@@ -444,6 +444,7 @@ public class InfoScreen extends AppCompatActivity {
             @Override
             public void run() {
                 handler.removeCallbacks(resetSearch);
+                mSocketAltp.removeEvent();
             }
         });
 
@@ -466,7 +467,7 @@ public class InfoScreen extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        if (mediaPlayer !=null && !mediaPlayer.isPlaying()) {
+        if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
             mediaPlayer.start();
         }
         super.onResume();
@@ -482,17 +483,14 @@ public class InfoScreen extends AppCompatActivity {
             connectionDiaglog.dismiss();
         }
 
-        if (searchAgainDialog != null) {
-            searchAgainDialog.dismiss();
-        }
-
-
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();
             mediaPlayer = null;
         }
-
+        if (timeSearch != null) {
+            timeSearch.cancel();
+        }
         super.onDestroy();
 
     }

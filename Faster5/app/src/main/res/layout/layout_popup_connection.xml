@@ -14,14 +14,36 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/imageview_erro"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/layout_marginTop_10"
+            android:text="@string/title_disconnect_popup"
+            android:textColor="#00366D"
+            android:textSize="@dimen/text_size_huge"
+            android:ellipsize="end"
+            android:lines="1"/>
+
+        <View
             android:layout_width="match_parent"
-            android:layout_height="@dimen/layout_height_50"
+            android:layout_height="@dimen/layout_height_3"
+            android:layout_marginTop="@dimen/layout_marginTop_10"
+            android:background="#00366D" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/layout_marginLeft_20"
+            android:layout_marginRight="@dimen/layout_marginRight_20"
             android:layout_marginTop="@dimen/layout_marginTop_20"
-            android:src="@drawable/button_erro" />
-
-
+            android:gravity="center"
+            android:text="@string/connect_erro_text"
+            android:textColor="#EEA542"
+            android:textSize="@dimen/text_size_xlarge"
+            android:textStyle="bold"
+            android:ellipsize="end"
+            android:lines="2"/>
         <Button
             android:id="@+id/btn_tryagain"
             android:layout_width="@dimen/layout_width_250"

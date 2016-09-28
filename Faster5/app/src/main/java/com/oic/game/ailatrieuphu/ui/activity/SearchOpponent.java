@@ -61,6 +61,7 @@ public class SearchOpponent extends AppCompatActivity {
     private ImageView mImageViewUserAvatar2;
     Button mButtonPlay;
     Button mButtonSeach;
+    Button btnCancel;
     Handler handler = new Handler();
 
     private SockAltp.OnSocketEvent playCallback = new SockAltp.OnSocketEvent() {
@@ -150,7 +151,7 @@ public class SearchOpponent extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                waitDialog.setCancelable(false);
+                btnCancel.setVisibility(View.GONE);
                 mTextViewWaitText.setVisibility(View.GONE);
             }
         });
@@ -231,8 +232,19 @@ public class SearchOpponent extends AppCompatActivity {
         waitDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         waitDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         waitDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        waitDialog.setCancelable(false);
         mTextViewReady = (TextView) waitDialog.findViewById(R.id.textview_ready);
         mTextViewWaitText = (TextView) waitDialog.findViewById(R.id.textview_wait_text);
+
+        btnCancel = (Button) waitDialog.findViewById(R.id.button_cancel);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                mAltpHelper.quit(mUser, mRoom, false);
+                waitDialog.hide();
+            }
+        });
 
     }
 
