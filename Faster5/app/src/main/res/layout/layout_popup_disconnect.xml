@@ -8,8 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
+        android:layout_marginLeft="@dimen/layout_marginLeft_40"
+        android:layout_marginRight="@dimen/layout_marginRight_40"
         android:background="@drawable/xml_popup_bg_white"
         android:gravity="center"
         android:orientation="vertical">
@@ -18,37 +18,37 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="@dimen/layout_marginTop_10"
             android:text="@string/title_disconnect_popup"
             android:textColor="#00366D"
-            android:textSize="30sp"
+            android:textSize="@dimen/text_size_huge"
             android:ellipsize="end"
             android:lines="1"/>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:layout_marginTop="10dp"
+            android:layout_height="@dimen/layout_height_3"
+            android:layout_marginTop="@dimen/layout_marginTop_10"
             android:background="#00366D" />
 
         <ImageView
             android:id="@+id/imgView_loading"
-            android:layout_width="200dp"
-            android:layout_height="100dp"
+            android:layout_width="@dimen/layout_width_200"
+            android:layout_height="@dimen/layout_height_100"
             android:layout_gravity="center"
-            android:layout_marginTop="20dp" />
+            android:layout_marginTop="@dimen/layout_marginTop_20" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginBottom="@dimen/layout_marginBottom_50"
+            android:layout_marginLeft="@dimen/layout_marginLeft_20"
+            android:layout_marginRight="@dimen/layout_marginRight_20"
+            android:layout_marginTop="@dimen/layout_marginTop_20"
             android:gravity="center"
             android:text="@string/reconnect_text"
             android:textColor="#EEA542"
-            android:textSize="20sp"
+            android:textSize="@dimen/text_size_xlarge"
             android:textStyle="bold"
             android:ellipsize="end"
             android:lines="1"/>

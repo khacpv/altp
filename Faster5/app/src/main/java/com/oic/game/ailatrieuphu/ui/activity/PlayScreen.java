@@ -137,7 +137,9 @@ public class PlayScreen extends AppCompatActivity {
                         public void run() {
                             if (disconnectDialog.isShowing() && !isFinishing()) {
                                 disconnectDialog.hide();
-                                resumeTimer();
+                                if (clickable) {
+                                    resumeTimer();
+                                }
                             }
                         }
                     });
@@ -880,7 +882,7 @@ public class PlayScreen extends AppCompatActivity {
                 quitBtn.setVisibility(View.GONE);
                 continueBtn.setVisibility(View.GONE);
                 loading.setVisibility(View.VISIBLE);
-                mAltpHelper.quit(mUser, mRoom);
+                mAltpHelper.quit(mUser, mRoom, true);
             }
         });
     }
@@ -997,7 +999,8 @@ public class PlayScreen extends AppCompatActivity {
             linearLayout.setVisibility(View.INVISIBLE);
             if (!moveGameOver) {
 
-                barChartDialog.show();}
+                barChartDialog.show();
+            }
 
             handler.postDelayed(new Runnable() {
                 @Override
@@ -1019,7 +1022,8 @@ public class PlayScreen extends AppCompatActivity {
             linearLayout.setVisibility(View.GONE);
             if (!moveGameOver) {
 
-                barChartDialog.show();}
+                barChartDialog.show();
+            }
             int n = new Random().nextInt(3) + 1;
             switch (n) {
                 case 1:
@@ -1361,7 +1365,7 @@ public class PlayScreen extends AppCompatActivity {
         if (isPauseClock && timerResume != null) {
             timerResume.cancel();
         }
-        timer.start();
+       // timer.start();
         isPauseClock = false;
     }
 
@@ -1399,13 +1403,13 @@ public class PlayScreen extends AppCompatActivity {
                         });
                     }
                 }
-            }.start();
+            };//start();
         }
     }
 
     public void timeOutandQuit() {
         SoundPoolManager.getInstance().playSound(R.raw.timesup);
-        mAltpHelper.quit(mUser, mRoom);
+        mAltpHelper.quit(mUser, mRoom, true);
         LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
         linearLayout.setVisibility(View.GONE);
         if (!moveGameOver) {
@@ -1446,7 +1450,8 @@ public class PlayScreen extends AppCompatActivity {
         SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
         if (!moveGameOver) {
 
-            quitDialog.show();}
+            quitDialog.show();
+        }
 
     }
 

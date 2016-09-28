@@ -50,7 +50,7 @@ public class SockAltp {
     public SockAltp(String url, boolean autoConnect) {
         try {
             IO.Options opts = new IO.Options();
-            opts.timeout = -1;
+            opts.timeout = 10000;
             mSocket = IO.socket(url,opts);
 
             if (autoConnect) {

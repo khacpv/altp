@@ -217,7 +217,6 @@ public class InfoScreen extends AppCompatActivity {
     }
 
     public void sendSearchRequest(User user) {
-        //mButtonSearch.getHandler().postDelayed(resetSearch, 36000);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -226,7 +225,7 @@ public class InfoScreen extends AppCompatActivity {
         });
 
         if (searchTimes > 0) {
-            for (int i = 0; i < 8; i++) {
+            for (int i = 0; i < 7; i++) {
                 mButtonPlayer[i].setText("NGƯỜI CHƠI");
                 mButtonPlayer[i].setBackgroundResource(R.drawable.answer0);
             }
@@ -421,9 +420,7 @@ public class InfoScreen extends AppCompatActivity {
                 .button_player);
         mButtonPlayer[i++] = (Button) findViewById(R.id.button_player6).findViewById(R.id
                 .button_player);
-        mButtonPlayer[i++] = (Button) findViewById(R.id.button_player7).findViewById(R.id
-                .button_player);
-        mButtonPlayer[i] = (Button) findViewById(R.id.button_player8).findViewById(R.id
+        mButtonPlayer[i] = (Button) findViewById(R.id.button_player7).findViewById(R.id
                 .button_player);
 
     }

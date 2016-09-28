@@ -361,7 +361,7 @@ public class LoginScreen extends AppCompatActivity {
                     mUser.fbId = object.getString("id");
                     mUser.name = object.getString("name");
                     mUser.address = city;
-                    mUser.avatar = "https://graph.facebook.com/" + object.getString("id") + "/picture?width=500&height=500";
+                    mUser.avatar = "https://graph.facebook.com/" + object.getString("id") + "/picture?width=200&height=200";
 
                     sendLoginRequest(mUser);
 

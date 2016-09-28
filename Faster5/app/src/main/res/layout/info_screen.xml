@@ -21,30 +21,30 @@
 
             <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/imageview_useravatar"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="30dp"
+                android:layout_width="@dimen/layout_width_70"
+                android:layout_height="@dimen/layout_height_70"
+                android:layout_marginLeft="@dimen/layout_marginLeft_20"
+                android:layout_marginStart="@dimen/layout_marginLeft_20"
+                android:layout_marginTop="@dimen/layout_marginTop_30"
                 android:src="@drawable/avatar"
                 app:civ_border_color="#fff"
-                app:civ_border_width="2dp" />
+                app:civ_border_width="@dimen/civ_border_width" />
 
             <TextView
                 android:id="@+id/textview_usernname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/imageview_useravatar"
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginLeft="@dimen/layout_marginLeft_20"
+                android:layout_marginStart="@dimen/layout_marginLeft_20"
+                android:layout_marginTop="@dimen/layout_marginTop_5"
                 android:layout_toEndOf="@+id/imageview_useravatar"
                 android:layout_toRightOf="@+id/imageview_useravatar"
                 android:ellipsize="end"
                 android:lines="1"
                 android:text="@string/player"
                 android:textColor="#ffffff"
-                android:textSize="24sp"
+                android:textSize="@dimen/text_size_xxlarge"
                 android:textStyle="bold" />
 
             <TextView
@@ -58,43 +58,49 @@
                 android:lines="1"
                 android:text="@string/city"
                 android:textColor="#ffffff"
-                android:textSize="18sp"
+                android:textSize="@dimen/text_size_large"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textview_total_score"
-                android:layout_width="220dp"
-                android:layout_height="45dp"
+                android:layout_width="@dimen/layout_width_220"
+                android:layout_height="@dimen/layout_height_45"
                 android:layout_alignLeft="@+id/imageview_useravatar"
                 android:layout_alignStart="@+id/imageview_useravatar"
                 android:layout_below="@+id/imageview_useravatar"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="@dimen/layout_marginTop_10"
                 android:background="@drawable/button_money"
                 android:gravity="center_horizontal"
-                android:paddingTop="7dp"
+                android:paddingTop="@dimen/paddingTop_7"
                 android:text="@string/money_default"
                 android:textColor="#000000"
-                android:textSize="20sp"
+                android:textSize="@dimen/text_size_xlarge"
                 android:textStyle="bold" />
 
         </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/button_search"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginTop="40dp">
+            android:layout_width="@dimen/layout_width_100"
+            android:layout_height="@dimen/layout_height_100"
+            android:layout_marginEnd="@dimen/layout_marginRight_5"
+            android:layout_marginRight="@dimen/layout_marginRight_5"
+            android:layout_marginTop="@dimen/layout_marginTop_40">
 
             <ImageView
-                android:layout_width="28dp"
-                android:layout_height="25dp"
+                android:layout_width="@dimen/layout_width_28"
+                android:layout_height="@dimen/layout_height_25"
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 android:background="@drawable/icon_search"
                 android:scaleType="fitXY" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+
+                />
         </RelativeLayout>
 
     </LinearLayout>
@@ -106,24 +112,26 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="@dimen/layout_height_2"
             android:layout_centerVertical="true"
             android:background="#FFF" />
 
         <Button
-            android:id="@+id/button_login"
+            android:id="@+id/button_opponent"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="@dimen/layout_height_40"
             android:layout_centerHorizontal="true"
-            android:layout_marginLeft="120dp"
-            android:layout_marginRight="120dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginLeft="@dimen/layout_marginLeft_110"
+            android:layout_marginStart="@dimen/layout_marginLeft_110"
+            android:layout_marginRight="@dimen/layout_marginRight_110"
+            android:layout_marginEnd="@dimen/layout_marginRight_110"
+            android:layout_marginTop="@dimen/layout_marginTop_5"
             android:background="@drawable/answer0"
-            android:paddingBottom="7dp"
+            android:paddingBottom="@dimen/paddingTop_7"
             android:text="@string/imageview_doithu"
             android:textAllCaps="false"
             android:textColor="#ffffff"
-            android:textSize="15sp"
+            android:textSize="@dimen/text_size_small"
             android:textStyle="bold" />
     </RelativeLayout>
 
@@ -132,7 +140,7 @@
         android:layout_height="wrap_content"
         android:clipToPadding="false"
         android:overScrollMode="never"
-        android:paddingTop="10dp"
+        android:paddingTop="@dimen/paddingTop_10"
         android:scrollbars="none">
 
         <include

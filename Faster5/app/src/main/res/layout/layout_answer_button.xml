@@ -7,14 +7,14 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/layout_marginTop_10"
         android:orientation="horizontal">
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="@dimen/layout_height_2"
             android:layout_gravity="center_vertical"
-            android:layout_marginBottom="4dp"
+            android:layout_marginBottom="@dimen/layout_marginBottom_4"
             android:background="#FFF" />
 
         <LinearLayout
@@ -24,40 +24,40 @@
             <Button
                 android:id="@+id/button_ans1"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
+                android:layout_height="@dimen/layout_height_50"
+                android:layout_marginLeft="@dimen/layout_marginLeft_10"
+                android:layout_marginStart="@dimen/layout_marginLeft_10"
                 android:layout_weight="1"
                 android:background="@drawable/answer0"
                 android:gravity="start|center_vertical"
                 android:onClick="btnAnswerClick"
-                android:paddingBottom="10dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
+                android:paddingBottom="@dimen/paddingBottom_10"
+                android:paddingLeft="@dimen/paddingLeft_20"
+                android:paddingRight="@dimen/paddingRight_20"
                 android:singleLine="true"
                 android:text="@string/answ_A"
                 android:textAllCaps="false"
                 android:textColor="#FFF"
-                android:textSize="18sp" />
+                android:textSize="@dimen/text_size_large" />
 
             <Button
                 android:id="@+id/button_ans2"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginEnd="10dp"
+                android:layout_height="@dimen/layout_height_50"
+                android:layout_marginRight="@dimen/layout_marginRight_10"
+                android:layout_marginEnd="@dimen/layout_marginRight_10"
                 android:layout_weight="1"
                 android:background="@drawable/answer0"
                 android:gravity="start|center_vertical"
                 android:onClick="btnAnswerClick"
-                android:paddingBottom="10dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
+                android:paddingBottom="@dimen/paddingBottom_10"
+                android:paddingLeft="@dimen/paddingLeft_20"
+                android:paddingRight="@dimen/paddingRight_20"
                 android:singleLine="true"
                 android:text="@string/answ_B"
                 android:textAllCaps="false"
                 android:textColor="#FFF"
-                android:textSize="18sp" />
+                android:textSize="@dimen/text_size_large" />
         </LinearLayout>
 
     </FrameLayout>
@@ -65,14 +65,14 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="@dimen/layout_marginTop_20"
         android:orientation="horizontal">
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="@dimen/layout_height_2"
             android:layout_gravity="center_vertical"
-            android:layout_marginBottom="4dp"
+            android:layout_marginBottom="@dimen/layout_marginBottom_4"
             android:background="#FFF" />
 
         <LinearLayout
@@ -82,40 +82,40 @@
             <Button
                 android:id="@+id/button_ans3"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
+                android:layout_height="@dimen/layout_height_50"
+                android:layout_marginLeft="@dimen/layout_marginLeft_10"
+                android:layout_marginStart="@dimen/layout_marginLeft_10"
                 android:layout_weight="1"
                 android:background="@drawable/answer0"
                 android:gravity="start|center_vertical"
                 android:onClick="btnAnswerClick"
-                android:paddingBottom="10dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
+                android:paddingBottom="@dimen/paddingBottom_10"
+                android:paddingLeft="@dimen/paddingLeft_20"
+                android:paddingRight="@dimen/paddingRight_20"
                 android:singleLine="true"
                 android:text="@string/answ_C"
                 android:textAllCaps="false"
                 android:textColor="#FFF"
-                android:textSize="18sp" />
+                android:textSize="@dimen/text_size_large" />
 
             <Button
                 android:id="@+id/button_ans4"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginEnd="10dp"
+                android:layout_height="@dimen/layout_height_50"
+                android:layout_marginRight="@dimen/layout_marginRight_10"
+                android:layout_marginEnd="@dimen/layout_marginRight_10"
                 android:layout_weight="1"
                 android:background="@drawable/answer0"
                 android:gravity="start|center_vertical"
                 android:onClick="btnAnswerClick"
-                android:paddingBottom="10dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
+                android:paddingBottom="@dimen/paddingBottom_10"
+                android:paddingLeft="@dimen/paddingLeft_20"
+                android:paddingRight="@dimen/paddingRight_20"
                 android:singleLine="true"
                 android:text="@string/answ_D"
                 android:textAllCaps="false"
                 android:textColor="#FFF"
-                android:textSize="18sp" />
+                android:textSize="@dimen/text_size_large" />
         </LinearLayout>
 
     </FrameLayout>

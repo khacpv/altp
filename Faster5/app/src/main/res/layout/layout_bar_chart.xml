@@ -9,8 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginLeft="@dimen/layout_marginLeft_20"
+        android:layout_marginRight="@dimen/layout_marginRight_20"
         android:background="@drawable/xml_popup_bg_white"
         android:orientation="vertical">
 
@@ -18,48 +18,48 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="@dimen/layout_marginTop_10"
             android:text="@string/trogiup_khangia"
             android:textColor="#00366D"
-            android:textSize="30sp"
+            android:textSize="@dimen/text_size_huge"
             android:ellipsize="end"
             android:lines="1"/>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="3dp"
+            android:layout_height="@dimen/layout_height_3"
             android:layout_gravity="center_vertical"
-            android:layout_marginBottom="4dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginBottom="@dimen/layout_marginBottom_4"
+            android:layout_marginTop="@dimen/layout_marginTop_10"
             android:background="#00366D" />
 
 
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/barchart"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
+            android:layout_width="@dimen/layout_width_300"
+            android:layout_height="@dimen/layout_height_300"
             android:layout_gravity="center"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp" />
+            android:layout_marginBottom="@dimen/layout_marginBottom_10"
+            android:layout_marginLeft="@dimen/layout_marginLeft_20"
+            android:layout_marginRight="@dimen/layout_marginRight_20"
+            android:layout_marginTop="@dimen/layout_marginTop_20" />
 
 
         <Button
             android:id="@+id/button_hide"
-            android:layout_width="250dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/layout_width_250"
+            android:layout_height="@dimen/layout_height_50"
             android:layout_gravity="center"
-            android:layout_marginBottom="20dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginBottom="@dimen/layout_marginBottom_20"
+            android:layout_marginLeft="@dimen/layout_marginLeft_30"
+            android:layout_marginRight="@dimen/layout_marginRight_30"
+            android:layout_marginTop="@dimen/layout_marginTop_5"
             android:background="@drawable/answer0"
-            android:paddingBottom="10dp"
+            android:paddingBottom="@dimen/paddingTop_10"
             android:text="@string/btn_close"
             android:textAllCaps="false"
             android:textColor="#ffffff"
-            android:textSize="18sp"
+            android:textSize="@dimen/text_size_xlarge"
             android:textStyle="bold" />
 
     </LinearLayout>

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,47 +9,47 @@
 
     <ImageView
         android:id="@+id/imageview_altp"
-        android:layout_width="320dp"
-        android:layout_height="55dp"
+        android:layout_width="@dimen/layout_width_320"
+        android:layout_height="@dimen/layout_height_55"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        android:src="@drawable/altp"/>
+        android:layout_marginTop="@dimen/layout_marginTop_30"
+        android:src="@drawable/altp" />
 
     <ImageView
         android:id="@+id/imageview_online"
-        android:layout_width="65dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/layout_width_65"
+        android:layout_height="@dimen/layout_height_30"
         android:layout_alignEnd="@+id/imageview_altp"
         android:layout_alignRight="@+id/imageview_altp"
         android:layout_below="@+id/imageview_altp"
-        android:src="@drawable/online"/>
+        android:src="@drawable/online" />
 
     <TextView
         android:id="@+id/textview_loading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:paddingTop="10dp"
-        android:paddingBottom="15dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginBottom="30dp"
-        android:layout_marginTop="30dp"
-        android:singleLine="true"
-        android:maxLines="1"
-        android:text="80%"
-        android:background="@drawable/btn_loading"
         android:layout_below="@id/imageview_online"
+        android:layout_marginBottom="@dimen/layout_marginBottom_30"
+        android:layout_marginEnd="@dimen/layout_marginRight_30"
+        android:layout_marginLeft="@dimen/layout_marginLeft_30"
+        android:layout_marginRight="@dimen/layout_marginRight_30"
+        android:layout_marginStart="@dimen/layout_marginLeft_30"
+        android:layout_marginTop="@dimen/layout_marginTop_30"
+        android:background="@drawable/btn_loading"
+        android:gravity="center"
+        android:maxLines="1"
+        android:paddingBottom="@dimen/paddingBottom_15"
+        android:paddingTop="@dimen/paddingTop_10"
+        android:text="80%"
         android:textColor="#FFF"
-        android:textSize="30sp"
-        android:textStyle="bold"/>
+        android:textSize="@dimen/text_size_huge"
+        android:textStyle="bold" />
 
     <com.oicmap.game.multiparalaxview.ParallaxView
         android:id="@+id/parallax"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/textview_loading"
-        />
+        android:layout_below="@id/textview_loading" />
 
     <TextView
         android:id="@+id/debug"
@@ -58,5 +57,5 @@
         android:layout_height="wrap_content"
         android:text="@string/debug"
         android:textColor="@android:color/white"
-        android:textSize="20sp"/>
+        android:textSize="20sp" />
 </RelativeLayout>

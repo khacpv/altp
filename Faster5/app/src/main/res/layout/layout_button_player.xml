@@ -8,26 +8,34 @@
         android:id="@+id/layout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp">
+        android:layout_marginTop="13dp">
 
         <View
             android:id="@+id/viewline_btnplayer"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="@dimen/layout_height_1"
             android:layout_gravity="center_vertical"
-            android:layout_marginBottom="3dp"
+            android:layout_marginBottom="@dimen/layout_marginBottom_4"
             android:background="#FFF" />
 
         <Button
             android:id="@+id/button_player"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginLeft="50dp"
-            android:layout_marginRight="50dp"
+            android:layout_height="@dimen/layout_height_40"
+            android:layout_marginLeft="@dimen/layout_marginLeft_50"
+            android:layout_marginRight="@dimen/layout_marginRight_50"
             android:background="@drawable/answer0"
-            android:paddingBottom="8dp"
+            android:paddingBottom="@dimen/paddingTop_8"
             android:text="@string/list_player"
-            android:textColor="#FFF"/>
+            android:textColor="#FFF" />
+
+
     </FrameLayout>
 
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/avatar_info"
+        android:layout_marginLeft="40dp"
+       />
 </RelativeLayout>
