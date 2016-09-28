@@ -253,11 +253,11 @@ public class AltpHelper {
      *
      * @see AltpHelper#gameOverCallback(Object...)
      */
-    public void quit(User user, Room room) {
+    public void quit(User user, Room room, boolean isPlaying) {
         try {
             Gson gson = new Gson();
             String json =
-                    String.format("{user:%s, room:%s}", gson.toJson(user), gson.toJson(room));
+                    String.format("{user:%s, room:%s, isPlay:%s}", gson.toJson(user), gson.toJson(room), gson.toJson(isPlaying));
             JSONObject data = new JSONObject(json);
             mSockAltp.send("quit", data);
         } catch (JSONException e) {

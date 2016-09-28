@@ -8,8 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
+        android:layout_marginLeft="@dimen/layout_marginLeft_40"
+        android:layout_marginRight="@dimen/layout_marginRight_40"
         android:background="@drawable/xml_popup_bg_white"
         android:gravity="center"
         android:orientation="vertical">
@@ -17,26 +17,26 @@
         <ImageView
             android:id="@+id/imageview_erro"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="20dp"
+            android:layout_height="@dimen/layout_height_50"
+            android:layout_marginTop="@dimen/layout_marginTop_20"
             android:src="@drawable/button_erro" />
 
 
         <Button
             android:id="@+id/btn_tryagain"
-            android:layout_width="250dp"
-            android:layout_height="50dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
+            android:layout_width="@dimen/layout_width_250"
+            android:layout_height="@dimen/layout_height_50"
+            android:layout_marginLeft="@dimen/layout_marginLeft_30"
+            android:layout_marginRight="@dimen/layout_marginRight_30"
             android:background="@drawable/answer0"
             android:gravity="center"
-            android:layout_marginTop="30dp"
-            android:layout_marginBottom="20dp"
-            android:paddingBottom="10dp"
+            android:layout_marginTop="@dimen/layout_marginTop_30"
+            android:layout_marginBottom="@dimen/layout_marginBottom_20"
+            android:paddingBottom="@dimen/paddingBottom_10"
             android:text="@string/try_again_text"
             android:textAllCaps="false"
             android:textColor="#ffffff"
-            android:textSize="18sp"
+            android:textSize="@dimen/text_size_large"
             android:textStyle="bold" />
 
 

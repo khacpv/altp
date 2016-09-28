@@ -8,8 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
+        android:layout_marginLeft="@dimen/layout_marginLeft_40"
+        android:layout_marginRight="@dimen/layout_marginRight_40"
         android:background="@drawable/xml_popup_bg_white"
         android:orientation="vertical">
 
@@ -17,76 +17,76 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="@dimen/layout_marginTop_10"
             android:text="@string/set_Avatar"
             android:textColor="#00366D"
-            android:textSize="30sp"
+            android:textSize="@dimen/text_size_huge"
             android:ellipsize="end"
             android:lines="1"/>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:layout_marginTop="10dp"
+            android:layout_height="@dimen/layout_height_3"
+            android:layout_marginTop="@dimen/layout_marginTop_10"
             android:background="#00366D" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginLeft="@dimen/layout_marginLeft_10"
+            android:layout_marginRight="@dimen/layout_marginRight_10"
+            android:layout_marginTop="@dimen/layout_marginTop_30"
             android:gravity="center"
             android:maxLines="2"
             android:text="@string/question_Avatar"
             android:textColor="#EEA542"
-            android:textSize="18sp"
-            android:layout_marginBottom="20dp"/>
+            android:textSize="@dimen/text_size_large"
+            android:layout_marginBottom="@dimen/layout_marginBottom_20"/>
 
 
         <Button
             android:id="@+id/button_camera"
-            android:layout_width="250dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/layout_width_250"
+            android:layout_height="@dimen/layout_height_50"
             android:layout_gravity="center"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
+            android:layout_marginLeft="@dimen/layout_marginLeft_30"
+            android:layout_marginRight="@dimen/layout_marginRight_30"
             android:background="@drawable/answer0"
-            android:paddingBottom="10dp"
+            android:paddingBottom="@dimen/paddingBottom_10"
             android:text="@string/avatar_from_camera"
             android:textAllCaps="false"
             android:textColor="#ffffff"
-            android:textSize="18sp"
+            android:textSize="@dimen/text_size_large"
             android:textStyle="bold"
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="@dimen/layout_marginBottom_10"/>
 
 
         <Button
             android:id="@+id/button_gallery"
-            android:layout_width="250dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/layout_width_250"
+            android:layout_height="@dimen/layout_height_50"
             android:layout_gravity="center"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
+            android:layout_marginLeft="@dimen/layout_marginLeft_30"
+            android:layout_marginRight="@dimen/layout_marginRight_30"
             android:background="@drawable/answer0"
             android:clickable="true"
-            android:paddingBottom="10dp"
+            android:paddingBottom="@dimen/paddingBottom_10"
             android:text="@string/avatar_from_gallery"
             android:textAllCaps="false"
             android:textColor="#ffffff"
-            android:textSize="18sp"
+            android:textSize="@dimen/text_size_large"
             android:textStyle="bold"
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="@dimen/layout_marginBottom_10"/>
 
 
         <Button
             android:id="@+id/button_later"
-            android:layout_width="250dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/layout_width_250"
+            android:layout_height="@dimen/layout_height_50"
             android:layout_gravity="center"
             android:background="@drawable/btn_later"
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="@dimen/layout_marginBottom_10"/>
 
 
     </LinearLayout>

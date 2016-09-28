@@ -8,7 +8,9 @@ import android.os.Handler;
 import android.support.annotation.WorkerThread;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -131,6 +133,16 @@ public class MainActivity extends AppCompatActivity {
         loadParallaxView();
 
 
+        Display display = getWindowManager().getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        display.getMetrics(outMetrics);
+
+        float density = getResources().getDisplayMetrics().density;
+        float dpHeight = outMetrics.heightPixels / density;
+        float dpWidth = outMetrics.widthPixels / density;
+
+        Log.e("TAG", "DP: " + dpWidth);
+
         userId = PrefUtils.getInstance(this).get(PrefUtils.KEY_USER_ID, "");
         username = PrefUtils.getInstance(this).get(PrefUtils.KEY_NAME, "");
         linkAvatar = PrefUtils.getInstance(this).get(PrefUtils.KEY_URL_AVATAR, "");
@@ -181,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
                     .setXPercent(0)
                     .setYPercent(0)
                     .setAlpha(0.3f)
-                    .setSize(45)
+                    .setSize(getResources().getDimensionPixelSize(R.dimen.text_size_small))
                     .build();
             data.add(item);
         }
@@ -192,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
                     .setXPercent(0)
                     .setYPercent(10)
                     .setAlpha(0.5f)
-                    .setSize(45)
+                    .setSize(getResources().getDimensionPixelSize(R.dimen.text_size_small))
                     .build();
             data.add(item);
         }
@@ -203,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
                     .setXPercent(20)
                     .setYPercent(30)
                     .setAlpha(0.1f)
-                    .setSize(45)
+                    .setSize(getResources().getDimensionPixelSize(R.dimen.text_size_small))
                     .build();
             data.add(item);
         }
@@ -214,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
                     .setXPercent(5)
                     .setYPercent(50)
                     .setAlpha(0.3f)
-                    .setSize(45)
+                    .setSize(getResources().getDimensionPixelSize(R.dimen.text_size_small))
                     .build();
             data.add(item);
         }
@@ -225,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
                     .setXPercent(15)
                     .setYPercent(65)
                     .setAlpha(0.5f)
-                    .setSize(45)
+                    .setSize(getResources().getDimensionPixelSize(R.dimen.text_size_small))
                     .build();
             data.add(item);
         }
@@ -236,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
                     .setXPercent(30)
                     .setYPercent(75)
                     .setAlpha(0.1f)
-                    .setSize(45)
+                    .setSize(getResources().getDimensionPixelSize(R.dimen.text_size_small))
                     .build();
             data.add(item);
         }
@@ -247,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
                     .setXPercent(50)
                     .setYPercent(20)
                     .setAlpha(0.3f)
-                    .setSize(45)
+                    .setSize(getResources().getDimensionPixelSize(R.dimen.text_size_small))
                     .build();
             data.add(item);
         }
@@ -257,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
                     .setXPercent(58)
                     .setYPercent(35)
                     .setAlpha(0.5f)
-                    .setSize(45)
+                    .setSize(getResources().getDimensionPixelSize(R.dimen.text_size_small))
                     .build();
             data.add(item);
         }
@@ -268,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
                     .setXPercent(30)
                     .setYPercent(55)
                     .setAlpha(0.5f)
-                    .setSize(45)
+                    .setSize(getResources().getDimensionPixelSize(R.dimen.text_size_small))
                     .build();
             data.add(item);
         }
@@ -279,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
                     .setXPercent(50)
                     .setYPercent(70)
                     .setAlpha(0.1f)
-                    .setSize(45)
+                    .setSize(getResources().getDimensionPixelSize(R.dimen.text_size_small))
                     .build();
             data.add(item);
         }
@@ -290,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
                     .setXPercent(10)
                     .setYPercent(80)
                     .setAlpha(0.3f)
-                    .setSize(45)
+                    .setSize(getResources().getDimensionPixelSize(R.dimen.text_size_small))
                     .build();
             data.add(item);
         }
@@ -300,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
                     .setXPercent(80)
                     .setYPercent(90)
                     .setAlpha(0.3f)
-                    .setSize(45)
+                    .setSize(getResources().getDimensionPixelSize(R.dimen.text_size_small))
                     .build();
             data.add(item);
         }
@@ -396,10 +408,11 @@ public class MainActivity extends AppCompatActivity {
                                 myIntent = new Intent(getApplicationContext(), InfoScreen.class);
                             }
                             mSocketAltp.removeEvent();
-                            startActivity(myIntent);
-                            overridePendingTransition(R.anim.xml_fade_in, R.anim.xml_fade_out);
-                            finish();
-
+                            if (mSocketAltp.isConnected()) {
+                                startActivity(myIntent);
+                                overridePendingTransition(R.anim.xml_fade_in, R.anim.xml_fade_out);
+                                finish();
+                            }
                         }
                     }, Math.max(LOAD_MAX_TIME, LOAD_MAX_TIME - (System.currentTimeMillis()
                             - startTime)));

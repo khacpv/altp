@@ -12,16 +12,16 @@
 
     <ImageView
         android:id="@+id/imageview_altp"
-        android:layout_width="320dp"
-        android:layout_height="55dp"
+        android:layout_width="@dimen/layout_width_320"
+        android:layout_height="@dimen/layout_height_55"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="@dimen/layout_marginTop_30"
         android:src="@drawable/altp" />
 
     <ImageView
         android:id="@+id/imageview_online"
-        android:layout_width="65dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/layout_width_65"
+        android:layout_height="@dimen/layout_height_30"
         android:layout_alignEnd="@+id/imageview_altp"
         android:layout_alignRight="@+id/imageview_altp"
         android:layout_below="@+id/imageview_altp"
@@ -30,66 +30,63 @@
     <com.facebook.login.widget.LoginButton
         android:id="@+id/button_fb"
         style="@style/FacebookLoginButton"
-        android:layout_width="1dp"
-        android:layout_height="1dp"
-        android:drawableLeft="@null"
-        android:paddingBottom="50dp"
-        android:paddingTop="50dp" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:drawableLeft="@null" />
 
     <Button
         android:id="@+id/btn_fakefb"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="@dimen/layout_width_100"
+        android:layout_height="@dimen/layout_height_100"
         android:layout_below="@+id/imageview_altp"
         android:layout_centerHorizontal="true"
         android:background="@drawable/fbbutton" />
 
     <ImageView
         android:id="@+id/imageview_or"
-        android:layout_width="150dp"
-        android:layout_height="45dp"
+        android:layout_width="@dimen/layout_width_150"
+        android:layout_height="@dimen/layout_height_45"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="@dimen/layout_marginTop_200"
         android:src="@drawable/or" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/imageview_avatar"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="@dimen/layout_width_100"
+        android:layout_height="@dimen/layout_height_100"
         android:layout_alignLeft="@+id/btn_fakefb"
         android:layout_alignStart="@+id/btn_fakefb"
         android:layout_below="@+id/imageview_or"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="@dimen/layout_marginTop_15"
         android:src="@drawable/avatar" />
-
 
     <FrameLayout
         android:id="@+id/layout_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/imageview_avatar"
-        android:layout_marginTop="5dp">
+        android:layout_marginTop="@dimen/layout_marginTop_15">
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="@dimen/layout_height_2"
             android:layout_gravity="center_vertical"
-            android:layout_marginBottom="2dp"
+            android:layout_marginBottom="@dimen/layout_marginBottom_2"
             android:background="#FFF" />
 
         <ImageView
             android:id="@+id/imageview_name"
-            android:layout_width="280dp"
-            android:layout_height="65dp"
+            android:layout_width="@dimen/layout_width_280"
+            android:layout_height="@dimen/layout_height_65"
             android:layout_gravity="center_horizontal"
-            android:paddingTop="5dp"
+            android:paddingTop="@dimen/paddingTop_5"
             android:src="@drawable/answer0" />
 
         <EditText
             android:id="@+id/text_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="17dp"
+            android:layout_marginTop="@dimen/layout_marginTop_17"
             android:background="@android:color/transparent"
             android:duplicateParentState="true"
             android:ellipsize="start"
@@ -101,11 +98,11 @@
             android:inputType="none"
             android:maxLength="16"
             android:maxLines="1"
-            android:paddingBottom="5dp"
+            android:paddingBottom="@dimen/paddingBottom_5"
             android:singleLine="true"
             android:textColor="#ffffff"
             android:textColorHint="#85ffffff"
-            android:textSize="20sp" />
+            android:textSize="@dimen/text_size_xlarge" />
 
     </FrameLayout>
 
@@ -118,22 +115,22 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="@dimen/layout_height_2"
             android:layout_gravity="center_vertical"
-            android:layout_marginBottom="2dp"
+            android:layout_marginBottom="@dimen/layout_marginBottom_2"
             android:background="#FFF" />
 
         <Button
             android:id="@+id/textview_city_login"
-            android:layout_width="280dp"
-            android:layout_height="58dp"
+            android:layout_width="@dimen/layout_width_280"
+            android:layout_height="@dimen/layout_height_65"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="@dimen/layout_marginTop_5"
             android:background="@drawable/answer0"
-            android:paddingBottom="10dp"
+            android:paddingBottom="@dimen/paddingBottom_10"
             android:text="@string/city"
             android:textColor="#ffffff"
-            android:textSize="20sp" />
+            android:textSize="@dimen/text_size_xlarge" />
 
 
     </FrameLayout>
@@ -144,28 +141,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/layout_city"
-        android:layout_marginTop="5dp">
+        android:layout_marginTop="@dimen/layout_marginTop_5">
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="@dimen/layout_height_2"
             android:layout_centerVertical="true"
             android:background="#FFF" />
 
         <Button
             android:id="@+id/button_login"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="@dimen/layout_height_40"
             android:layout_centerHorizontal="true"
-            android:layout_marginLeft="110dp"
-            android:layout_marginRight="110dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginLeft="@dimen/layout_marginLeft_110"
+            android:layout_marginRight="@dimen/layout_marginRight_110"
+            android:layout_marginTop="@dimen/layout_marginTop_5"
             android:background="@drawable/answer0"
-            android:paddingBottom="7dp"
+            android:paddingBottom="@dimen/paddingBottom_7"
             android:text="@string/btnLogin"
             android:textAllCaps="false"
             android:textColor="#ffffff"
-            android:textSize="15sp"
+            android:textSize="@dimen/text_size_small"
             android:textStyle="bold" />
     </RelativeLayout>
 </RelativeLayout>
