@@ -63,7 +63,7 @@ public class InfoScreen extends AppCompatActivity {
     private String location;
     private String totalScore;
     private String userId;
-    private final HexagonDrawable searchBg = new HexagonDrawable();
+    private HexagonDrawable searchBg;
     private int searchTimes = 0;
     private int enemyNumberInList;
     private boolean isEnemy = false;
@@ -74,9 +74,6 @@ public class InfoScreen extends AppCompatActivity {
     ImageView mImageviewIconSearch;
     TextView mTextViewTimeSearch;
     CountDownTimer timeSearch;
-    private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
 
     /**
      * global events
@@ -196,10 +193,11 @@ public class InfoScreen extends AppCompatActivity {
                         }
                     }, 2000);
                 }
+                //Thi thoang ko set dc text
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mButtonPlayer[_i].setText(dummyUsers.get(_i).name);
+                        mButtonPlayer[_i].setText(dummyUsers.get(_i % dummyUsers.size()).name);
                     }
                 });
                 Log.e("TAG", "dummy user: " + dummyUsers.get(i).name);
@@ -259,6 +257,9 @@ public class InfoScreen extends AppCompatActivity {
         bgMusic();
         EventBus.getDefault().register(this);
 
+        searchBg = new HexagonDrawable();
+        searchBg.setStrokeWith(getResources().getDimensionPixelSize(R.dimen.border_hexa));
+
         mSocketAltp = MainApplication.sockAltp();
         mAltpHelper = new AltpHelper(mSocketAltp);
 
@@ -270,18 +271,6 @@ public class InfoScreen extends AppCompatActivity {
         mSocketAltp.addEvent("search", searchCallback);
 
         getUserInfo();
-
-        /**
-         * RecyclerView
-         */
-        /*List<Topic> rowListItem = TopicMng.getAllItemList();
-        mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new GridLayoutManager(this, 3);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new TopicAdapter(rowListItem);
-        mRecyclerView.setAdapter(mAdapter);*/
-
         findViewById();
         setView();
         buttonPlayer();
@@ -319,7 +308,7 @@ public class InfoScreen extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             mButtonSearch.setBackground(searchBg);
         } else {
-            mButtonSearch.setBackgroundDrawable(new HexagonDrawable());
+            mButtonSearch.setBackgroundDrawable(searchBg);
         }
         mButtonSearch.setClickable(true);
         mButtonSearch.setOnClickListener(new View.OnClickListener() {
@@ -401,7 +390,7 @@ public class InfoScreen extends AppCompatActivity {
     public void setView() {
         mTextViewNameUser.setText(username);
         mTextViewCity.setText(location);
-        Glide.with(getApplicationContext()).load(linkAvatar).placeholder(R.drawable.avatar_default)
+        Glide.with(getApplicationContext()).load(linkAvatar).fitCenter().placeholder(R.drawable.avatar_default)
                 .error(R.drawable.avatar_default).into(mImageViewAvatar);
         mTextViewTotalScore.setText(totalScore);
     }
@@ -460,6 +449,9 @@ public class InfoScreen extends AppCompatActivity {
     public void onPause() {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
+        }
+        if (SoundPoolManager.getInstance().isPlaySound()) {
+            SoundPoolManager.getInstance().stop();
         }
         super.onPause();
     }

@@ -750,6 +750,9 @@ public class LoginScreen extends AppCompatActivity {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
         }
+        if (SoundPoolManager.getInstance().isPlaySound()) {
+            SoundPoolManager.getInstance().stop();
+        }
         super.onPause();
     }
 

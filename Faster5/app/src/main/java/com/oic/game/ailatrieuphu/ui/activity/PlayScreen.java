@@ -32,6 +32,7 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.oic.game.ailatrieuphu.MainApplication;
 import com.oic.game.ailatrieuphu.R;
+import com.oic.game.ailatrieuphu.model.GameOverMessage;
 import com.oic.game.ailatrieuphu.model.Question;
 import com.oic.game.ailatrieuphu.model.Room;
 import com.oic.game.ailatrieuphu.model.User;
@@ -83,6 +84,7 @@ public class PlayScreen extends AppCompatActivity {
     private User mEnemy;
     private Room mRoom;
     private Question mQuestion;
+    private GameOverMessage mMessage;
     Handler handler = new Handler();
     Runnable hideRuleDialog;
     Runnable offSoundVuotMoc;
@@ -91,6 +93,7 @@ public class PlayScreen extends AppCompatActivity {
     Dialog quitDialog;
     Dialog barChartDialog;
     Dialog disconnectDialog;
+    Dialog quitNoticeDialog;
     MediaPlayer mediaPlayer;
     BarChart barChart;
     Typeface font;
@@ -140,7 +143,7 @@ public class PlayScreen extends AppCompatActivity {
                                 if (clickable) {
                                     resumeTimer();
                                 } else {
-                                    Log.e("TAG", "RECONNECT & REANSWER" );
+                                    Log.e("TAG", "RECONNECT & REANSWER");
                                     mAltpHelper.answer(mUser, mRoom, mUser.answerIndex);
                                 }
                             }
@@ -179,7 +182,10 @@ public class PlayScreen extends AppCompatActivity {
     private SockAltp.OnSocketEvent answerNextCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
-            Question mQuestion = mAltpHelper.answerNextCallback(args);
+            Pair<Room, Question> data = mAltpHelper.answerNextCallback(args);
+            mRoom = data.first;
+            mQuestion = data.second;
+
             Log.e("TAG", "mQuestion: " + mQuestion.mQuestion);
 
             OnAnsCallbackEvent eventBus = new OnAnsCallbackEvent();
@@ -205,23 +211,31 @@ public class PlayScreen extends AppCompatActivity {
         @Override
         public void onEvent(String event, Object... args) {
             ArrayList<User> quitUser = mAltpHelper.quitCallback(args);
-
-            User user1 = quitUser.get(0);
-            User user2 = quitUser.get(1);
-
+            mMessage = mAltpHelper.gameOverCallbackGetMessages(args);
+            String quitUserId = mAltpHelper.quitCallbackGetUserQuitId(args);
+            int timeQuit = 0;
+            if (!mUser.id.equalsIgnoreCase(quitUserId)) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        quitNoticeDialog.show();
+                    }
+                });
+                timeQuit = 3000;
+            }
             if (!isFinishing() && !moveGameOver) {
                 moveGameOver = true;
-                handler.post(new Runnable() {
+                handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         SoundPoolManager.getInstance().stop();
                         mSocketAltp.removeEvent();
-                        startActivity(GameOver.createIntent(PlayScreen.this, mUser, mEnemy));
+                        startActivity(GameOver.createIntent(PlayScreen.this, mUser, mEnemy, mMessage));
                         overridePendingTransition(R.animator.right_in, R.animator.left_out);
                         finish();
 
                     }
-                });
+                }, timeQuit);
             }
         }
     };
@@ -231,6 +245,7 @@ public class PlayScreen extends AppCompatActivity {
         public void onEvent(String event, Object... args) {
             OnGameOverCallbackEvent eventBus = new OnGameOverCallbackEvent();
             ArrayList<User> userGameOver = mAltpHelper.gameOverCallback(args);
+            mMessage = mAltpHelper.gameOverCallbackGetMessages(args);
             boolean isLastQuesion = mAltpHelper.gameOverCallbackGetLastQuestion(args);
             int timeMoveGameOver = 8000;
             if (isLastQuesion) {
@@ -254,7 +269,7 @@ public class PlayScreen extends AppCompatActivity {
                 public void run() {
                     mSocketAltp.removeEvent();
                     SoundPoolManager.getInstance().stop();
-                    startActivity(GameOver.createIntent(PlayScreen.this, mUser, mEnemy));
+                    startActivity(GameOver.createIntent(PlayScreen.this, mUser, mEnemy, mMessage));
                     overridePendingTransition(R.animator.right_in, R.animator.left_out);
                     finish();
                 }
@@ -503,7 +518,6 @@ public class PlayScreen extends AppCompatActivity {
         if (result.first < 0) {
             return;
         }
-
         final List<User> answerUserList = result.second;
 
         // Kiem tra cau tra loi cua enemy
@@ -545,10 +559,12 @@ public class PlayScreen extends AppCompatActivity {
         }
 
         // Kiem tra cau tra loi
+        Log.e("TAG", "TRA LOI DUNG 1" + mQuestion.questionIndex + " " + mQuestion.mCorrectAnsId);
         mButtonAns[mUser.answerIndex].postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (checkAns(mUser.answerIndex)) {
+             //   if (checkAns(mUser.answerIndex)) {
+
                     //Add score for user
                     mTextViewMyScore.post(new Runnable() {
                         @Override
@@ -610,7 +626,8 @@ public class PlayScreen extends AppCompatActivity {
                             getResources().getDrawable(R.drawable.xml_btn_anim);
                     mButtonAns[mUser.answerIndex].setBackgroundDrawable(btnAnswerDrawable);
                     btnAnswerDrawable.start();
-                }
+
+               // }
             }
         }, 3000 + timeQuestionImpor);
 
@@ -677,6 +694,7 @@ public class PlayScreen extends AppCompatActivity {
         setRuleDialog();
         setCheckQuitDialog();
         setBarChartDialog();
+        setQuitNoticeDialog();
     }
 
     public void findViewById() {
@@ -684,6 +702,7 @@ public class PlayScreen extends AppCompatActivity {
         quitDialog = new Dialog(this);
         barChartDialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         disconnectDialog = new Dialog(this);
+        quitNoticeDialog = new Dialog(this);
 
         font = Typeface.createFromAsset(getAssets(), "fonts/roboto.ttf");
         mButtonAns = new Button[4];
@@ -908,6 +927,14 @@ public class PlayScreen extends AppCompatActivity {
         });
     }
 
+    public void setQuitNoticeDialog() {
+        quitNoticeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        quitNoticeDialog.setContentView(R.layout.layout_quit_notice);
+        quitNoticeDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        quitNoticeDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        quitNoticeDialog.setCancelable(false);
+    }
+
     public void barChart() {
         List<Integer> percent = audienceSuggest(mQuestion.questionIndex, mQuestion.mCorrectAnsId, isCheckFiftyHelp);
 
@@ -1068,11 +1095,11 @@ public class PlayScreen extends AppCompatActivity {
         // my info
         mTextViewUserName1.setText(mUser.name);
         mTextViewCityUser1.setText(mUser.address);
-        Glide.with(getApplicationContext()).load(mUser.avatar).placeholder(R.drawable.avatar_default)
+        Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter().placeholder(R.drawable.avatar_default)
                 .error(R.drawable.avatar_default).into(mImageViewUserAvatar1);
 
         // enemy info
-        Glide.with(getApplicationContext()).load(mEnemy.avatar).placeholder(R.drawable.avatar_default)
+        Glide.with(getApplicationContext()).load(mEnemy.avatar).fitCenter().placeholder(R.drawable.avatar_default)
                 .error(R.drawable.avatar_default).into(mImageViewUserAvatar2);
         mTextViewUserName2.setText(mEnemy.name);
         mTextViewCityUser2.setText(mEnemy.address);
@@ -1469,6 +1496,9 @@ public class PlayScreen extends AppCompatActivity {
         if (timerResume != null) {
             timerResume.cancel();
         }
+        if (SoundPoolManager.getInstance().isPlaySound()) {
+            SoundPoolManager.getInstance().stop();
+        }
         super.onPause();
     }
 
@@ -1498,6 +1528,9 @@ public class PlayScreen extends AppCompatActivity {
         }
         if (disconnectDialog != null) {
             disconnectDialog.dismiss();
+        }
+        if (quitNoticeDialog != null) {
+            quitNoticeDialog.dismiss();
         }
         if (timer != null) {
             timer.cancel();

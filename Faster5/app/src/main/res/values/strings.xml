@@ -19,9 +19,6 @@
     <string name="title_baotri">THÔNG BÁO</string>
     <string name="text_baotri">Hệ thống đang bảo trì\nVui lòng quay lại sau!</string>
     <string name="text_search_tryagain">Không tìm thấy đối thủ\nVui lòng tìm kiếm lại!</string>
-
-
-
     <string name="title_gameover">CHÚC MỪNG CHIẾN THẮNG</string>
     <string name="btn_tieptuc">TIẾP TỤC</string>
     <string name="imageview_doithu">Đối thủ</string>
@@ -32,7 +29,7 @@
     <string name="set_Avatar">Đặt Avatar</string>
     <string name="question_Avatar">Bạn muốn chọn ảnh đại diện\ncho mình luôn chứ?</string>
     <string name="avatar_from_camera">Từ Camera</string>
-    <string name="avatar_from_gallery">Từ Camera</string>
+    <string name="avatar_from_gallery">Từ Thư viện</string>
     <string name="trogiup_khangia">Trợ giúp khán giả</string>
     <string name="btn_close">Đóng</string>
     <string name="list_player">Người chơi</string>
@@ -58,4 +55,5 @@
     <string name="help1_wait_popup">Trợ giúp 50/50</string>
     <string name="help2_wait_popup">Hỏi ý kiến khán giả</string>
     <string name="help3_wait_popup">Đáp án từ chương trình</string>
+    <string name="quit">Đối phương đã bỏ cuộc</string>
 </resources>

@@ -8,12 +8,13 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
-    <uses-feature android:name="android.hardware.sensor.gyroscope"
-                  android:required="true" />
+    <uses-feature
+        android:name="android.hardware.sensor.gyroscope"
+        android:required="true" />
 
     <application
         android:name="com.oic.game.ailatrieuphu.MainApplication"
@@ -23,14 +24,6 @@
         android:largeHeap="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <receiver android:name="com.oic.game.ailatrieuphu.network.ConnectivityChangeReceiver">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
-                <action android:name="android.net.wifi.STATE_CHANGE" />
-            </intent-filter>
-        </receiver>
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -42,7 +35,10 @@
             android:label="@string/app_name"
             android:theme="@style/FullyTranslucent"
             tools:replace="android:theme" />
-        <activity android:name="com.oic.game.ailatrieuphu.ui.activity.MainActivity">
+        <activity
+            android:name="com.oic.game.ailatrieuphu.ui.activity.MainActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -54,10 +50,22 @@
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible|adjustResize" />
-        <activity android:name="com.oic.game.ailatrieuphu.ui.activity.InfoScreen" />
-        <activity android:name="com.oic.game.ailatrieuphu.ui.activity.PlayScreen" />
-        <activity android:name="com.oic.game.ailatrieuphu.ui.activity.SearchOpponent" />
-        <activity android:name="com.oic.game.ailatrieuphu.ui.activity.GameOver" />
+        <activity
+            android:name="com.oic.game.ailatrieuphu.ui.activity.InfoScreen"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.oic.game.ailatrieuphu.ui.activity.PlayScreen"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.oic.game.ailatrieuphu.ui.activity.SearchOpponent"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.oic.game.ailatrieuphu.ui.activity.GameOver"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
 
         <provider
             android:name="com.facebook.FacebookContentProvider"

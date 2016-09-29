@@ -5,6 +5,8 @@ import android.util.Pair;
 import android.widget.ArrayAdapter;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.oic.game.ailatrieuphu.model.GameOverMessage;
 import com.oic.game.ailatrieuphu.model.Question;
 import com.oic.game.ailatrieuphu.model.Room;
 import com.oic.game.ailatrieuphu.model.User;
@@ -205,16 +207,18 @@ public class AltpHelper {
         }
     }
 
-    public Question answerNextCallback(Object... args) {
+    public Pair<Room,Question> answerNextCallback(Object... args) {
         Question question = new Question();
+        Room room = new Room();
         JSONObject data = (JSONObject) args[0];
         Log.e("TAG", "answerNextCallback:" + data.toString());
         try {
             question = new Gson().fromJson(data.getJSONObject("question").toString(), Question.class);
+            room = new Gson().fromJson(data.getJSONObject("room").toString(), Room.class);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return question;
+        return new Pair<>(room,question);
     }
 
     /*
@@ -233,6 +237,23 @@ public class AltpHelper {
             e.printStackTrace();
         }
         return answerUserList;
+    }
+
+    /**
+     * get game over message with win, lose, draw
+     * @param args from server
+     * @return messages object
+     */
+    public GameOverMessage gameOverCallbackGetMessages(Object... args){
+        GameOverMessage messages = new GameOverMessage();
+        JSONObject data = (JSONObject) args[0];
+        try {
+            JSONObject messagesJson = data.getJSONObject("messages");
+            messages = new Gson().fromJson(messagesJson.toString(),GameOverMessage.class);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return messages;
     }
 
     public boolean gameOverCallbackGetLastQuestion(Object... args) {
@@ -282,5 +303,19 @@ public class AltpHelper {
             e.printStackTrace();
         }
         return userQuit;
+    }
+
+    /**
+     * fire when an user has loss connection
+     * @return user quit id
+     */
+    public String quitCallbackGetUserQuitId(Object... args) {
+        JSONObject data = (JSONObject) args[0];
+        try {
+            return data.getString("quitUserId");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 }

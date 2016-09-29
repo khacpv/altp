@@ -40,4 +40,7 @@ public class User implements Serializable{
 
     @SerializedName("winner")
     public boolean isWinner = true;
+
+    @SerializedName("lang")
+    public String lang = "vi";
 }

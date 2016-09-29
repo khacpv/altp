@@ -28,6 +28,7 @@ public class HexagonDrawable extends Drawable {
     Rect bounds = new Rect();
     SweepGradient bgColor;
     boolean animating = false;
+    int strokeWith = 20;
     Handler mHandler = new Handler();
 
     private Runnable mAnimatingRunnable = new Runnable() {
@@ -66,7 +67,7 @@ public class HexagonDrawable extends Drawable {
 
     private void init() {
         paintStroke.setColor(colorStroke);
-        paintStroke.setStrokeWidth(20);
+        paintStroke.setStrokeWidth(strokeWith);
         paintStroke.setStyle(Paint.Style.FILL_AND_STROKE);
 
         paint.setStyle(Paint.Style.FILL);
@@ -86,6 +87,11 @@ public class HexagonDrawable extends Drawable {
     public void reset() {
         animating = false;
         rotateTo(-90);
+    }
+
+    public void setStrokeWith(int strokeWith){
+        this.strokeWith =strokeWith;
+        paintStroke.setStrokeWidth(strokeWith);
     }
 
     public void rotateTo(float angle) {
