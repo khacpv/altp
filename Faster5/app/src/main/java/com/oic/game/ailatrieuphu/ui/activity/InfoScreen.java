@@ -9,6 +9,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -62,19 +63,17 @@ public class InfoScreen extends AppCompatActivity {
     private String location;
     private String totalScore;
     private String userId;
-    private final HexagonDrawable searchBg = new HexagonDrawable();
+    private HexagonDrawable searchBg;
     private int searchTimes = 0;
     private int enemyNumberInList;
     private boolean isEnemy = false;
     private Dialog connectionDiaglog;
-
-    private Dialog searchAgainDialog;
     MediaPlayer mediaPlayer;
     private Handler handler;
     Runnable resetSearch;
-    private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+    ImageView mImageviewIconSearch;
+    TextView mTextViewTimeSearch;
+    CountDownTimer timeSearch;
 
     /**
      * global events
@@ -173,7 +172,7 @@ public class InfoScreen extends AppCompatActivity {
                 mediaPlayer.stop();
             }
             SoundPoolManager.getInstance().playSound(R.raw.search_finish);
-
+            timeSearch.cancel();
             searchBg.stop();
 
             for (int i = 0; i < Math.min(mButtonPlayer.length, dummyUsers.size()); i++) {
@@ -194,10 +193,11 @@ public class InfoScreen extends AppCompatActivity {
                         }
                     }, 2000);
                 }
+                //Thi thoang ko set dc text
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mButtonPlayer[_i].setText(dummyUsers.get(_i).name);
+                        mButtonPlayer[_i].setText(dummyUsers.get(_i % dummyUsers.size()).name);
                     }
                 });
                 Log.e("TAG", "dummy user: " + dummyUsers.get(i).name);
@@ -220,7 +220,7 @@ public class InfoScreen extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                handler.postDelayed(resetSearch, 36000);
+                handler.postDelayed(resetSearch, 30000);
             }
         });
 
@@ -257,39 +257,40 @@ public class InfoScreen extends AppCompatActivity {
         bgMusic();
         EventBus.getDefault().register(this);
 
+        searchBg = new HexagonDrawable();
+        searchBg.setStrokeWith(getResources().getDimensionPixelSize(R.dimen.border_hexa));
+
         mSocketAltp = MainApplication.sockAltp();
         mAltpHelper = new AltpHelper(mSocketAltp);
-
 
         if (!mSocketAltp.isConnected()) {
             mSocketAltp.connect();
         }
 
-
         mSocketAltp.addGlobalEvent(globalCallback);
         mSocketAltp.addEvent("search", searchCallback);
 
         getUserInfo();
-
-        /**
-         * RecyclerView
-         */
-        /*List<Topic> rowListItem = TopicMng.getAllItemList();
-        mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new GridLayoutManager(this, 3);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new TopicAdapter(rowListItem);
-        mRecyclerView.setAdapter(mAdapter);*/
-
         findViewById();
         setView();
         buttonPlayer();
 
         setConnectionDiaglog();
-        setSearchAgainDialog();
-
         handler = new Handler();
+
+        timeSearch = new CountDownTimer(30100, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                mTextViewTimeSearch.setText("" + (int) (millisUntilFinished / 1000));
+            }
+
+            @Override
+            public void onFinish() {
+                timeSearch.cancel();
+                mTextViewTimeSearch.setVisibility(View.GONE);
+                mImageviewIconSearch.setVisibility(View.VISIBLE);
+            }
+        };
 
         resetSearch = new Runnable() {
             @Override
@@ -298,7 +299,6 @@ public class InfoScreen extends AppCompatActivity {
                 searchBg.stop();
                 searchBg.reset();
                 mButtonSearch.setClickable(true);
-                searchAgainDialog.show();
             }
         };
 
@@ -308,7 +308,7 @@ public class InfoScreen extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             mButtonSearch.setBackground(searchBg);
         } else {
-            mButtonSearch.setBackgroundDrawable(new HexagonDrawable());
+            mButtonSearch.setBackgroundDrawable(searchBg);
         }
         mButtonSearch.setClickable(true);
         mButtonSearch.setOnClickListener(new View.OnClickListener() {
@@ -318,6 +318,7 @@ public class InfoScreen extends AppCompatActivity {
                                                  if (NetworkUtils.checkInternetConnection(InfoScreen.this) && mSocketAltp.isConnected()) {
                                                      setUserInfo();
                                                      sendSearchRequest(mUser);
+                                                     setSearchTimes();
                                                      mButtonSearch.setClickable(false);
                                                      searchBg.start();
                                                  } else {
@@ -337,13 +338,13 @@ public class InfoScreen extends AppCompatActivity {
         mTextViewCity = (TextView) findViewById(R.id.textview_city_info);
         mImageViewAvatar = (ImageView) findViewById(R.id.imageview_useravatar);
         mTextViewTotalScore = (TextView) findViewById(R.id.textview_total_score);
+        mImageviewIconSearch = (ImageView) findViewById(R.id.imageview_icon_search);
+        mTextViewTimeSearch = (TextView) findViewById(R.id.textview_time_search);
+        mTextViewTimeSearch.setVisibility(View.GONE);
 
-        setTypeface(font, mTextViewCity, mTextViewNameUser, mTextViewTotalScore);
+        setTypeface(font, mTextViewCity, mTextViewNameUser, mTextViewTotalScore, mTextViewTimeSearch);
 
         connectionDiaglog = new Dialog(this);
-        searchAgainDialog = new Dialog(this);
-
-
     }
 
     public void setConnectionDiaglog() {
@@ -364,22 +365,10 @@ public class InfoScreen extends AppCompatActivity {
 
     }
 
-    public void setSearchAgainDialog() {
-        searchAgainDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        searchAgainDialog.setContentView(R.layout.layout_search_tryagain);
-        searchAgainDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        searchAgainDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
-        searchAgainDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-
-        Button okBtn = (Button) searchAgainDialog.findViewById(R.id.button_okay);
-
-        okBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                searchAgainDialog.hide();
-            }
-        });
-
+    public void setSearchTimes() {
+        mImageviewIconSearch.setVisibility(View.GONE);
+        mTextViewTimeSearch.setVisibility(View.VISIBLE);
+        timeSearch.start();
     }
 
 
@@ -401,7 +390,7 @@ public class InfoScreen extends AppCompatActivity {
     public void setView() {
         mTextViewNameUser.setText(username);
         mTextViewCity.setText(location);
-        Glide.with(getApplicationContext()).load(linkAvatar).placeholder(R.drawable.avatar_default)
+        Glide.with(getApplicationContext()).load(linkAvatar).fitCenter()
                 .error(R.drawable.avatar_default).into(mImageViewAvatar);
         mTextViewTotalScore.setText(totalScore);
     }
@@ -444,6 +433,7 @@ public class InfoScreen extends AppCompatActivity {
             @Override
             public void run() {
                 handler.removeCallbacks(resetSearch);
+                mSocketAltp.removeEvent();
             }
         });
 
@@ -460,13 +450,16 @@ public class InfoScreen extends AppCompatActivity {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
         }
+        if (SoundPoolManager.getInstance().isPlaySound()) {
+            SoundPoolManager.getInstance().stop();
+        }
         super.onPause();
     }
 
 
     @Override
     protected void onResume() {
-        if (mediaPlayer !=null && !mediaPlayer.isPlaying()) {
+        if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
             mediaPlayer.start();
         }
         super.onResume();
@@ -482,17 +475,14 @@ public class InfoScreen extends AppCompatActivity {
             connectionDiaglog.dismiss();
         }
 
-        if (searchAgainDialog != null) {
-            searchAgainDialog.dismiss();
-        }
-
-
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();
             mediaPlayer = null;
         }
-
+        if (timeSearch != null) {
+            timeSearch.cancel();
+        }
         super.onDestroy();
 
     }

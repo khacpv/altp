@@ -155,7 +155,14 @@ public class LoginScreen extends AppCompatActivity {
 
         setContentView(R.layout.login_screen);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        bgMusic();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                bgMusic();
+            }
+        }).start();
+
         EventBus.getDefault().register(this);
 
         mSocketAltp = MainApplication.sockAltp();
@@ -743,12 +750,15 @@ public class LoginScreen extends AppCompatActivity {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
         }
+        if (SoundPoolManager.getInstance().isPlaySound()) {
+            SoundPoolManager.getInstance().stop();
+        }
         super.onPause();
     }
 
     @Override
     protected void onResume() {
-        if (mediaPlayer !=null && !mediaPlayer.isPlaying()) {
+        if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
             mediaPlayer.start();
         }
         super.onResume();

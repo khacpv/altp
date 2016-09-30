@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/layout_marginTop_10"
-            android:text="@string/title_disconnect_popup"
+            android:text="@string/title_baotri"
             android:textColor="#00366D"
             android:textSize="@dimen/text_size_huge"
             android:ellipsize="end"
@@ -34,33 +34,17 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/layout_marginBottom_50"
             android:layout_marginLeft="@dimen/layout_marginLeft_20"
             android:layout_marginRight="@dimen/layout_marginRight_20"
-            android:layout_marginTop="@dimen/layout_marginTop_20"
+            android:layout_marginTop="@dimen/layout_marginTop_40"
             android:gravity="center"
-            android:text="@string/connect_erro_text"
+            android:text="@string/quit"
             android:textColor="#EEA542"
             android:textSize="@dimen/text_size_xlarge"
             android:textStyle="bold"
             android:ellipsize="end"
-            android:lines="2"/>
-        <Button
-            android:id="@+id/btn_tryagain"
-            android:layout_width="@dimen/layout_width_250"
-            android:layout_height="@dimen/layout_height_50"
-            android:layout_marginLeft="@dimen/layout_marginLeft_30"
-            android:layout_marginRight="@dimen/layout_marginRight_30"
-            android:background="@drawable/answer0"
-            android:gravity="center"
-            android:layout_marginTop="@dimen/layout_marginTop_30"
-            android:layout_marginBottom="@dimen/layout_marginBottom_20"
-            android:paddingBottom="@dimen/paddingBottom_10"
-            android:text="@string/try_again_text"
-            android:textAllCaps="false"
-            android:textColor="#ffffff"
-            android:textSize="@dimen/text_size_large"
-            android:textStyle="bold" />
-
+            android:lines="1"/>
 
     </LinearLayout>
 </RelativeLayout>

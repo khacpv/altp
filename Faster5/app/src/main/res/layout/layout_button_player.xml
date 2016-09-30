@@ -8,7 +8,7 @@
         android:id="@+id/layout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="13dp">
+        android:layout_marginTop="@dimen/layout_marginTop_13">
 
         <View
             android:id="@+id/viewline_btnplayer"
@@ -32,10 +32,10 @@
 
     </FrameLayout>
 
-    <ImageView
+  <!--  <ImageView
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:background="@drawable/avatar_info"
         android:layout_marginLeft="40dp"
-       />
+       />-->
 </RelativeLayout>

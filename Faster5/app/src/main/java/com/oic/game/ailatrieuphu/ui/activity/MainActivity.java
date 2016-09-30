@@ -132,17 +132,6 @@ public class MainActivity extends AppCompatActivity {
 
         loadParallaxView();
 
-
-        Display display = getWindowManager().getDefaultDisplay();
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        display.getMetrics(outMetrics);
-
-        float density = getResources().getDisplayMetrics().density;
-        float dpHeight = outMetrics.heightPixels / density;
-        float dpWidth = outMetrics.widthPixels / density;
-
-        Log.e("TAG", "DP: " + dpWidth);
-
         userId = PrefUtils.getInstance(this).get(PrefUtils.KEY_USER_ID, "");
         username = PrefUtils.getInstance(this).get(PrefUtils.KEY_NAME, "");
         linkAvatar = PrefUtils.getInstance(this).get(PrefUtils.KEY_URL_AVATAR, "");
@@ -434,6 +423,11 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     @Override

@@ -87,8 +87,8 @@
             android:layout_height="@dimen/layout_height_70"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="@dimen/layout_marginRight_20"
-            android:layout_marginEnd="@dimen/layout_marginRight_20"
+            android:layout_marginRight="@dimen/layout_marginRight_10"
+            android:layout_marginEnd="@dimen/layout_marginRight_10"
             android:src="@drawable/avatar"
             app:civ_border_color="#fff"
             app:civ_border_width="@dimen/civ_border_width" />

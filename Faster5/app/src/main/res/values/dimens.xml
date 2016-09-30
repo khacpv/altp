@@ -13,6 +13,8 @@
     <dimen name="text_size_huge">30sp</dimen>
     <!--Text Size-->
 
+    <dimen name="border_hexa">6dp</dimen>
+
     <dimen name="layout_width_28">28dp</dimen>
     <dimen name="layout_width_40">40dp</dimen>
     <dimen name="layout_width_50">50dp</dimen>
@@ -53,6 +55,7 @@
     <dimen name="layout_marginTop_3">3dp</dimen>
     <dimen name="layout_marginTop_5">5dp</dimen>
     <dimen name="layout_marginTop_10">10dp</dimen>
+    <dimen name="layout_marginTop_13">13dp</dimen>
     <dimen name="layout_marginTop_15">15dp</dimen>
     <dimen name="layout_marginTop_17">17dp</dimen>
     <dimen name="layout_marginTop_18">18dp</dimen>
@@ -62,7 +65,7 @@
     <dimen name="layout_marginTop_60">60dp</dimen>
     <dimen name="layout_marginTop_200">200dp</dimen>
 
-    <dimen name="layout_marginBottom_2">4dp</dimen>
+    <dimen name="layout_marginBottom_2">2dp</dimen>
     <dimen name="layout_marginBottom_3">3dp</dimen>
     <dimen name="layout_marginBottom_4">4dp</dimen>
     <dimen name="layout_marginBottom_10">10dp</dimen>

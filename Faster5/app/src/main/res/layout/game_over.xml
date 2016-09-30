@@ -20,6 +20,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/layout_marginTop_30"
         android:text="@string/title_gameover"
+        android:textAllCaps="true"
         android:textColor="#fff"
         android:textSize="@dimen/text_size_xxlarge"
         android:textStyle="bold" />

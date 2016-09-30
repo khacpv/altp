@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.oic.game.ailatrieuphu.R;
+import com.oic.game.ailatrieuphu.model.GameOverMessage;
 import com.oic.game.ailatrieuphu.model.User;
 import com.oic.game.ailatrieuphu.util.PrefUtils;
 import com.oic.game.ailatrieuphu.util.SoundPoolManager;
@@ -29,14 +30,10 @@ import org.greenrobot.eventbus.EventBus;
  */
 public class GameOver extends AppCompatActivity {
 
-    public static final String EXTRA_WINNER = "winner";
     private static final String EXTRA_USER = "user";
     private static final String EXTRA_ENEMY = "enemy";
-    public static final int DRAW = -1;
-    public static final int WIN = 1;
-    public static final int LOSE = 0;
-    public static final int GIVEUP = 2;
-
+    private static final String GAME_OVER_MESSAGE = "message";
+    private static final String SERVER_ERR = "server_erro";
     ImageView mImageViewMyAvatar;
     ImageView mImageViewEnemyAvatar;
     TextView mTextViewMyName;
@@ -48,10 +45,10 @@ public class GameOver extends AppCompatActivity {
     TextView mTextViewResultText;
     Button mButtonBack;
     private int mTotalScore;
-    private int mWinner;
     private MediaPlayer mediaPlayer;
     User mUser;
     User mEnemy;
+    GameOverMessage mMessage;
 
     @Override
 
@@ -119,34 +116,51 @@ public class GameOver extends AppCompatActivity {
         }
     }
 
-    public static Intent createIntent(Context context, User mUser, User enemyUser) {
+    public static Intent createIntent(Context context, User mUser, User enemyUser, GameOverMessage mMessage, boolean serverErr) {
         Intent intent = new Intent(context, GameOver.class);
         intent.putExtra(EXTRA_USER, mUser);
         intent.putExtra(EXTRA_ENEMY, enemyUser);
+        intent.putExtra(GAME_OVER_MESSAGE, mMessage);
+        intent.putExtra(SERVER_ERR, serverErr);
         return intent;
     }
 
     private void getBundle() {
         mUser = (User) getIntent().getSerializableExtra(EXTRA_USER);
         mEnemy = (User) getIntent().getSerializableExtra(EXTRA_ENEMY);
+        mMessage = (GameOverMessage) getIntent().getSerializableExtra(GAME_OVER_MESSAGE);
+        boolean isServerErr = getIntent().getBooleanExtra(SERVER_ERR, false);
 
-        if (mUser.score == mEnemy.score) {
-            mTextViewResultText.setText("BẤT PHÂN THẮNG BẠI");
-            SoundPoolManager.getInstance().playSound(R.raw.pass_good);
-            startMedia(6000);
-        } else if (mUser.score < mEnemy.score) {
-            if (mUser.score == 0) {
-                mTextViewResultText.setText("THẤT BẠI ĐAU ĐỚN");
-            } else {
-                mTextViewResultText.setText("CHÚC BẠN MAY MẮN");
+
+        if (!isServerErr) {
+            if (mUser.score == mEnemy.score) {
+                mTextViewResultText.setText(mMessage.draw);
+                SoundPoolManager.getInstance().playSound(R.raw.pass_good);
+                startMedia(6000);
+            } else if (mUser.score < mEnemy.score) {
+                mTextViewResultText.setText(mMessage.lose);
+                SoundPoolManager.getInstance().playSound(R.raw.lose);
+                startMedia(3000);
+            } else if (mUser.score > mEnemy.score) {
+                mTextViewResultText.setText(mMessage.win);
+                SoundPoolManager.getInstance().playSound(R.raw.best_player);
+                startMedia(12000);
             }
-            SoundPoolManager.getInstance().playSound(R.raw.lose);
-            startMedia(3000);
-        } else if (mUser.score > mEnemy.score) {
-            mTextViewResultText.setText("CHÚC MỪNG CHIẾN THẮNG");
-            SoundPoolManager.getInstance().playSound(R.raw.best_player);
-            startMedia(12000);
+        } else {
+            mTextViewResultText.setText("MẤT KẾT NỐI SERVER");
+            if (mUser.score == mEnemy.score) {
+                SoundPoolManager.getInstance().playSound(R.raw.pass_good);
+                startMedia(6000);
+            } else if (mUser.score < mEnemy.score) {
+                SoundPoolManager.getInstance().playSound(R.raw.lose);
+                startMedia(3000);
+            } else if (mUser.score > mEnemy.score) {
+                SoundPoolManager.getInstance().playSound(R.raw.best_player);
+                startMedia(12000);
+            }
+
         }
+
         mTotalScore = PrefUtils.getInstance(GameOver.this).get(PrefUtils.KEY_TOTAL_SCORE, 0);
         mTotalScore = mUser.totalScore + mUser.score;
         PrefUtils.getInstance(GameOver.this).set(PrefUtils.KEY_TOTAL_SCORE, mTotalScore);
@@ -155,15 +169,15 @@ public class GameOver extends AppCompatActivity {
     public void setUserInfo() {
         mTextViewMyName.setText(mUser.name);
         mTextViewMyCity.setText(mUser.address);
-        mTextViewMyScore.setText(""+mUser.score);
-        Glide.with(getApplicationContext()).load(mUser.avatar).placeholder(R.drawable.avatar_default)
+        mTextViewMyScore.setText("" + mUser.score);
+        Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter()
                 .error(R.drawable.avatar_default).into(mImageViewMyAvatar);
 
 
         mTextViewEnemyName.setText(mEnemy.name);
         mTextViewEnemyCity.setText(mEnemy.address);
-        mTextViewEnemyScore.setText(""+mEnemy.score);
-        Glide.with(getApplicationContext()).load(mEnemy.avatar).placeholder(R.drawable.avatar_default)
+        mTextViewEnemyScore.setText("" + mEnemy.score);
+        Glide.with(getApplicationContext()).load(mEnemy.avatar).fitCenter()
                 .error(R.drawable.avatar_default).into(mImageViewEnemyAvatar);
     }
 
@@ -192,8 +206,12 @@ public class GameOver extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        if (mediaPlayer !=null && !mediaPlayer.isPlaying()) {
-        mediaPlayer.start();}
+        if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
+            mediaPlayer.start();
+        }
+        if (SoundPoolManager.getInstance().isPlaySound()) {
+            SoundPoolManager.getInstance().stop();
+        }
         super.onResume();
     }
 
