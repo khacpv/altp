@@ -63,6 +63,7 @@ public class SearchOpponent extends AppCompatActivity {
     Button mButtonSeach;
     Button btnCancel;
     Handler handler = new Handler();
+    private boolean isCancel = false;
 
     private SockAltp.OnSocketEvent playCallback = new SockAltp.OnSocketEvent() {
         @Override
@@ -156,18 +157,21 @@ public class SearchOpponent extends AppCompatActivity {
             }
         });
         Question mQuestion = event.mQuestion;
-        final Intent playScrnIntent = PlayScreen.createIntent(SearchOpponent.this, mUser, enemyUser, mRoom, mQuestion);
-        SoundPoolManager.getInstance().playSound(R.raw.ready);
-        if (!isFinishing()) {
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    startActivity(playScrnIntent);
-                    overridePendingTransition(R.animator.right_in, R.animator.left_out);
-                    finish();
-                }
-            }, 5000);
+        if (!isCancel) {
+            final Intent playScrnIntent = PlayScreen.createIntent(SearchOpponent.this, mUser, enemyUser, mRoom, mQuestion);
+            SoundPoolManager.getInstance().playSound(R.raw.ready);
+            if (!isFinishing()) {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivity(playScrnIntent);
+                        overridePendingTransition(R.animator.right_in, R.animator.left_out);
+                        finish();
+                    }
+                }, 5000);
+            }
         }
+
     }
 
     /**
@@ -182,15 +186,14 @@ public class SearchOpponent extends AppCompatActivity {
     public void setInfoUser() {
         // my info
         mTextViewUserName1.setText(mUser.name);
-        Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter().placeholder(R.drawable.avatar_default)
+        Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter()
                 .error(R.drawable.avatar_default).into(mImageViewUserAvatar1);
         mTextViewCityUser1.setText(mUser.address);
         mTextViewScore1.setText(Integer.toString(mUser.totalScore));
 
         // enemy user
         mTextViewUserName2.setText(enemyUser.name);
-        Glide.with(getApplicationContext()).load(enemyUser.avatar).fitCenter().placeholder(R.drawable.avatar_default)
-                .error(R.drawable.avatar_default).into(mImageViewUserAvatar2);
+        Glide.with(getApplicationContext()).load(enemyUser.avatar).fitCenter().error(R.drawable.avatar_default).into(mImageViewUserAvatar2);
         mTextViewCityUser2.setText(enemyUser.address);
         mTextViewScore2.setText(Integer.toString(enemyUser.totalScore));
 
@@ -243,12 +246,14 @@ public class SearchOpponent extends AppCompatActivity {
                 SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
                 mAltpHelper.quit(mUser, mRoom, false);
                 waitDialog.hide();
+                isCancel = true;
             }
         });
 
     }
 
     public void btnSearch(View view) {
+        mAltpHelper.quit(mUser, mRoom, false);
         SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
         SoundPoolManager.getInstance().stop();
         Intent intent = new Intent(SearchOpponent.this, InfoScreen.class);

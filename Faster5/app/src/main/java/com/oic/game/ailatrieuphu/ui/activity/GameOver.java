@@ -33,6 +33,7 @@ public class GameOver extends AppCompatActivity {
     private static final String EXTRA_USER = "user";
     private static final String EXTRA_ENEMY = "enemy";
     private static final String GAME_OVER_MESSAGE = "message";
+    private static final String SERVER_ERR = "server_erro";
     ImageView mImageViewMyAvatar;
     ImageView mImageViewEnemyAvatar;
     TextView mTextViewMyName;
@@ -115,11 +116,12 @@ public class GameOver extends AppCompatActivity {
         }
     }
 
-    public static Intent createIntent(Context context, User mUser, User enemyUser, GameOverMessage mMessage) {
+    public static Intent createIntent(Context context, User mUser, User enemyUser, GameOverMessage mMessage, boolean serverErr) {
         Intent intent = new Intent(context, GameOver.class);
         intent.putExtra(EXTRA_USER, mUser);
         intent.putExtra(EXTRA_ENEMY, enemyUser);
         intent.putExtra(GAME_OVER_MESSAGE, mMessage);
+        intent.putExtra(SERVER_ERR, serverErr);
         return intent;
     }
 
@@ -127,19 +129,36 @@ public class GameOver extends AppCompatActivity {
         mUser = (User) getIntent().getSerializableExtra(EXTRA_USER);
         mEnemy = (User) getIntent().getSerializableExtra(EXTRA_ENEMY);
         mMessage = (GameOverMessage) getIntent().getSerializableExtra(GAME_OVER_MESSAGE);
+        boolean isServerErr = getIntent().getBooleanExtra(SERVER_ERR, false);
 
-        if (mUser.score == mEnemy.score) {
-            mTextViewResultText.setText(mMessage.draw);
-            SoundPoolManager.getInstance().playSound(R.raw.pass_good);
-            startMedia(6000);
-        } else if (mUser.score < mEnemy.score) {
-            mTextViewResultText.setText(mMessage.lose);
-            SoundPoolManager.getInstance().playSound(R.raw.lose);
-            startMedia(3000);
-        } else if (mUser.score > mEnemy.score) {
-            mTextViewResultText.setText(mMessage.win);
-            SoundPoolManager.getInstance().playSound(R.raw.best_player);
-            startMedia(12000);
+
+        if (!isServerErr) {
+            if (mUser.score == mEnemy.score) {
+                mTextViewResultText.setText(mMessage.draw);
+                SoundPoolManager.getInstance().playSound(R.raw.pass_good);
+                startMedia(6000);
+            } else if (mUser.score < mEnemy.score) {
+                mTextViewResultText.setText(mMessage.lose);
+                SoundPoolManager.getInstance().playSound(R.raw.lose);
+                startMedia(3000);
+            } else if (mUser.score > mEnemy.score) {
+                mTextViewResultText.setText(mMessage.win);
+                SoundPoolManager.getInstance().playSound(R.raw.best_player);
+                startMedia(12000);
+            }
+        } else {
+            mTextViewResultText.setText("MẤT KẾT NỐI SERVER");
+            if (mUser.score == mEnemy.score) {
+                SoundPoolManager.getInstance().playSound(R.raw.pass_good);
+                startMedia(6000);
+            } else if (mUser.score < mEnemy.score) {
+                SoundPoolManager.getInstance().playSound(R.raw.lose);
+                startMedia(3000);
+            } else if (mUser.score > mEnemy.score) {
+                SoundPoolManager.getInstance().playSound(R.raw.best_player);
+                startMedia(12000);
+            }
+
         }
 
         mTotalScore = PrefUtils.getInstance(GameOver.this).get(PrefUtils.KEY_TOTAL_SCORE, 0);
@@ -151,14 +170,14 @@ public class GameOver extends AppCompatActivity {
         mTextViewMyName.setText(mUser.name);
         mTextViewMyCity.setText(mUser.address);
         mTextViewMyScore.setText("" + mUser.score);
-        Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter().placeholder(R.drawable.avatar_default)
+        Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter()
                 .error(R.drawable.avatar_default).into(mImageViewMyAvatar);
 
 
         mTextViewEnemyName.setText(mEnemy.name);
         mTextViewEnemyCity.setText(mEnemy.address);
         mTextViewEnemyScore.setText("" + mEnemy.score);
-        Glide.with(getApplicationContext()).load(mEnemy.avatar).fitCenter().placeholder(R.drawable.avatar_default)
+        Glide.with(getApplicationContext()).load(mEnemy.avatar).fitCenter()
                 .error(R.drawable.avatar_default).into(mImageViewEnemyAvatar);
     }
 

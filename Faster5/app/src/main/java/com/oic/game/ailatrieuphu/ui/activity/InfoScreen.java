@@ -390,7 +390,7 @@ public class InfoScreen extends AppCompatActivity {
     public void setView() {
         mTextViewNameUser.setText(username);
         mTextViewCity.setText(location);
-        Glide.with(getApplicationContext()).load(linkAvatar).fitCenter().placeholder(R.drawable.avatar_default)
+        Glide.with(getApplicationContext()).load(linkAvatar).fitCenter()
                 .error(R.drawable.avatar_default).into(mImageViewAvatar);
         mTextViewTotalScore.setText(totalScore);
     }
