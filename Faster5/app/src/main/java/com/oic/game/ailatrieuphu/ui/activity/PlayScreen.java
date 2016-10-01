@@ -113,7 +113,7 @@ public class PlayScreen extends AppCompatActivity {
     private int timeQuestion15 = 0;
     private int rdIdxFifty = 0;
     private boolean checkVuotMoc = false;
-    private boolean moveGameOver = false;
+    private boolean isMoveGameOver = false;
     private boolean isServerErr = false;
 
     private SockAltp.OnSocketEvent globalCallback = new SockAltp.OnSocketEvent() {
@@ -184,6 +184,9 @@ public class PlayScreen extends AppCompatActivity {
     private SockAltp.OnSocketEvent answerNextCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
+            if (isMoveGameOver) {
+                return;
+            }
             Pair<Room, Question> data = mAltpHelper.answerNextCallback(args);
             handler.removeCallbacks(runServerErr);
             mRoom = data.first;
@@ -201,6 +204,9 @@ public class PlayScreen extends AppCompatActivity {
     private SockAltp.OnSocketEvent answerCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
+            if (isMoveGameOver) {
+                return;
+            }
             OnAnsCallbackEvent eventBus = new OnAnsCallbackEvent();
             Pair<Integer, ArrayList<User>> result = mAltpHelper.answerCallback(args);
             handler.removeCallbacks(runServerErr);
@@ -214,7 +220,9 @@ public class PlayScreen extends AppCompatActivity {
 
         @Override
         public void onEvent(String event, Object... args) {
-            ArrayList<User> quitUser = mAltpHelper.quitCallback(args);
+            if (isMoveGameOver) {
+                return;
+            }
             mMessage = mAltpHelper.gameOverCallbackGetMessages(args);
             String quitUserId = mAltpHelper.quitCallbackGetUserQuitId(args);
             handler.removeCallbacks(runServerErr);
@@ -229,8 +237,8 @@ public class PlayScreen extends AppCompatActivity {
                 });
                 timeQuit = 3000;
             }
-            if (!isFinishing() && !moveGameOver) {
-                moveGameOver = true;
+            if (!isFinishing() && !isMoveGameOver) {
+                isMoveGameOver = true;
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -249,6 +257,9 @@ public class PlayScreen extends AppCompatActivity {
     private SockAltp.OnSocketEvent gameOverCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
+            if (isMoveGameOver) {
+                return;
+            }
             OnGameOverCallbackEvent eventBus = new OnGameOverCallbackEvent();
             ArrayList<User> userGameOver = mAltpHelper.gameOverCallback(args);
             mMessage = mAltpHelper.gameOverCallbackGetMessages(args);
@@ -282,8 +293,8 @@ public class PlayScreen extends AppCompatActivity {
                     finish();
                 }
             };
-            if (!isFinishing() && !moveGameOver) {
-                moveGameOver = true;
+            if (!isFinishing() && !isMoveGameOver) {
+                isMoveGameOver = true;
                 handler.postDelayed(moveGameOverScr, timeMoveGameOver + timeQuestionImpor + timeQuestion15);
             }
             eventBus.result = userGameOver;
@@ -461,7 +472,7 @@ public class PlayScreen extends AppCompatActivity {
                     if (mQuestion.questionIndex == 15) {
                         timeQuestion15 = 4000;
                     }
-                    Log.e("TAG", "Index Question: " + mQuestion.questionIndex);
+                    Log.e("TAG", "mCorrectAnsId Index Question: " + mQuestion.mCorrectAnsId);
                     changBgMusic(mQuestion.questionIndex);
                     runOnUiThread(new Runnable() {
                         @Override
@@ -543,10 +554,11 @@ public class PlayScreen extends AppCompatActivity {
             }
         }
         if (mQuestion.questionIndex == 5 || mQuestion.questionIndex == 10 || mQuestion.questionIndex == 15) {
+            final int index = mQuestion.questionIndex;
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    switch (mQuestion.questionIndex) {
+                    switch (index) {
                         case 5:
                             SoundPoolManager.getInstance().playSound(R.raw.ans_now1);
                             break;
@@ -678,7 +690,7 @@ public class PlayScreen extends AppCompatActivity {
             @Override
             public void onFinish() {
                 mTextViewTimer.setText("0");
-                if (!moveGameOver) {
+                if (!isMoveGameOver) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -690,18 +702,19 @@ public class PlayScreen extends AppCompatActivity {
         };
 
         findViewById();
-        setDisconnectDialog();
         setUserInfo();
         setQA(1);
         setRuleDialog();
         setCheckQuitDialog();
         setBarChartDialog();
         setQuitNoticeDialog();
+        setDisconnectDialog();
 
         runServerErr = new Runnable() {
             @Override
             public void run() {
                 isServerErr = true;
+                isMoveGameOver = true;
                 startActivity(GameOver.createIntent(PlayScreen.this, mUser, mEnemy, mMessage, isServerErr));
                 overridePendingTransition(R.animator.right_in, R.animator.left_out);
                 finish();
@@ -911,6 +924,7 @@ public class PlayScreen extends AppCompatActivity {
         quitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                handler.removeCallbacks(runServerErr);
                 SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
                 noti.setText("Vui lòng đợi!");
                 quitBtn.setVisibility(View.GONE);
@@ -1002,7 +1016,7 @@ public class PlayScreen extends AppCompatActivity {
             pauseTimer();
             final LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
             linearLayout.setVisibility(View.INVISIBLE);
-            if (!moveGameOver) {
+            if (!isMoveGameOver) {
                 barChartDialog.show();
             }
             handler.removeCallbacks(musicImpor);
@@ -1040,7 +1054,7 @@ public class PlayScreen extends AppCompatActivity {
             button.setBackgroundResource(R.drawable.save2_dis);
             final LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
             linearLayout.setVisibility(View.INVISIBLE);
-            if (!moveGameOver) {
+            if (!isMoveGameOver) {
 
                 barChartDialog.show();
             }
@@ -1063,7 +1077,7 @@ public class PlayScreen extends AppCompatActivity {
             mShowAnsRightHelp = 1;
             LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
             linearLayout.setVisibility(View.GONE);
-            if (!moveGameOver) {
+            if (!isMoveGameOver) {
 
                 barChartDialog.show();
             }
@@ -1128,7 +1142,7 @@ public class PlayScreen extends AppCompatActivity {
         if (mediaPlayer != null) {
             mediaPlayer.start();
         }
-        handler.postDelayed(runServerErr, 45000);
+        handler.postDelayed(runServerErr, 40000);
     }
 
     public void setSoundQuestion(int stt) {
@@ -1436,7 +1450,7 @@ public class PlayScreen extends AppCompatActivity {
                 public void onFinish() {
                     timer.cancel();
                     mTextViewTimer.setText("0");
-                    if (!moveGameOver) {
+                    if (!isMoveGameOver) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -1454,7 +1468,7 @@ public class PlayScreen extends AppCompatActivity {
         mAltpHelper.quit(mUser, mRoom, true);
         LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
         linearLayout.setVisibility(View.GONE);
-        if (!moveGameOver) {
+        if (!isMoveGameOver) {
             try {
                 barChartDialog.show();
             } catch (WindowManager.BadTokenException e) {
@@ -1491,7 +1505,7 @@ public class PlayScreen extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-        if (!moveGameOver) {
+        if (!isMoveGameOver) {
 
             quitDialog.show();
         }
@@ -1519,6 +1533,7 @@ public class PlayScreen extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();
