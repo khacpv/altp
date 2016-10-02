@@ -63,14 +63,20 @@ public class SearchOpponent extends AppCompatActivity {
     Button mButtonSeach;
     Button btnCancel;
     Handler handler = new Handler();
+    Runnable runMovePlayScr;
     private boolean isCancel = false;
+    private boolean isMovePlayScr = false;
+    private boolean notReady;
 
     private SockAltp.OnSocketEvent playCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
+            if (isCancel || isMovePlayScr) {
+                return;
+            }
             OnPlayCallbackEvent eventBus = new OnPlayCallbackEvent();
 
-            boolean notReady = mAltpHelper.playCallbackReady(args);
+            notReady = mAltpHelper.playCallbackReady(args);
 
             Question mQuestion = mAltpHelper.playCallbackQuestion(args);
 
@@ -121,7 +127,7 @@ public class SearchOpponent extends AppCompatActivity {
 
     @Subscribe
     public void onEventMainThread(OnPlayCallbackEvent event) {
-        boolean notReady = event.notReady;
+        notReady = event.notReady;
 
         if (notReady) {
             runOnUiThread(new Runnable() {
@@ -135,6 +141,13 @@ public class SearchOpponent extends AppCompatActivity {
             Log.e("TAG", "waiting for other players ready.");
             return;
         }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                btnCancel.setVisibility(View.GONE);
+                mTextViewWaitText.setVisibility(View.GONE);
+            }
+        });
 
         mTextViewReady.getHandler().post(new Runnable() {
             @Override
@@ -149,27 +162,21 @@ public class SearchOpponent extends AppCompatActivity {
             }
         });
 
-        runOnUiThread(new Runnable() {
+        Question mQuestion = event.mQuestion;
+        final Intent playScrnIntent = PlayScreen.createIntent(SearchOpponent.this, mUser, enemyUser, mRoom, mQuestion);
+        runMovePlayScr = new Runnable() {
             @Override
             public void run() {
-                btnCancel.setVisibility(View.GONE);
-                mTextViewWaitText.setVisibility(View.GONE);
+                startActivity(playScrnIntent);
+                overridePendingTransition(R.animator.right_in, R.animator.left_out);
+                finish();
             }
-        });
-        Question mQuestion = event.mQuestion;
-        if (!isCancel) {
-            final Intent playScrnIntent = PlayScreen.createIntent(SearchOpponent.this, mUser, enemyUser, mRoom, mQuestion);
+        };
+
+        if (!isFinishing() && !isMovePlayScr) {
             SoundPoolManager.getInstance().playSound(R.raw.ready);
-            if (!isFinishing()) {
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        startActivity(playScrnIntent);
-                        overridePendingTransition(R.animator.right_in, R.animator.left_out);
-                        finish();
-                    }
-                }, 5000);
-            }
+            isMovePlayScr = true;
+            handler.postDelayed(runMovePlayScr, 5000);
         }
 
     }
@@ -247,6 +254,7 @@ public class SearchOpponent extends AppCompatActivity {
                 mAltpHelper.quit(mUser, mRoom, false);
                 waitDialog.hide();
                 isCancel = true;
+                btnSearch(getCurrentFocus());
             }
         });
 
@@ -286,6 +294,9 @@ public class SearchOpponent extends AppCompatActivity {
     protected void onDestroy() {
         if (waitDialog != null) {
             waitDialog.dismiss();
+        }
+        if (!notReady && runMovePlayScr != null) {
+            handler.removeCallbacks(runMovePlayScr);
         }
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);

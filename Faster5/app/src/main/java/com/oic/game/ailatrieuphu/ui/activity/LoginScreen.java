@@ -112,6 +112,7 @@ public class LoginScreen extends AppCompatActivity {
     private boolean uploadResult;
     private boolean isCheckPickImage = false;
     private boolean isCheckBtnLater = true;
+    private boolean isMoveInfo = false;
     private UploadPhotoUtils uploadPhotoUtils = new UploadPhotoUtils();
     private int uploadFail = 0;
 
@@ -122,6 +123,9 @@ public class LoginScreen extends AppCompatActivity {
     private SockAltp.OnSocketEvent loginCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
+            if (isMoveInfo) {
+                return;
+            }
             OnLoginCallbackEvent eventBus = new OnLoginCallbackEvent();
             User user = mAltpHelper.loginCallback(args);
             eventBus.user = user;
@@ -212,7 +216,8 @@ public class LoginScreen extends AppCompatActivity {
         PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_TOTAL_SCORE, mUser.totalScore);
         PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_LOGGED_IN, true);
         Log.e("TAG", "LoginCallback: " + user.totalScore + user.fbId + " " + user.id + " " + user.name + " " + user.address + " " + "\n" + user.avatar);
-        if (!isFinishing()) {
+        if (!isFinishing() && !isMoveInfo) {
+            isMoveInfo = true;
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -236,14 +241,13 @@ public class LoginScreen extends AppCompatActivity {
         mTextViewCity.setTypeface(font);
         mRelativeLayoutBg = (RelativeLayout) findViewById(R.id.background);
         mEditText = (EditText) findViewById(R.id.text_edit);
+        mEditText.setTypeface(font);
         mLoginButtonFb = (LoginButton) findViewById(R.id.button_fb);
         mImageButtonPlay = (Button) findViewById(R.id.button_login);
         mButtonFakeFb = (Button) findViewById(R.id.btn_fakefb);
-
     }
 
     public void editTexConfig() {
-        mEditText.setTypeface(font);
         mEditText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

@@ -67,6 +67,7 @@ public class InfoScreen extends AppCompatActivity {
     private int searchTimes = 0;
     private int enemyNumberInList;
     private boolean isEnemy = false;
+    private boolean isMoveSearOppo = false;
     private Dialog connectionDiaglog;
     MediaPlayer mediaPlayer;
     private Handler handler;
@@ -134,6 +135,9 @@ public class InfoScreen extends AppCompatActivity {
     private SockAltp.OnSocketEvent searchCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
+            if (isMoveSearOppo) {
+                return;
+            }
             Pair<Room, ArrayList<User>> result = mAltpHelper.searchCallback(args);
             OnSearhCallbackEvent eventBus = new OnSearhCallbackEvent();
             eventBus.result = result;
@@ -193,7 +197,6 @@ public class InfoScreen extends AppCompatActivity {
                         }
                     }, 2000);
                 }
-                //Thi thoang ko set dc text
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -202,7 +205,8 @@ public class InfoScreen extends AppCompatActivity {
                 });
                 Log.e("TAG", "dummy user: " + dummyUsers.get(i).name);
             }
-            if (!isFinishing()) {
+            if (!isFinishing() && !isMoveSearOppo) {
+                isMoveSearOppo = true;
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -211,8 +215,7 @@ public class InfoScreen extends AppCompatActivity {
                     }
                 }, 4000);
             }
-            Log.e("TAG", "join room: " + room.roomId);
-            Log.e("TAG", "dummy user: " + dummyUsers.size());
+            Log.e("TAG", "dymmy Size" + dummyUsers.size() + "join room: " + room.roomId);
         }
     }
 
