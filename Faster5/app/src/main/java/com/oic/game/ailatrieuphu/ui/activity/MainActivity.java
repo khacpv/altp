@@ -3,6 +3,7 @@ package com.oic.game.ailatrieuphu.ui.activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.WorkerThread;
@@ -10,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Display;
 import android.view.View;
 import android.view.Window;
@@ -22,6 +24,7 @@ import com.oic.game.ailatrieuphu.BuildConfig;
 import com.oic.game.ailatrieuphu.R;
 import com.oic.game.ailatrieuphu.sock.SockAltp;
 import com.oic.game.ailatrieuphu.util.ISoundPoolLoaded;
+import com.oic.game.ailatrieuphu.util.NetworkUtils;
 import com.oic.game.ailatrieuphu.util.PrefUtils;
 import com.oic.game.ailatrieuphu.util.SoundPoolManager;
 import com.oicmap.game.multiparalaxview.DataItem;
@@ -160,13 +163,28 @@ public class MainActivity extends AppCompatActivity {
         maintainDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         maintainDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         maintainDialog.setCancelable(false);
+
+        TextView textViewNoti = (TextView) maintainDialog.findViewById(R.id.text_noti);
+
+        if (NetworkUtils.checkInternetConnection(MainActivity.this)) {
+            textViewNoti.setText(getResources().getString(R.string.text_baotri));
+        } else {
+            textViewNoti.setText(getResources().getString(R.string.connect_erro_text));
+        }
+
         Button okBtn = (Button) maintainDialog.findViewById(R.id.button_okay);
 
         okBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                maintainDialog.hide();
-                finish();
+                if (NetworkUtils.checkInternetConnection(MainActivity.this)) {
+                    maintainDialog.hide();
+                    finish();
+                } else {
+                    maintainDialog.hide();
+                    startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
+                    finish();
+                }
             }
         });
 
