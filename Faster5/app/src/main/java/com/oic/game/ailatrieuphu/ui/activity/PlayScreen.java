@@ -1122,11 +1122,15 @@ public class PlayScreen extends AppCompatActivity {
         // my info
         mTextViewUserName1.setText(mUser.name);
         mTextViewCityUser1.setText(mUser.address);
-        Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter().
-                error(R.drawable.avatar_default).into(mImageViewUserAvatar1);
+        Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter()
+                .placeholder(R.drawable.avatar_default).dontAnimate()
+                .error(R.drawable.avatar_default)
+                .into(mImageViewUserAvatar1);
 
         // enemy info
-        Glide.with(getApplicationContext()).load(mEnemy.avatar).fitCenter().error(R.drawable.avatar_default).into(mImageViewUserAvatar2);
+        Glide.with(getApplicationContext()).load(mEnemy.avatar).fitCenter()
+                .placeholder(R.drawable.avatar_default).dontAnimate()
+                .error(R.drawable.avatar_default).into(mImageViewUserAvatar2);
         mTextViewUserName2.setText(mEnemy.name);
         mTextViewCityUser2.setText(mEnemy.address);
     }

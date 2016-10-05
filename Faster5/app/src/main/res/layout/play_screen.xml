@@ -1,285 +1,296 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/background"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:background="@drawable/xml_bg"
-    android:orientation="vertical"
     tools:context="com.oic.game.ailatrieuphu.ui.activity.MainActivity">
 
     <LinearLayout
+        android:id="@+id/background"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/layout_marginTop_10"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/layout_marginTop_10"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/imageview_useravatar1"
+                    android:layout_width="@dimen/layout_width_50"
+                    android:layout_height="@dimen/layout_height_50"
+                    android:layout_marginLeft="@dimen/layout_marginLeft_20"
+                    android:layout_marginStart="@dimen/layout_marginLeft_20"
+                    android:layout_marginTop="@dimen/layout_marginTop_30"
+                    android:src="@drawable/avatar"
+                    app:civ_border_color="#fff"
+                    app:civ_border_width="@dimen/civ_border_width_1" />
+
+                <TextView
+                    android:id="@+id/textview_username1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/imageview_useravatar1"
+                    android:layout_marginLeft="@dimen/layout_marginLeft_5"
+                    android:layout_marginStart="@dimen/layout_marginLeft_5"
+                    android:layout_toEndOf="@+id/imageview_useravatar1"
+                    android:layout_toRightOf="@+id/imageview_useravatar1"
+                    android:ellipsize="end"
+                    android:lines="1"
+                    android:text="@string/player"
+                    android:textColor="#ffffff"
+                    android:textSize="@dimen/text_size_xlarge"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textview_city_user1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/textview_username1"
+                    android:layout_alignStart="@+id/textview_username1"
+                    android:layout_below="@+id/textview_username1"
+                    android:ellipsize="end"
+                    android:lines="1"
+                    android:text="@string/city"
+                    android:textAllCaps="true"
+                    android:textColor="#ffffff"
+                    android:textSize="@dimen/text_size_small"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textview_money1"
+                    android:layout_width="@dimen/layout_width_160"
+                    android:layout_height="@dimen/layout_height_35"
+                    android:layout_alignLeft="@+id/imageview_useravatar1"
+                    android:layout_alignStart="@+id/imageview_useravatar1"
+                    android:layout_below="@+id/imageview_useravatar1"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/layout_marginTop_10"
+                    android:background="@drawable/button_money"
+                    android:gravity="center_horizontal"
+                    android:paddingTop="@dimen/paddingTop_5"
+                    android:text="@string/money_default"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/text_size_xsmall"
+                    android:textStyle="bold" />
+
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/textview_timer"
+                android:layout_width="@dimen/layout_width_80"
+                android:layout_height="@dimen/layout_height_80"
+                android:layout_gravity="center"
+                android:background="@drawable/clock"
+                android:gravity="center_horizontal|center_vertical"
+                android:paddingBottom="@dimen/paddingBottom_1"
+                android:text="@string/money_default"
+                android:textColor="#FFF"
+                android:textSize="@dimen/text_size_xxlarge"
+                android:textStyle="bold" />
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/imageview_useravatar2"
+                    android:layout_width="@dimen/layout_width_50"
+                    android:layout_height="@dimen/layout_height_50"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginEnd="@dimen/layout_marginRight_20"
+                    android:layout_marginRight="@dimen/layout_marginRight_20"
+                    android:layout_marginTop="@dimen/layout_marginTop_30"
+                    android:src="@drawable/avatar"
+                    app:civ_border_color="#fff"
+                    app:civ_border_width="@dimen/civ_border_width_1" />
+
+                <TextView
+                    android:id="@+id/textview_username2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/imageview_useravatar2"
+                    android:layout_marginEnd="@dimen/layout_marginRight_5"
+                    android:layout_marginRight="@dimen/layout_marginRight_5"
+                    android:layout_toLeftOf="@+id/imageview_useravatar2"
+                    android:layout_toStartOf="@+id/imageview_useravatar2"
+                    android:ellipsize="end"
+                    android:lines="1"
+                    android:text="@string/enemy"
+                    android:textColor="#ffffff"
+                    android:textSize="@dimen/text_size_xlarge"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textview_city_user2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignEnd="@+id/textview_username2"
+                    android:layout_alignRight="@+id/textview_username2"
+                    android:layout_below="@+id/textview_username2"
+                    android:ellipsize="end"
+                    android:lines="1"
+                    android:text="@string/city"
+                    android:textAllCaps="true"
+                    android:textColor="#ffffff"
+                    android:textSize="@dimen/text_size_small"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textview_money2"
+                    android:layout_width="@dimen/layout_width_160"
+                    android:layout_height="@dimen/layout_height_35"
+                    android:layout_alignEnd="@+id/imageview_useravatar2"
+                    android:layout_alignRight="@+id/imageview_useravatar2"
+                    android:layout_below="@+id/imageview_useravatar2"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/layout_marginTop_10"
+                    android:background="@drawable/button_money2"
+                    android:gravity="center_horizontal"
+                    android:paddingTop="@dimen/paddingTop_5"
+                    android:text="@string/money_default"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/text_size_xsmall"
+                    android:textStyle="bold" />
+                />
+            </RelativeLayout>
+
+        </LinearLayout>
+
 
         <RelativeLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_marginTop="@dimen/layout_marginTop_20">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/imageview_useravatar1"
+            <Button
+                android:id="@+id/button_save1"
+                android:layout_width="@dimen/layout_width_50"
+                android:layout_height="@dimen/layout_height_50"
+                android:layout_marginEnd="@dimen/layout_marginRight_20"
+                android:layout_marginRight="@dimen/layout_marginRight_20"
+                android:layout_toLeftOf="@+id/button_save2"
+                android:layout_toStartOf="@+id/button_save2"
+                android:background="@drawable/save1"
+                android:onClick="fiftyHelp" />
+
+            <Button
+                android:id="@+id/button_save2"
+                android:layout_width="@dimen/layout_width_50"
+                android:layout_height="@dimen/layout_height_50"
+                android:layout_centerInParent="true"
+                android:background="@drawable/save2"
+                android:onClick="audienceHelp" />
+
+            <Button
+                android:id="@+id/button_save3"
                 android:layout_width="@dimen/layout_width_50"
                 android:layout_height="@dimen/layout_height_50"
                 android:layout_marginLeft="@dimen/layout_marginLeft_20"
                 android:layout_marginStart="@dimen/layout_marginLeft_20"
-                android:layout_marginTop="@dimen/layout_marginTop_30"
-                android:src="@drawable/avatar"
-                app:civ_border_color="#fff"
-                app:civ_border_width="@dimen/civ_border_width_1" />
-
-            <TextView
-                android:id="@+id/textview_username1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/imageview_useravatar1"
-                android:layout_marginLeft="@dimen/layout_marginLeft_5"
-                android:layout_marginStart="@dimen/layout_marginLeft_5"
-                android:layout_toEndOf="@+id/imageview_useravatar1"
-                android:layout_toRightOf="@+id/imageview_useravatar1"
-                android:ellipsize="end"
-                android:lines="1"
-                android:text="@string/player"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/text_size_xlarge"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textview_city_user1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/textview_username1"
-                android:layout_alignStart="@+id/textview_username1"
-                android:layout_below="@+id/textview_username1"
-                android:ellipsize="end"
-                android:lines="1"
-                android:text="@string/city"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/text_size_small"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textview_money1"
-                android:layout_width="@dimen/layout_width_160"
-                android:layout_height="@dimen/layout_height_35"
-                android:layout_alignLeft="@+id/imageview_useravatar1"
-                android:layout_alignStart="@+id/imageview_useravatar1"
-                android:layout_below="@+id/imageview_useravatar1"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/layout_marginTop_10"
-                android:background="@drawable/button_money"
-                android:gravity="center_horizontal"
-                android:paddingTop="@dimen/paddingTop_5"
-                android:text="@string/money_default"
-                android:textColor="#000000"
-                android:textSize="@dimen/text_size_xsmall"
-                android:textStyle="bold" />
-
+                android:layout_toEndOf="@+id/button_save2"
+                android:layout_toRightOf="@+id/button_save2"
+                android:background="@drawable/save3"
+                android:onClick="showAnsRightHelp" />
 
         </RelativeLayout>
-
-        <TextView
-            android:id="@+id/textview_timer"
-            android:layout_width="@dimen/layout_width_80"
-            android:layout_height="@dimen/layout_height_80"
-            android:layout_gravity="center"
-            android:background="@drawable/clock"
-            android:gravity="center_horizontal|center_vertical"
-            android:text="@string/money_default"
-            android:paddingBottom="@dimen/paddingBottom_1"
-            android:textColor="#FFF"
-            android:textSize="@dimen/text_size_xxlarge"
-            android:textStyle="bold" />
 
         <RelativeLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_marginTop="@dimen/layout_marginTop_10">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/imageview_useravatar2"
-                android:layout_width="@dimen/layout_width_50"
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/layout_height_2"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="@dimen/layout_marginTop_3"
+                    android:background="#FFF" />
+
+                <TextView
+                    android:id="@+id/textview_tablequestion"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/layout_height_150"
+                    android:layout_marginEnd="@dimen/layout_marginRight_5"
+                    android:layout_marginLeft="@dimen/layout_marginLeft_5"
+                    android:layout_marginRight="@dimen/layout_marginRight_5"
+                    android:layout_marginStart="@dimen/layout_marginLeft_5"
+                    android:layout_marginTop="@dimen/layout_marginTop_18"
+                    android:background="@drawable/table_question"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:paddingBottom="@dimen/paddingBottom_15"
+                    android:paddingEnd="@dimen/paddingRight_20"
+                    android:paddingLeft="@dimen/paddingLeft_20"
+                    android:paddingRight="@dimen/paddingRight_20"
+                    android:paddingStart="@dimen/paddingLeft_20"
+                    android:paddingTop="@dimen/paddingTop_5"
+                    android:text="@string/question"
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/text_size_xlarge"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+
+            <TextView
+                android:id="@+id/textview_moneyquestion"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/layout_height_50"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="@dimen/layout_marginRight_20"
-                android:layout_marginEnd="@dimen/layout_marginRight_20"
-                android:layout_marginTop="@dimen/layout_marginTop_30"
-                android:src="@drawable/avatar"
-                app:civ_border_color="#fff"
-                app:civ_border_width="@dimen/civ_border_width_1" />
-
-            <TextView
-                android:id="@+id/textview_username2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/imageview_useravatar2"
-                android:layout_marginRight="@dimen/layout_marginRight_5"
-                android:layout_marginEnd="@dimen/layout_marginRight_5"
-                android:layout_toLeftOf="@+id/imageview_useravatar2"
-                android:layout_toStartOf="@+id/imageview_useravatar2"
-                android:ellipsize="end"
-                android:lines="1"
-                android:text="@string/enemy"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/text_size_xlarge"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textview_city_user2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignRight="@+id/textview_username2"
-                android:layout_alignEnd="@+id/textview_username2"
-                android:layout_below="@+id/textview_username2"
-                android:ellipsize="end"
-                android:lines="1"
-                android:text="@string/city"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/text_size_small"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textview_money2"
-                android:layout_width="@dimen/layout_width_160"
-                android:layout_height="@dimen/layout_height_35"
-                android:layout_alignRight="@+id/imageview_useravatar2"
-                android:layout_alignEnd="@+id/imageview_useravatar2"
-                android:layout_below="@+id/imageview_useravatar2"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/layout_marginTop_10"
-                android:background="@drawable/button_money2"
-                android:gravity="center_horizontal"
-                android:paddingTop="@dimen/paddingTop_5"
-                android:text="@string/money_default"
-                android:textColor="#000000"
-                android:textSize="@dimen/text_size_xsmall"
-                android:textStyle="bold" />
-            />
-        </RelativeLayout>
-
-    </LinearLayout>
-
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/layout_marginTop_20">
-
-        <Button
-            android:id="@+id/button_save1"
-            android:layout_width="@dimen/layout_width_50"
-            android:layout_height="@dimen/layout_height_50"
-            android:layout_marginRight="@dimen/layout_marginRight_20"
-            android:layout_marginEnd="@dimen/layout_marginRight_20"
-            android:layout_toLeftOf="@+id/button_save2"
-            android:layout_toStartOf="@+id/button_save2"
-            android:background="@drawable/save1"
-            android:onClick="fiftyHelp"
-            />
-
-        <Button
-            android:id="@+id/button_save2"
-            android:layout_width="@dimen/layout_width_50"
-            android:layout_height="@dimen/layout_height_50"
-            android:layout_centerInParent="true"
-            android:background="@drawable/save2"
-            android:onClick="audienceHelp"/>
-
-        <Button
-            android:id="@+id/button_save3"
-            android:layout_width="@dimen/layout_width_50"
-            android:layout_height="@dimen/layout_height_50"
-            android:layout_marginLeft="@dimen/layout_marginLeft_20"
-            android:layout_marginStart="@dimen/layout_marginLeft_20"
-            android:layout_toRightOf="@+id/button_save2"
-            android:layout_toEndOf="@+id/button_save2"
-            android:background="@drawable/save3"
-            android:onClick="showAnsRightHelp"/>
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/layout_marginTop_10">
-
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/layout_height_2"
-                android:layout_gravity="center_vertical"
-                android:layout_marginTop="@dimen/layout_marginTop_3"
-                android:background="#FFF" />
-
-            <TextView
-                android:id="@+id/textview_tablequestion"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/layout_height_150"
-                android:layout_marginLeft="@dimen/layout_marginLeft_5"
-                android:layout_marginStart="@dimen/layout_marginLeft_5"
-                android:layout_marginEnd="@dimen/layout_marginRight_5"
-                android:layout_marginRight="@dimen/layout_marginRight_5"
-                android:layout_marginTop="@dimen/layout_marginTop_18"
-                android:background="@drawable/table_question"
+                android:layout_marginEnd="@dimen/layout_marginRight_60"
+                android:layout_marginLeft="@dimen/layout_marginLeft_60"
+                android:layout_marginRight="@dimen/layout_marginRight_60"
+                android:layout_marginStart="@dimen/layout_marginLeft_60"
+                android:background="@drawable/money_question"
                 android:gravity="center_horizontal|center_vertical"
-                android:paddingBottom="@dimen/paddingBottom_15"
-                android:paddingLeft="@dimen/paddingLeft_20"
-                android:paddingStart="@dimen/paddingLeft_20"
-                android:paddingEnd="@dimen/paddingRight_20"
-                android:paddingRight="@dimen/paddingRight_20"
-                android:paddingTop="@dimen/paddingTop_5"
-                android:text="@string/question"
+                android:paddingBottom="@dimen/paddingBottom_5"
+                android:text="@string/money_default"
                 android:textColor="#FFF"
                 android:textSize="@dimen/text_size_xlarge"
                 android:textStyle="bold" />
-        </FrameLayout>
 
+            <TextView
+                android:id="@+id/textview_numberquestion"
+                android:layout_width="@dimen/layout_width_50"
+                android:layout_height="@dimen/layout_height_50"
+                android:layout_alignLeft="@+id/textview_moneyquestion"
+                android:layout_alignStart="@+id/textview_moneyquestion"
+                android:layout_alignTop="@+id/textview_moneyquestion"
+                android:background="@drawable/number_question"
+                android:gravity="center_horizontal|center_vertical"
+                android:paddingBottom="@dimen/paddingBottom_5"
+                android:paddingRight="@dimen/paddingRight_4"
+                android:text="@string/no_question"
+                android:textColor="#FFF"
+                android:textSize="@dimen/text_size_xlarge"
+                android:textStyle="bold" />
+        </RelativeLayout>
 
-        <TextView
-            android:id="@+id/textview_moneyquestion"
+        <include
+            layout="@layout/layout_answer_button"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/layout_height_50"
-            android:layout_marginLeft="@dimen/layout_marginLeft_60"
-            android:layout_marginStart="@dimen/layout_marginLeft_60"
-            android:layout_marginEnd="@dimen/layout_marginRight_60"
-            android:layout_marginRight="@dimen/layout_marginRight_60"
-            android:background="@drawable/money_question"
-            android:gravity="center_horizontal|center_vertical"
-            android:paddingBottom="@dimen/paddingBottom_5"
-            android:text="@string/money_default"
-            android:textColor="#FFF"
-            android:textSize="@dimen/text_size_xlarge"
-            android:textStyle="bold" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/layout_marginTop_20" />
+    </LinearLayout>
 
-        <TextView
-            android:id="@+id/textview_numberquestion"
-            android:layout_width="@dimen/layout_width_50"
-            android:layout_height="@dimen/layout_height_50"
-            android:layout_alignLeft="@+id/textview_moneyquestion"
-            android:layout_alignStart="@+id/textview_moneyquestion"
-            android:layout_alignTop="@+id/textview_moneyquestion"
-            android:background="@drawable/number_question"
-            android:gravity="center_horizontal|center_vertical"
-            android:paddingBottom="@dimen/paddingBottom_5"
-            android:paddingRight="@dimen/paddingRight_4"
-            android:text="@string/no_question"
-            android:textColor="#FFF"
-            android:textSize="@dimen/text_size_xlarge"
-            android:textStyle="bold" />
-    </RelativeLayout>
-
-    <include
-        layout="@layout/layout_answer_button"
+    <FrameLayout
+        android:id="@+id/ads_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/layout_marginTop_20" />
-</LinearLayout>
-
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="#3FFF" />
+</RelativeLayout>

@@ -8,7 +8,7 @@
         android:id="@+id/layout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/layout_marginTop_13">
+        android:layout_marginTop="@dimen/layout_marginTop_14">
 
         <View
             android:id="@+id/viewline_btnplayer"
@@ -25,17 +25,26 @@
             android:layout_marginLeft="@dimen/layout_marginLeft_50"
             android:layout_marginRight="@dimen/layout_marginRight_50"
             android:background="@drawable/answer0"
+            android:lines="1"
             android:paddingBottom="@dimen/paddingTop_8"
+            android:paddingEnd="35dp"
+            android:paddingLeft="55dp"
+            android:paddingRight="35dp"
+            android:paddingStart="55dp"
+            android:singleLine="true"
             android:text="@string/list_player"
             android:textColor="#FFF" />
 
 
     </FrameLayout>
 
-  <!--  <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:background="@drawable/avatar_info"
-        android:layout_marginLeft="40dp"
-       />-->
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/dummyuser_avatar"
+        android:layout_width="@dimen/layout_width_45"
+        android:layout_height="@dimen/layout_height_45"
+        android:layout_marginLeft="@dimen/layout_marginLeft_54"
+        android:layout_marginStart="@dimen/layout_marginLeft_54"
+        android:src="@drawable/avatar_default"
+        app:civ_border_color="#fff"
+        app:civ_border_width="@dimen/civ_border_width" />
 </RelativeLayout>

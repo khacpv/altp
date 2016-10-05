@@ -41,12 +41,4 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <include
-        android:id="@+id/button_player7"
-        layout="@layout/layout_button_player"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-
-
 </LinearLayout>

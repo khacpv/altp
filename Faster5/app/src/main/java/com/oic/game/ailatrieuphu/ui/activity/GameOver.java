@@ -166,6 +166,7 @@ public class GameOver extends AppCompatActivity {
         mTextViewMyCity.setText(mUser.address);
         mTextViewMyScore.setText("" + mUser.score);
         Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter()
+                .placeholder(R.drawable.avatar_default).dontAnimate()
                 .error(R.drawable.avatar_default).into(mImageViewMyAvatar);
 
 
@@ -173,6 +174,7 @@ public class GameOver extends AppCompatActivity {
         mTextViewEnemyCity.setText(mEnemy.address);
         mTextViewEnemyScore.setText("" + mEnemy.score);
         Glide.with(getApplicationContext()).load(mEnemy.avatar).fitCenter()
+                .placeholder(R.drawable.avatar_default).dontAnimate()
                 .error(R.drawable.avatar_default).into(mImageViewEnemyAvatar);
     }
 

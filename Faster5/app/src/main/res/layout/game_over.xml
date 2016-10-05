@@ -72,6 +72,7 @@
                 android:layout_below="@+id/textview_username1"
                 android:ellipsize="end"
                 android:lines="1"
+                android:textAllCaps="true"
                 android:text="@string/city"
                 android:textColor="#ffffff"
                 android:textSize="@dimen/text_size_small"
@@ -141,6 +142,7 @@
                 android:ellipsize="end"
                 android:lines="1"
                 android:text="@string/city"
+                android:textAllCaps="true"
                 android:textColor="#ffffff"
                 android:textSize="@dimen/text_size_small"
                 android:textStyle="bold" />

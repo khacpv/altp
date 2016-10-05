@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/background"
     android:layout_width="match_parent"
@@ -19,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1">
 
-            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imageview_useravatar"
                 android:layout_width="@dimen/layout_width_70"
                 android:layout_height="@dimen/layout_height_70"
@@ -96,6 +97,7 @@
                 android:layout_gravity="center"
                 android:background="@drawable/icon_search"
                 android:scaleType="fitXY" />
+
             <TextView
                 android:id="@+id/textview_time_search"
                 android:layout_width="wrap_content"
@@ -103,8 +105,7 @@
                 android:layout_centerInParent="true"
                 android:textColor="#FFF"
                 android:textSize="@dimen/text_size_huge"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
         </RelativeLayout>
 
     </LinearLayout>
@@ -125,10 +126,10 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/layout_height_40"
             android:layout_centerHorizontal="true"
-            android:layout_marginLeft="@dimen/layout_marginLeft_110"
-            android:layout_marginStart="@dimen/layout_marginLeft_110"
-            android:layout_marginRight="@dimen/layout_marginRight_110"
             android:layout_marginEnd="@dimen/layout_marginRight_110"
+            android:layout_marginLeft="@dimen/layout_marginLeft_110"
+            android:layout_marginRight="@dimen/layout_marginRight_110"
+            android:layout_marginStart="@dimen/layout_marginLeft_110"
             android:layout_marginTop="@dimen/layout_marginTop_5"
             android:background="@drawable/answer0"
             android:paddingBottom="@dimen/paddingTop_7"
@@ -139,19 +140,32 @@
             android:textStyle="bold" />
     </RelativeLayout>
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipToPadding="false"
-        android:overScrollMode="never"
-        android:paddingTop="@dimen/paddingTop_10"
-        android:scrollbars="none">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-        <include
-            layout="@layout/layout_list_player"
+        <FrameLayout
+            android:id="@+id/ads_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </ScrollView>
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:background="#3FFF" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/ads_view"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            android:paddingTop="@dimen/paddingTop_5"
+            android:scrollbars="none">
+
+            <include
+                layout="@layout/layout_list_player"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </ScrollView>
+    </RelativeLayout>
 
 
 </LinearLayout>

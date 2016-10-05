@@ -17,6 +17,7 @@
 
     <dimen name="layout_width_28">28dp</dimen>
     <dimen name="layout_width_40">40dp</dimen>
+    <dimen name="layout_width_45">45dp</dimen>
     <dimen name="layout_width_50">50dp</dimen>
     <dimen name="layout_width_65">65dp</dimen>
     <dimen name="layout_width_70">70dp</dimen>
@@ -52,14 +53,17 @@
     <dimen name="layout_height_300">300dp</dimen>
 
     <dimen name="layout_marginTop_1">1dp</dimen>
+    <dimen name="layout_marginTop_2">2dp</dimen>
     <dimen name="layout_marginTop_3">3dp</dimen>
     <dimen name="layout_marginTop_5">5dp</dimen>
+    <dimen name="layout_marginTop_14">14dp</dimen>
     <dimen name="layout_marginTop_10">10dp</dimen>
     <dimen name="layout_marginTop_13">13dp</dimen>
     <dimen name="layout_marginTop_15">15dp</dimen>
     <dimen name="layout_marginTop_17">17dp</dimen>
     <dimen name="layout_marginTop_18">18dp</dimen>
     <dimen name="layout_marginTop_20">20dp</dimen>
+    <dimen name="layout_marginTop_25">25dp</dimen>
     <dimen name="layout_marginTop_30">30dp</dimen>
     <dimen name="layout_marginTop_40">40dp</dimen>
     <dimen name="layout_marginTop_60">60dp</dimen>
@@ -70,6 +74,7 @@
     <dimen name="layout_marginBottom_4">4dp</dimen>
     <dimen name="layout_marginBottom_10">10dp</dimen>
     <dimen name="layout_marginBottom_20">20dp</dimen>
+    <dimen name="layout_marginBottom_25">25dp</dimen>
     <dimen name="layout_marginBottom_30">30dp</dimen>
     <dimen name="layout_marginBottom_40">40dp</dimen>
     <dimen name="layout_marginBottom_50">50dp</dimen>
@@ -80,6 +85,8 @@
     <dimen name="layout_marginLeft_30">30dp</dimen>
     <dimen name="layout_marginLeft_40">40dp</dimen>
     <dimen name="layout_marginLeft_50">50dp</dimen>
+    <dimen name="layout_marginLeft_54">54dp</dimen>
+    <dimen name="layout_marginLeft_55">55dp</dimen>
     <dimen name="layout_marginLeft_60">60dp</dimen>
     <dimen name="layout_marginLeft_70">70dp</dimen>
     <dimen name="layout_marginLeft_100">100dp</dimen>

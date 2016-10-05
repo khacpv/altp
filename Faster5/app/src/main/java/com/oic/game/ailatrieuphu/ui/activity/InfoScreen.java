@@ -24,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.oic.game.ailatrieuphu.MainApplication;
 import com.oic.game.ailatrieuphu.R;
 import com.oic.game.ailatrieuphu.model.Room;
@@ -52,7 +53,8 @@ public class InfoScreen extends AppCompatActivity {
     private TextView mTextViewTotalScore;
     private TextView mTextViewCity;
     private ImageView mImageViewAvatar;
-    private Button[] mButtonPlayer = new Button[8];
+    private Button[] mButtonPlayer = new Button[6];
+    private ImageView[] mImgViewDummyAvatar = new ImageView[6];
     private RelativeLayout mButtonSearch;
     private SockAltp mSocketAltp;
     private AltpHelper mAltpHelper;
@@ -201,6 +203,10 @@ public class InfoScreen extends AppCompatActivity {
                     @Override
                     public void run() {
                         mButtonPlayer[_i].setText(dummyUsers.get(_i % dummyUsers.size()).name);
+                        Glide.with(getApplicationContext()).load(dummyUsers.get(_i).avatar).fitCenter()
+                                .placeholder(R.drawable.avatar_default).dontAnimate()
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .error(R.drawable.avatar_default).into(mImgViewDummyAvatar[_i]);
                     }
                 });
                 Log.e("TAG", "dummy user: " + dummyUsers.get(i).name);
@@ -213,7 +219,7 @@ public class InfoScreen extends AppCompatActivity {
                         moveSearchOpponent(room);
 
                     }
-                }, 4000);
+                }, 5000);
             }
             Log.e("TAG", "dymmy Size" + dummyUsers.size() + "join room: " + room.roomId);
         }
@@ -394,26 +400,37 @@ public class InfoScreen extends AppCompatActivity {
         mTextViewNameUser.setText(username);
         mTextViewCity.setText(location);
         Glide.with(getApplicationContext()).load(linkAvatar).fitCenter()
+                .placeholder(R.drawable.avatar_default).dontAnimate()
                 .error(R.drawable.avatar_default).into(mImageViewAvatar);
         mTextViewTotalScore.setText(totalScore);
     }
 
     public void buttonPlayer() {
         int i = 0;
+        mImgViewDummyAvatar[i] = (ImageView) findViewById(R.id.button_player1).findViewById(R.id.dummyuser_avatar);
         mButtonPlayer[i++] = (Button) findViewById(R.id.button_player1).findViewById(R.id
                 .button_player);
+
+        mImgViewDummyAvatar[i] = (ImageView) findViewById(R.id.button_player2).findViewById(R.id.dummyuser_avatar);
         mButtonPlayer[i++] = (Button) findViewById(R.id.button_player2).findViewById(R.id
                 .button_player);
+
+        mImgViewDummyAvatar[i] = (ImageView) findViewById(R.id.button_player3).findViewById(R.id.dummyuser_avatar);
         mButtonPlayer[i++] = (Button) findViewById(R.id.button_player3).findViewById(R.id
                 .button_player);
+
+        mImgViewDummyAvatar[i] = (ImageView) findViewById(R.id.button_player4).findViewById(R.id.dummyuser_avatar);
         mButtonPlayer[i++] = (Button) findViewById(R.id.button_player4).findViewById(R.id
                 .button_player);
+
+        mImgViewDummyAvatar[i] = (ImageView) findViewById(R.id.button_player5).findViewById(R.id.dummyuser_avatar);
         mButtonPlayer[i++] = (Button) findViewById(R.id.button_player5).findViewById(R.id
                 .button_player);
-        mButtonPlayer[i++] = (Button) findViewById(R.id.button_player6).findViewById(R.id
+
+        mImgViewDummyAvatar[i] = (ImageView) findViewById(R.id.button_player6).findViewById(R.id.dummyuser_avatar);
+        mButtonPlayer[i] = (Button) findViewById(R.id.button_player6).findViewById(R.id
                 .button_player);
-        mButtonPlayer[i] = (Button) findViewById(R.id.button_player7).findViewById(R.id
-                .button_player);
+
 
     }
 
