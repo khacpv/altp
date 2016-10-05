@@ -26,7 +26,7 @@
                 android:layout_height="@dimen/layout_height_70"
                 android:layout_marginLeft="@dimen/layout_marginLeft_20"
                 android:layout_marginStart="@dimen/layout_marginLeft_20"
-                android:layout_marginTop="@dimen/layout_marginTop_10"
+                android:layout_marginTop="@dimen/layout_marginTop_30"
                 android:src="@drawable/avatar"
                 app:civ_border_color="#fff"
                 app:civ_border_width="@dimen/civ_border_width" />
@@ -87,7 +87,7 @@
             android:layout_height="@dimen/layout_height_100"
             android:layout_marginEnd="@dimen/layout_marginRight_5"
             android:layout_marginRight="@dimen/layout_marginRight_5"
-            android:layout_marginTop="@dimen/layout_marginTop_20">
+            android:layout_marginTop="@dimen/layout_marginTop_40">
 
             <ImageView
                 android:id="@+id/imageview_icon_search"

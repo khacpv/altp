@@ -53,8 +53,8 @@ public class InfoScreen extends AppCompatActivity {
     private TextView mTextViewTotalScore;
     private TextView mTextViewCity;
     private ImageView mImageViewAvatar;
-    private Button[] mButtonPlayer = new Button[7];
-    private ImageView[] mImgViewDummyAvatar = new ImageView[7];
+    private Button[] mButtonPlayer = new Button[6];
+    private ImageView[] mImgViewDummyAvatar = new ImageView[6];
     private RelativeLayout mButtonSearch;
     private SockAltp mSocketAltp;
     private AltpHelper mAltpHelper;
@@ -428,11 +428,7 @@ public class InfoScreen extends AppCompatActivity {
                 .button_player);
 
         mImgViewDummyAvatar[i] = (ImageView) findViewById(R.id.button_player6).findViewById(R.id.dummyuser_avatar);
-        mButtonPlayer[i++] = (Button) findViewById(R.id.button_player6).findViewById(R.id
-                .button_player);
-
-        mImgViewDummyAvatar[i] = (ImageView) findViewById(R.id.button_player7).findViewById(R.id.dummyuser_avatar);
-        mButtonPlayer[i] = (Button) findViewById(R.id.button_player7).findViewById(R.id
+        mButtonPlayer[i] = (Button) findViewById(R.id.button_player6).findViewById(R.id
                 .button_player);
 
 

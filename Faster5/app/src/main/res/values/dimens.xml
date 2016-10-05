@@ -63,6 +63,7 @@
     <dimen name="layout_marginTop_17">17dp</dimen>
     <dimen name="layout_marginTop_18">18dp</dimen>
     <dimen name="layout_marginTop_20">20dp</dimen>
+    <dimen name="layout_marginTop_25">25dp</dimen>
     <dimen name="layout_marginTop_30">30dp</dimen>
     <dimen name="layout_marginTop_40">40dp</dimen>
     <dimen name="layout_marginTop_60">60dp</dimen>
@@ -73,6 +74,7 @@
     <dimen name="layout_marginBottom_4">4dp</dimen>
     <dimen name="layout_marginBottom_10">10dp</dimen>
     <dimen name="layout_marginBottom_20">20dp</dimen>
+    <dimen name="layout_marginBottom_25">25dp</dimen>
     <dimen name="layout_marginBottom_30">30dp</dimen>
     <dimen name="layout_marginBottom_40">40dp</dimen>
     <dimen name="layout_marginBottom_50">50dp</dimen>
