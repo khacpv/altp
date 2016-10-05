@@ -66,15 +66,24 @@
 
 
     </RelativeLayout>
-
-    <com.inthecheesefactory.thecheeselibrary.widget.AdjustableImageView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/layout_marginBottom_20"
-        android:layout_marginTop="@dimen/layout_marginTop_20"
-        android:adjustViewBounds="true"
-        android:scaleType="fitXY"
-        android:src="@drawable/icon_opponent" />
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_centerInParent="true"
+            android:background="#FFF"/>
+        <com.inthecheesefactory.thecheeselibrary.widget.AdjustableImageView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/layout_marginBottom_20"
+            android:layout_marginTop="@dimen/layout_marginTop_20"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/icon_opponent"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/layout_opponent2"
