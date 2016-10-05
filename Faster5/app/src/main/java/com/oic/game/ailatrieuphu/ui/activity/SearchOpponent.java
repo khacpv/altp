@@ -194,13 +194,16 @@ public class SearchOpponent extends AppCompatActivity {
         // my info
         mTextViewUserName1.setText(mUser.name);
         Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter()
+                .placeholder(R.drawable.avatar_default).dontAnimate()
                 .error(R.drawable.avatar_default).into(mImageViewUserAvatar1);
         mTextViewCityUser1.setText(mUser.address);
         mTextViewScore1.setText(Integer.toString(mUser.totalScore));
 
         // enemy user
         mTextViewUserName2.setText(enemyUser.name);
-        Glide.with(getApplicationContext()).load(enemyUser.avatar).fitCenter().error(R.drawable.avatar_default).into(mImageViewUserAvatar2);
+        Glide.with(getApplicationContext()).load(enemyUser.avatar).fitCenter()
+                .placeholder(R.drawable.avatar_default).dontAnimate()
+                .error(R.drawable.avatar_default).into(mImageViewUserAvatar2);
         mTextViewCityUser2.setText(enemyUser.address);
         mTextViewScore2.setText(Integer.toString(enemyUser.totalScore));
 

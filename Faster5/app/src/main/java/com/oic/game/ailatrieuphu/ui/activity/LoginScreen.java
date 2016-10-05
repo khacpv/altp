@@ -411,7 +411,6 @@ public class LoginScreen extends AppCompatActivity {
         });
     }
 
-
     public void setPickAvatarDialog() {
         avatarDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         avatarDialog.setContentView(R.layout.layout_avatar_popup);
@@ -682,6 +681,8 @@ public class LoginScreen extends AppCompatActivity {
                 // Get the Image's file name
                 String fileNameSegments[] = imgPath.split("/");
                 fileName = System.currentTimeMillis() + "_" + fileNameSegments[fileNameSegments.length - 1];
+                Log.e("TAG", " URI onActivityResult: " + uriPhoto + "\n" + Uri.fromFile(new File(fileName)));
+
             }
         }
     }

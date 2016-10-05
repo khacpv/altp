@@ -58,6 +58,7 @@
                 android:lines="1"
                 android:text="@string/city"
                 android:textColor="#ffffff"
+                android:textAllCaps="true"
                 android:textSize="@dimen/text_size_small"
                 android:textStyle="bold" />
 
@@ -139,6 +140,7 @@
                 android:ellipsize="end"
                 android:lines="1"
                 android:text="@string/city"
+                android:textAllCaps="true"
                 android:textColor="#ffffff"
                 android:textSize="@dimen/text_size_small"
                 android:textStyle="bold" />

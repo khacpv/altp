@@ -31,6 +31,8 @@
             android:layout_toEndOf="@+id/imageview_useravatar1"
             android:layout_toRightOf="@+id/imageview_useravatar1"
             android:text="@string/player"
+            android:ellipsize="end"
+            android:lines="1"
             android:textColor="#ffffff"
             android:textSize="@dimen/text_size_huge"
             android:textStyle="bold" />
@@ -43,6 +45,7 @@
             android:layout_alignStart="@+id/textview_username1"
             android:layout_below="@+id/textview_username1"
             android:text="@string/city"
+            android:textAllCaps="true"
             android:textColor="#ffffff"
             android:textSize="@dimen/text_size_xlarge"
             android:textStyle="bold" />
@@ -98,11 +101,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/imageview_useravatar2"
+            android:layout_marginLeft="@dimen/layout_marginLeft_5"
+            android:layout_marginStart="@dimen/layout_marginLeft_5"
             android:layout_marginRight="@dimen/layout_marginRight_10"
             android:layout_marginEnd="@dimen/layout_marginRight_10"
             android:layout_toLeftOf="@+id/imageview_useravatar2"
             android:layout_toStartOf="@+id/imageview_useravatar2"
             android:text="@string/enemy"
+            android:ellipsize="end"
+            android:lines="1"
             android:textColor="#ffffff"
             android:textSize="@dimen/text_size_huge"
             android:textStyle="bold" />
@@ -117,6 +124,7 @@
             android:text="@string/city"
             android:textColor="#ffffff"
             android:textSize="@dimen/text_size_xlarge"
+            android:textAllCaps="true"
             android:textStyle="bold" />
 
         <TextView
