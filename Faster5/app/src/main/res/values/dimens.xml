@@ -53,6 +53,7 @@
     <dimen name="layout_height_300">300dp</dimen>
 
     <dimen name="layout_marginTop_1">1dp</dimen>
+    <dimen name="layout_marginTop_2">2dp</dimen>
     <dimen name="layout_marginTop_3">3dp</dimen>
     <dimen name="layout_marginTop_5">5dp</dimen>
     <dimen name="layout_marginTop_14">14dp</dimen>

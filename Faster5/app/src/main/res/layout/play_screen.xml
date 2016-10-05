@@ -181,7 +181,8 @@
             android:layout_toLeftOf="@+id/button_save2"
             android:layout_toStartOf="@+id/button_save2"
             android:background="@drawable/save1"
-            android:onClick="fiftyHelp" />
+            android:onClick="fiftyHelp"
+            />
 
         <Button
             android:id="@+id/button_save2"
