@@ -56,7 +56,8 @@ public class MainActivity extends AppCompatActivity {
 
     private SockAltp mSocketAltp;
     private Dialog maintainDialog;
-
+    private boolean isLoaded = false;
+    Intent myIntent;
 
     private SockAltp.OnSocketEvent globalCallback = new SockAltp.OnSocketEvent() {
         @Override
@@ -80,6 +81,11 @@ public class MainActivity extends AppCompatActivity {
                         public void run() {
                             if (maintainDialog.isShowing() && !isFinishing()) {
                                 maintainDialog.hide();
+                                if (isLoaded) {
+                                    startActivity(myIntent);
+                                    overridePendingTransition(R.anim.xml_fade_in, R.anim.xml_fade_out);
+                                    finish();
+                                }
                             }
                         }
                     });
@@ -139,6 +145,14 @@ public class MainActivity extends AppCompatActivity {
         username = PrefUtils.getInstance(this).get(PrefUtils.KEY_NAME, "");
         linkAvatar = PrefUtils.getInstance(this).get(PrefUtils.KEY_URL_AVATAR, "");
         location = PrefUtils.getInstance(this).get(PrefUtils.KEY_LOCATION, "");
+
+        if (TextUtils.isEmpty(userId) || TextUtils.isEmpty(username) ||
+                TextUtils.isEmpty(linkAvatar)
+                || TextUtils.isEmpty(location)) {
+            myIntent = new Intent(getApplicationContext(), LoginScreen.class);
+        } else {
+            myIntent = new Intent(getApplicationContext(), InfoScreen.class);
+        }
 
         new Thread(new Runnable() {
             @Override
@@ -397,6 +411,7 @@ public class MainActivity extends AppCompatActivity {
             SoundPoolManager.getInstance().InitializeSoundPool(this, new ISoundPoolLoaded() {
                 @Override
                 public void onSuccess() {
+
                     textviewLoading.setText("99%");
 
                     Log.e("TAG", "load time delay:" + Math.max(LOAD_MAX_TIME, LOAD_MAX_TIME -
@@ -406,14 +421,6 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             textviewLoading.setText("100%");
-                            Intent myIntent;
-                            if (TextUtils.isEmpty(userId) || TextUtils.isEmpty(username) ||
-                                    TextUtils.isEmpty(linkAvatar)
-                                    || TextUtils.isEmpty(location)) {
-                                myIntent = new Intent(getApplicationContext(), LoginScreen.class);
-                            } else {
-                                myIntent = new Intent(getApplicationContext(), InfoScreen.class);
-                            }
                             mSocketAltp.removeEvent();
                             if (mSocketAltp.isConnected()) {
                                 startActivity(myIntent);
@@ -423,6 +430,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }, Math.max(LOAD_MAX_TIME, LOAD_MAX_TIME - (System.currentTimeMillis()
                             - startTime)));
+                    isLoaded = true;
                 }
 
                 @Override

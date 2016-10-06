@@ -17,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.oic.game.ailatrieuphu.R;
 import com.oic.game.ailatrieuphu.model.GameOverMessage;
 import com.oic.game.ailatrieuphu.model.User;
@@ -85,6 +87,14 @@ public class GameOver extends AppCompatActivity {
 
         setTypeface(font, mTextViewResultText, mTextViewMyName, mTextViewMyScore, mTextViewMyCity,
                 mTextViewEnemyName, mTextViewEnemyScore, mTextViewEnemyCity);
+
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("666F50DBC9F76F90D726062FAA38B130")
+                .addTestDevice("F62A1ABE4DDAA8A709CCEBA71211561A")
+                .build();
+        mAdView.loadAd(adRequest);
+
     }
 
 
@@ -138,17 +148,15 @@ public class GameOver extends AppCompatActivity {
         } else if (mUser.score < mEnemy.score) {
             SoundPoolManager.getInstance().playSound(R.raw.lose);
             startMedia(3000);
-        } else if (mUser.score > mEnemy.score) {
+        } else if (mUser.score > mEnemy.score){
             SoundPoolManager.getInstance().playSound(R.raw.best_player);
             startMedia(12000);
         }
         if (!isServerErr) {
             if (mUser.score == mEnemy.score) {
                 mTextViewResultText.setText(mMessage.draw);
-
             } else if (mUser.score < mEnemy.score) {
                 mTextViewResultText.setText(mMessage.lose);
-
             } else if (mUser.score > mEnemy.score) {
                 mTextViewResultText.setText(mMessage.win);
             }
@@ -156,9 +164,7 @@ public class GameOver extends AppCompatActivity {
             mTextViewResultText.setText(getResources().getString(R.string.disconnect_server));
         }
 
-        mTotalScore = PrefUtils.getInstance(GameOver.this).get(PrefUtils.KEY_TOTAL_SCORE, 0);
-        mTotalScore = mUser.totalScore + mUser.score;
-        PrefUtils.getInstance(GameOver.this).set(PrefUtils.KEY_TOTAL_SCORE, mTotalScore);
+        PrefUtils.getInstance(GameOver.this).set(PrefUtils.KEY_TOTAL_SCORE, mUser.totalScore);
     }
 
     public void setUserInfo() {
@@ -199,6 +205,9 @@ public class GameOver extends AppCompatActivity {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
         }
+        if (SoundPoolManager.getInstance().isPlaySound()) {
+            SoundPoolManager.getInstance().stop();
+        }
         super.onPause();
     }
 
@@ -207,9 +216,7 @@ public class GameOver extends AppCompatActivity {
         if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
             mediaPlayer.start();
         }
-        if (SoundPoolManager.getInstance().isPlaySound()) {
-            SoundPoolManager.getInstance().stop();
-        }
+
         super.onResume();
     }
 

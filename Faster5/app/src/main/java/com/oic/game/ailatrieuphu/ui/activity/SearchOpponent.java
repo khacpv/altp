@@ -19,6 +19,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.oic.game.ailatrieuphu.R;
 import com.bumptech.glide.Glide;
 import com.oic.game.ailatrieuphu.MainApplication;
@@ -41,7 +43,6 @@ public class SearchOpponent extends AppCompatActivity {
     private static final String EXTRA_USER = "user";
     private static final String EXTRA_ENEMY = "enemy";
     private static final String EXTRA_ROOM = "room";
-
     private SockAltp mSocketAltp;
     private AltpHelper mAltpHelper;
     private User mUser = new User();
@@ -152,7 +153,7 @@ public class SearchOpponent extends AppCompatActivity {
         mTextViewReady.getHandler().post(new Runnable() {
             @Override
             public void run() {
-                mTextViewReady.setText("Đã sẵn sàng");
+                mTextViewReady.setText(getResources().getString(R.string.ready));
                 if (Build.VERSION.SDK_INT < 23) {
                     mTextViewReady.setTextColor(getResources().getColor(R.color.RED));
                 } else {
@@ -197,7 +198,7 @@ public class SearchOpponent extends AppCompatActivity {
                 .placeholder(R.drawable.avatar_default).dontAnimate()
                 .error(R.drawable.avatar_default).into(mImageViewUserAvatar1);
         mTextViewCityUser1.setText(mUser.address);
-        mTextViewScore1.setText(Integer.toString(mUser.totalScore));
+        mTextViewScore1.setText("" + mUser.totalScore);
 
         // enemy user
         mTextViewUserName2.setText(enemyUser.name);
@@ -205,7 +206,7 @@ public class SearchOpponent extends AppCompatActivity {
                 .placeholder(R.drawable.avatar_default).dontAnimate()
                 .error(R.drawable.avatar_default).into(mImageViewUserAvatar2);
         mTextViewCityUser2.setText(enemyUser.address);
-        mTextViewScore2.setText(Integer.toString(enemyUser.totalScore));
+        mTextViewScore2.setText("" + enemyUser.totalScore);
 
     }
 
@@ -231,6 +232,14 @@ public class SearchOpponent extends AppCompatActivity {
 
         mButtonSeach = (Button) findViewById(R.id.button_search_again);
         mButtonPlay = (Button) findViewById(R.id.button_play);
+
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("666F50DBC9F76F90D726062FAA38B130")
+                .addTestDevice("F62A1ABE4DDAA8A709CCEBA71211561A")
+                .build();
+        mAdView.loadAd(adRequest);
+
     }
 
     public static void setTypeface(Typeface font, TextView... textviews) {

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">ALTP Online</string>
     <string name="facebook_app_id">1120563777999580</string>
+    <string name="banner_ad_unit_id">ca-app-pub-7868677551170210/5076670289</string>
 
     <string name="player">PLAYER</string>
     <string name="enemy">ENEMY</string>
@@ -57,4 +58,5 @@
     <string name="help3_wait_popup">Đáp án từ chương trình</string>
     <string name="quit">Đối phương đã bỏ cuộc</string>
     <string name="disconnect_server">MẤT KẾT NỐI SERVER</string>
+    <string name="ready">Đã sẵn sàng</string>
 </resources>

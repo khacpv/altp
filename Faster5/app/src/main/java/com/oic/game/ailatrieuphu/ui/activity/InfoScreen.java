@@ -25,6 +25,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.oic.game.ailatrieuphu.MainApplication;
 import com.oic.game.ailatrieuphu.R;
 import com.oic.game.ailatrieuphu.model.Room;
@@ -340,6 +343,14 @@ public class InfoScreen extends AppCompatActivity {
     }
 
     public void findViewById() {
+
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("666F50DBC9F76F90D726062FAA38B130")
+                .addTestDevice("F62A1ABE4DDAA8A709CCEBA71211561A")
+                .build();
+        mAdView.loadAd(adRequest);
+
         Typeface font = Typeface.createFromAsset(getAssets(),
                 "fonts/roboto.ttf");
 

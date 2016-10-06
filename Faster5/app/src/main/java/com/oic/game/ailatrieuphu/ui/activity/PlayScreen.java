@@ -30,6 +30,8 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.oic.game.ailatrieuphu.MainApplication;
 import com.oic.game.ailatrieuphu.R;
 import com.oic.game.ailatrieuphu.model.GameOverMessage;
@@ -777,6 +779,14 @@ public class PlayScreen extends AppCompatActivity {
             }
             mButtonAns[i].setBackgroundResource(R.drawable.answer0);
         }
+
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("666F50DBC9F76F90D726062FAA38B130")
+                .addTestDevice("F62A1ABE4DDAA8A709CCEBA71211561A")
+                .build();
+        mAdView.loadAd(adRequest);
+
     }
 
     /**
