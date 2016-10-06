@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -46,6 +47,11 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.oic.game.ailatrieuphu.MainApplication;
 import com.oic.game.ailatrieuphu.R;
@@ -80,10 +86,11 @@ public class LoginScreen extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 1;
     public static final int IMAGE_FROM_CAMERA = 0;
     public static final int IMAGE_FROM_GALLERY = 1;
+    public static final String FIRE_BASE = "gs://altp-3e631.appspot.com";
     public static final String prefixHOST = "http://ailatrieuphu.esy.es/imgupload/";
     public static final String DEFAULT_AVATAR = "http://ailatrieuphu.esy.es/imgupload/uploadedimages/avatar.png";
     private static String city;
-    private static String url = "http://209.58.180.196/json/"; //URL to get JSON Array
+    private static String url = "http://209.58.180.196/json/"; //URL to get CITY from JSON Array
     AccessToken mAccessToken;
     private AccessTokenTracker mAccessTokenTracker;
     private RelativeLayout mRelativeLayoutBg;
@@ -105,7 +112,7 @@ public class LoginScreen extends AppCompatActivity {
     private Dialog connectionDialog;
     private String mStringUserName;
     private String imgPath;
-    private String fileName;
+    //private String fileName;
     private String imgUrl;
     private Uri uriPhoto;
     MediaPlayer mediaPlayer;
@@ -342,17 +349,20 @@ public class LoginScreen extends AppCompatActivity {
 
                             @Override
                             public void onCancel() {
+                                if (loginDialog.isShowing()) {
+                                    loginDialog.hide();
+                                }
                                 mLoginButtonFb.setClickable(true);
                             }
 
                             @Override
                             public void onError(FacebookException exception) {
                                 mLoginButtonFb.setClickable(true);
-                                loginDialog.hide();
+                                if (loginDialog.isShowing()) {
+                                    loginDialog.hide();
+                                }
                             }
                         });
-                        return;
-
                     }
                 });
 
@@ -569,14 +579,70 @@ public class LoginScreen extends AppCompatActivity {
             avatarDialog.show();
             return;
         }
-
-        encodeAndUploadImage();
+        uploadAvatarToFireBase();
+        //encodeAndUploadImage();
 
         prgDialog.setMessage("Uploading Avatar");
         prgDialog.show();
     }
 
-    public void encodeAndUploadImage() {
+    /**
+     * //Upload avatar to firebase server
+     */
+    public void uploadAvatarToFireBase() {
+        CameraUtils.autoRotateImage(imgPath);
+        StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(FIRE_BASE);
+        StorageReference imagesRef = storageRef.child("image");
+        Uri file = Uri.fromFile(new File(imgPath));
+        UploadTask uploadTask = imagesRef.putFile(file);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+                uploadFail += 1;
+                if (uploadFail < 3) {
+                    uploadImage();
+                } else {
+                    imgUrl = DEFAULT_AVATAR;
+                    mUser.name = mStringUserName;
+                    mUser.address = city;
+                    mUser.avatar = imgUrl;
+                    sendLoginRequest(mUser);
+                }
+                Log.e("TAG", "unsuccessful: ");
+
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                String imgUrl = taskSnapshot.getDownloadUrl().toString();
+                loginDialog.show();
+                uploadPhotoUtils.isUploading = false;
+
+                if (prgDialog.isShowing()) {
+                    prgDialog.hide();
+                }
+                uploadFail = 4;
+
+                PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_URL_AVATAR, imgUrl);
+                PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_NAME, mStringUserName);
+                PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_TOTAL_SCORE, 0);
+                PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_LOCATION, city);
+
+                mUser.name = mStringUserName;
+                mUser.address = city;
+                mUser.avatar = imgUrl;
+                sendLoginRequest(mUser);
+            }
+        });
+    }
+
+    /**
+     * //Upload avatar to server php
+     */
+
+    /*public void encodeAndUploadImage() {
         new AsyncTask<Void, Void, String>() {
 
             protected void onPreExecute() {
@@ -609,8 +675,8 @@ public class LoginScreen extends AppCompatActivity {
                         PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_LOCATION, city);
 
                         mUser.name = mStringUserName;
-                        mUser.avatar = imgUrl;
                         mUser.address = city;
+                        mUser.avatar = imgUrl;
                         sendLoginRequest(mUser);
                     }
 
@@ -621,7 +687,10 @@ public class LoginScreen extends AppCompatActivity {
                             uploadImage();
                         } else {
                             imgUrl = DEFAULT_AVATAR;
-                            loggedAndMoveInfoScreen();
+                            mUser.name = mStringUserName;
+                            mUser.address = city;
+                            mUser.avatar = imgUrl;
+                            sendLoginRequest(mUser);
                         }
                         Log.e("statusCode: ", "" + statusCode);
                     }
@@ -631,8 +700,7 @@ public class LoginScreen extends AppCompatActivity {
 
             }
         }.execute(null, null, null);
-    }
-
+    }*/
     public void bgMusic() {
         AudioManager amanager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
         int maxVolume = amanager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
@@ -658,8 +726,10 @@ public class LoginScreen extends AppCompatActivity {
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .skipMemoryCache(true).into(mImageViewAvatar);
 
-                String fileNameSegments[] = imgPath.split("/");
-                fileName = System.currentTimeMillis() + "_" + fileNameSegments[fileNameSegments.length - 1];
+                // Get the Image's file name for Upload file to PHP server
+                // String fileNameSegments[] = imgPath.split("/");
+                //fileName = System.currentTimeMillis() + "_" + fileNameSegments[fileNameSegments.length - 1];
+
 
             } else if (requestCode == IMAGE_FROM_GALLERY && null != data) {
                 uriPhoto = data.getData();
@@ -678,10 +748,10 @@ public class LoginScreen extends AppCompatActivity {
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
                 imgPath = cursor.getString(columnIndex);
                 cursor.close();
-                // Get the Image's file name
-                String fileNameSegments[] = imgPath.split("/");
-                fileName = System.currentTimeMillis() + "_" + fileNameSegments[fileNameSegments.length - 1];
-                Log.e("TAG", " URI onActivityResult: " + uriPhoto + "\n" + Uri.fromFile(new File(fileName)));
+
+                // Get the Image's file name for Upload file to PHP server
+                //String fileNameSegments[] = imgPath.split("/");
+                //fileName = System.currentTimeMillis() + "_" + fileNameSegments[fileNameSegments.length - 1];
 
             }
         }
