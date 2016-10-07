@@ -30,8 +30,10 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.oic.game.ailatrieuphu.MainApplication;
 import com.oic.game.ailatrieuphu.R;
 import com.oic.game.ailatrieuphu.model.GameOverMessage;
@@ -117,6 +119,7 @@ public class PlayScreen extends AppCompatActivity {
     private boolean checkVuotMoc = false;
     private boolean isMoveGameOver = false;
     private boolean isServerErr = false;
+    InterstitialAd mInterstitialAd;
 
     private SockAltp.OnSocketEvent globalCallback = new SockAltp.OnSocketEvent() {
         @Override
@@ -143,7 +146,7 @@ public class PlayScreen extends AppCompatActivity {
                         @Override
                         public void run() {
                             if (disconnectDialog.isShowing() && !isFinishing()) {
-                                disconnectDialog.hide();
+                                disconnectDialog.dismiss();
                                 if (clickable) {
                                     resumeTimer();
                                 } else {
@@ -240,16 +243,17 @@ public class PlayScreen extends AppCompatActivity {
                 timeQuit = 3000;
             }
             if (!isFinishing() && !isMoveGameOver) {
-                isMoveGameOver = true;
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         SoundPoolManager.getInstance().stop();
                         mSocketAltp.removeEvent();
-                        startActivity(GameOver.createIntent(PlayScreen.this, mUser, mEnemy, mMessage, isServerErr));
-                        overridePendingTransition(R.animator.right_in, R.animator.left_out);
-                        finish();
-
+                        if (mInterstitialAd.isLoaded() && !isMoveGameOver) {
+                            mInterstitialAd.show();
+                            eventAdClose();
+                        } else {
+                            setMoveGameOver();
+                        }
                     }
                 }, timeQuit);
             }
@@ -276,7 +280,6 @@ public class PlayScreen extends AppCompatActivity {
             User user1 = userGameOver.get(0);
             User user2 = userGameOver.get(1);
 
-
             if (user1.id.equalsIgnoreCase(mUser.id)) {
                 mUser = user1;
                 mEnemy = user2;
@@ -290,13 +293,15 @@ public class PlayScreen extends AppCompatActivity {
                 public void run() {
                     mSocketAltp.removeEvent();
                     SoundPoolManager.getInstance().stop();
-                    startActivity(GameOver.createIntent(PlayScreen.this, mUser, mEnemy, mMessage, isServerErr));
-                    overridePendingTransition(R.animator.right_in, R.animator.left_out);
-                    finish();
+                    if (mInterstitialAd.isLoaded()) {
+                        mInterstitialAd.show();
+                        eventAdClose();
+                    } else {
+                        setMoveGameOver();
+                    }
                 }
             };
             if (!isFinishing() && !isMoveGameOver) {
-                isMoveGameOver = true;
                 handler.postDelayed(moveGameOverScr, timeMoveGameOver + timeQuestionImpor + timeQuestion15);
             }
             eventBus.result = userGameOver;
@@ -704,9 +709,10 @@ public class PlayScreen extends AppCompatActivity {
         };
 
         findViewById();
+        setInterstitialAd();
+        setRuleDialog();
         setUserInfo();
         setQA(1);
-        setRuleDialog();
         setCheckQuitDialog();
         setBarChartDialog();
         setQuitNoticeDialog();
@@ -716,10 +722,7 @@ public class PlayScreen extends AppCompatActivity {
             @Override
             public void run() {
                 isServerErr = true;
-                isMoveGameOver = true;
-                startActivity(GameOver.createIntent(PlayScreen.this, mUser, mEnemy, mMessage, isServerErr));
-                overridePendingTransition(R.animator.right_in, R.animator.left_out);
-                finish();
+                setMoveGameOver();
             }
         };
     }
@@ -789,6 +792,37 @@ public class PlayScreen extends AppCompatActivity {
 
     }
 
+    public void setInterstitialAd() {
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId(getResources().getString(R.string.interstitial_ad_unit_id));
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("666F50DBC9F76F90D726062FAA38B130")
+                .addTestDevice("F62A1ABE4DDAA8A709CCEBA71211561A")
+                .build();
+
+        mInterstitialAd.loadAd(adRequest);
+    }
+
+    public void eventAdClose() {
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                if (!isMoveGameOver) {
+                    setMoveGameOver();
+                }
+            }
+        });
+    }
+
+    public void setMoveGameOver() {
+        isMoveGameOver = true;
+        Intent intent = GameOver.createIntent(PlayScreen.this, mUser, mEnemy, mRoom, mMessage, isServerErr);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(intent);
+        //overridePendingTransition(R.animator.right_in, R.animator.left_out);
+        finish();
+    }
+
     /**
      * get data from previous activity
      */
@@ -846,7 +880,7 @@ public class PlayScreen extends AppCompatActivity {
     public void setRuleDialog() {
         ruleDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         ruleDialog.setContentView(R.layout.layout_popup_rule);
-        ruleDialog.getWindow().getAttributes().windowAnimations = R.style.DialogNoAnimation;
+        ruleDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         ruleDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         ruleDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         ruleDialog.setCancelable(false);
@@ -909,7 +943,7 @@ public class PlayScreen extends AppCompatActivity {
     public void setCheckQuitDialog() {
         quitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         quitDialog.setContentView(R.layout.layout_check_quit);
-        quitDialog.getWindow().getAttributes().windowAnimations = R.style.DialogNoAnimation;
+        quitDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         quitDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         quitDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         quitDialog.setCancelable(false);
@@ -949,6 +983,7 @@ public class PlayScreen extends AppCompatActivity {
     public void setBarChartDialog() {
         barChartDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         barChartDialog.setContentView(R.layout.layout_bar_chart);
+        barChartDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         barChartDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         barChartDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         barChartDialog.setCancelable(false);
@@ -957,6 +992,7 @@ public class PlayScreen extends AppCompatActivity {
         hideBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
                 barChartDialog.hide();
                 barChart.destroyDrawingCache();
 
@@ -967,6 +1003,7 @@ public class PlayScreen extends AppCompatActivity {
     public void setQuitNoticeDialog() {
         quitNoticeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         quitNoticeDialog.setContentView(R.layout.layout_quit_notice);
+        quitNoticeDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         quitNoticeDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         quitNoticeDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         quitNoticeDialog.setCancelable(false);
@@ -1026,9 +1063,8 @@ public class PlayScreen extends AppCompatActivity {
             pauseTimer();
             final LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
             linearLayout.setVisibility(View.INVISIBLE);
-            if (!isMoveGameOver) {
-                barChartDialog.show();
-            }
+            barChartDialog.show();
+
             handler.removeCallbacks(musicImpor);
             Button button = (Button) findViewById(R.id.button_save1);
             button.setBackgroundResource(R.drawable.save1_dis);
@@ -1064,10 +1100,7 @@ public class PlayScreen extends AppCompatActivity {
             button.setBackgroundResource(R.drawable.save2_dis);
             final LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
             linearLayout.setVisibility(View.INVISIBLE);
-            if (!isMoveGameOver) {
-
-                barChartDialog.show();
-            }
+            barChartDialog.show();
 
             handler.postDelayed(new Runnable() {
                 @Override
@@ -1087,10 +1120,8 @@ public class PlayScreen extends AppCompatActivity {
             mShowAnsRightHelp = 1;
             LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
             linearLayout.setVisibility(View.GONE);
-            if (!isMoveGameOver) {
+            barChartDialog.show();
 
-                barChartDialog.show();
-            }
             int n = new Random().nextInt(3) + 1;
             switch (n) {
                 case 1:
@@ -1153,7 +1184,7 @@ public class PlayScreen extends AppCompatActivity {
         mTextViewAns3.setText("C: " + mQuestion.mAns.get(2));
         mTextViewAns4.setText("D: " + mQuestion.mAns.get(3));
         autoFitText(mTextViewQuestion, mTextViewAns1, mTextViewAns2, mTextViewAns3, mTextViewAns4);
-        if (mediaPlayer != null) {
+        if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
             mediaPlayer.start();
         }
         handler.postDelayed(runServerErr, 40000);
@@ -1482,7 +1513,7 @@ public class PlayScreen extends AppCompatActivity {
         mAltpHelper.quit(mUser, mRoom, true);
         LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
         linearLayout.setVisibility(View.GONE);
-        if (!isMoveGameOver) {
+        if (!isMoveGameOver && barChartDialog != null) {
             try {
                 barChartDialog.show();
             } catch (WindowManager.BadTokenException e) {
@@ -1519,8 +1550,7 @@ public class PlayScreen extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-        if (!isMoveGameOver) {
-
+        if (!isMoveGameOver && quitDialog != null) {
             quitDialog.show();
         }
 
@@ -1574,6 +1604,7 @@ public class PlayScreen extends AppCompatActivity {
         if (timerResume != null) {
             timerResume.cancel();
         }
+        handler.removeCallbacks(hideRuleDialog);
         super.onDestroy();
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);

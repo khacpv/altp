@@ -49,6 +49,7 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -313,6 +314,7 @@ public class LoginScreen extends AppCompatActivity {
                     mLoginButtonFb.performClick();
                 } else {
                     connectionDialog.show();
+
                 }
             }
         });
@@ -349,18 +351,14 @@ public class LoginScreen extends AppCompatActivity {
 
                             @Override
                             public void onCancel() {
-                                if (loginDialog.isShowing()) {
-                                    loginDialog.hide();
-                                }
+                                loginDialog.hide();
                                 mLoginButtonFb.setClickable(true);
                             }
 
                             @Override
                             public void onError(FacebookException exception) {
                                 mLoginButtonFb.setClickable(true);
-                                if (loginDialog.isShowing()) {
-                                    loginDialog.hide();
-                                }
+                                loginDialog.hide();
                             }
                         });
                     }
@@ -412,6 +410,7 @@ public class LoginScreen extends AppCompatActivity {
                         } else {
                             isCheckBtnLater = true;
                             avatarDialog.show();
+
                         }
                     }
                 } else {
@@ -427,6 +426,7 @@ public class LoginScreen extends AppCompatActivity {
         avatarDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         avatarDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         avatarDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        avatarDialog.setCancelable(false);
 
         Button btnCamera = (Button) avatarDialog.findViewById(R.id.button_camera);
         Button btnLater = (Button) avatarDialog.findViewById(R.id.button_later);
@@ -481,6 +481,7 @@ public class LoginScreen extends AppCompatActivity {
         edittexDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         edittexDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         edittexDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        edittexDialog.setCancelable(false);
 
         Button okay = (Button) edittexDialog.findViewById(R.id.button_okay);
 
@@ -490,6 +491,7 @@ public class LoginScreen extends AppCompatActivity {
 
                 SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
                 edittexDialog.hide();
+
             }
         });
     }
@@ -514,6 +516,7 @@ public class LoginScreen extends AppCompatActivity {
         connectionDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         connectionDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         connectionDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        connectionDialog.setCancelable(false);
 
         Button tryAgain = (Button) connectionDialog.findViewById(R.id.btn_tryagain);
 
@@ -523,6 +526,7 @@ public class LoginScreen extends AppCompatActivity {
 
                 SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
                 connectionDialog.hide();
+
             }
         });
 
@@ -592,7 +596,8 @@ public class LoginScreen extends AppCompatActivity {
     public void uploadAvatarToFireBase() {
         CameraUtils.autoRotateImage(imgPath);
         StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(FIRE_BASE);
-        StorageReference imagesRef = storageRef.child("image");
+        String androidID = NetworkUtils.getUniqueID(this).replaceAll("-", "");
+        StorageReference imagesRef = storageRef.child(androidID + "_" + System.currentTimeMillis());
         Uri file = Uri.fromFile(new File(imgPath));
         UploadTask uploadTask = imagesRef.putFile(file);
         uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -609,8 +614,6 @@ public class LoginScreen extends AppCompatActivity {
                     mUser.avatar = imgUrl;
                     sendLoginRequest(mUser);
                 }
-                Log.e("TAG", "unsuccessful: ");
-
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -619,10 +622,7 @@ public class LoginScreen extends AppCompatActivity {
                 String imgUrl = taskSnapshot.getDownloadUrl().toString();
                 loginDialog.show();
                 uploadPhotoUtils.isUploading = false;
-
-                if (prgDialog.isShowing()) {
-                    prgDialog.hide();
-                }
+                prgDialog.hide();
                 uploadFail = 4;
 
                 PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_URL_AVATAR, imgUrl);

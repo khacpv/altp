@@ -2,6 +2,7 @@
     <string name="app_name">ALTP Online</string>
     <string name="facebook_app_id">1120563777999580</string>
     <string name="banner_ad_unit_id">ca-app-pub-7868677551170210/5076670289</string>
+    <string name="interstitial_ad_unit_id">ca-app-pub-7868677551170210/6640801881</string>
 
     <string name="player">PLAYER</string>
     <string name="enemy">ENEMY</string>
@@ -27,26 +28,26 @@
     <string name="answ_B">B:</string>
     <string name="answ_C">C:</string>
     <string name="answ_D">D:</string>
-    <string name="set_Avatar">Đặt Avatar</string>
+    <string name="set_Avatar">ĐẶT Avatar</string>
     <string name="question_Avatar">Bạn muốn chọn ảnh đại diện\ncho mình luôn chứ?</string>
     <string name="avatar_from_camera">Từ Camera</string>
     <string name="avatar_from_gallery">Từ Thư viện</string>
     <string name="trogiup_khangia">Trợ giúp khán giả</string>
     <string name="btn_close">Đóng</string>
     <string name="list_player">Người chơi</string>
-    <string name="title_quit_popup">Dừng chơi</string>
+    <string name="title_quit_popup">DỪNG CHƠI</string>
     <string name="question_quit_popup">Bạn thực sự muốn dừng  cuộc chơi tại đây?</string>
     <string name="btnNo_quit_popup">Không</string>
     <string name="btnYes_quit_popup">Đồng ý</string>
-    <string name="title_edittex_popup">Lỗi</string>
+    <string name="title_edittex_popup">LỖI</string>
     <string name="noti_edittex_popup">Tên đăng nhập \n phải lớn hơn 3 ký tự</string>
-    <string name="title_login_popup">Đăng Nhập</string>
-    <string name="wait_text">Vui lòng đợi ...</string>
+    <string name="title_login_popup">ĐĂNG NHẬP</string>
+    <string name="wait_text">Vui lòng đợi&#8230;</string>
     <string name="try_again_text">Thử Lại</string>
     <string name="skip_text">Bỏ Qua</string>
-    <string name="reconnect_text">Đang kết nối lại.\nVui lòng đợi...</string>
-    <string name="connect_erro_text">Lỗi mạng.\nVui lòng kiểm tra lại...</string>
-    <string name="title_disconnect_popup">Mất kết nối</string>
+    <string name="reconnect_text">Đang kết nối lại.\nVui lòng đợi&#8230;</string>
+    <string name="connect_erro_text">Lỗi mạng.\nVui lòng kiểm tra lại&#8230;</string>
+    <string name="title_disconnect_popup">MẤT KẾT NỐI</string>
     <string name="hint_edittex_login">Choose username</string>
     <string name="title_wait_popup">Chưa sẵn sàng</string>
     <string name="text_wait_popup">Vui lòng đợi đối thủ</string>
@@ -59,4 +60,9 @@
     <string name="quit">Đối phương đã bỏ cuộc</string>
     <string name="disconnect_server">MẤT KẾT NỐI SERVER</string>
     <string name="ready">Đã sẵn sàng</string>
+    <string name="title_report">PHẢN HỒI</string>
+    <string name="text_report">Có câu hỏi bị sai\ntrong lượt chơi vừa rồi</string>
+    <string name="btn_report">Gửi cho chương trình</string>
+    <string name="noti_report">Cảm ơn bạn đã gửi phản hồi!</string>
+    <string name="noti_report_2">Bạn đã phản hồi ở lượt chơi này rồi!</string>
 </resources>
