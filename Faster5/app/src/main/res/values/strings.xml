@@ -1,8 +1,12 @@
 <resources>
     <string name="app_name">ALTP Online</string>
     <string name="facebook_app_id">1120563777999580</string>
-    <string name="banner_ad_unit_id">ca-app-pub-7868677551170210/5076670289</string>
-    <string name="interstitial_ad_unit_id">ca-app-pub-7868677551170210/6640801881</string>
+
+    <string name="banner_ad_unit_id">ca-app-pub-2681309004534126/1995949093</string>
+    <string name="interstitial_ad_unit_id">ca-app-pub-2681309004534126/3472682296</string>
+
+    <string name="test_device_1">666F50DBC9F76F90D726062FAA38B130</string>
+    <string name="test_device_2">F62A1ABE4DDAA8A709CCEBA71211561A</string>
 
     <string name="player">PLAYER</string>
     <string name="enemy">ENEMY</string>
@@ -61,7 +65,7 @@
     <string name="disconnect_server">MẤT KẾT NỐI SERVER</string>
     <string name="ready">Đã sẵn sàng</string>
     <string name="title_report">PHẢN HỒI</string>
-    <string name="text_report">Có câu hỏi không chính xác\ntrong lượt chơi vừa rồi?</string>
+    <string name="text_report">Có câu hỏi không chính xác\ntrong lượt chơi vừa rồi&#63;</string>
     <string name="btn_report">Gửi cho chương trình</string>
     <string name="noti_report">Cảm ơn bạn đã gửi phản hồi!</string>
     <string name="noti_report_2">Bạn đã phản hồi ở lượt chơi này rồi!</string>

@@ -87,9 +87,8 @@ public class LoginScreen extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 1;
     public static final int IMAGE_FROM_CAMERA = 0;
     public static final int IMAGE_FROM_GALLERY = 1;
-    public static final String FIRE_BASE = "gs://altp-3e631.appspot.com";
-    public static final String prefixHOST = "http://ailatrieuphu.esy.es/imgupload/";
-    public static final String DEFAULT_AVATAR = "http://ailatrieuphu.esy.es/imgupload/uploadedimages/avatar.png";
+    public static final String FIRE_BASE = "gs://ai-la-trieu-phu-online.appspot.com/avatar";
+    public static final String DEFAULT_AVATAR = "https://firebasestorage.googleapis.com/v0/b/ai-la-trieu-phu-online.appspot.com/o/avatar%2Favatar.png?alt=media&token=24133aa8-e81e-4019-bdb9-c6c5e49c6ff3";
     private static String city;
     private static String url = "http://209.58.180.196/json/"; //URL to get CITY from JSON Array
     AccessToken mAccessToken;
@@ -638,69 +637,6 @@ public class LoginScreen extends AppCompatActivity {
         });
     }
 
-    /**
-     * //Upload avatar to server php
-     */
-
-    /*public void encodeAndUploadImage() {
-        new AsyncTask<Void, Void, String>() {
-
-            protected void onPreExecute() {
-            }
-
-            @Override
-            protected String doInBackground(Void... params) {
-                return uploadPhotoUtils.encodeImage();
-            }
-
-            @Override
-            protected void onPostExecute(String encode) {
-                uploadPhotoUtils.startUploadImage(LoginScreen.this, fileName, encode, new AsyncHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                        loginDialog.show();
-                        uploadPhotoUtils.isUploading = false;
-                        try {
-                            imgUrl = prefixHOST + new String(responseBody, "UTF-8").replace("\"", "").replaceAll("\\\\", File.separator);
-
-                        } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
-                        }
-                        prgDialog.hide();
-                        uploadFail = 4;
-
-                        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_URL_AVATAR, imgUrl);
-                        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_NAME, mStringUserName);
-                        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_TOTAL_SCORE, 0);
-                        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_LOCATION, city);
-
-                        mUser.name = mStringUserName;
-                        mUser.address = city;
-                        mUser.avatar = imgUrl;
-                        sendLoginRequest(mUser);
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                        uploadFail += 1;
-                        if (uploadFail < 3) {
-                            uploadImage();
-                        } else {
-                            imgUrl = DEFAULT_AVATAR;
-                            mUser.name = mStringUserName;
-                            mUser.address = city;
-                            mUser.avatar = imgUrl;
-                            sendLoginRequest(mUser);
-                        }
-                        Log.e("statusCode: ", "" + statusCode);
-                    }
-
-                });
-
-
-            }
-        }.execute(null, null, null);
-    }*/
     public void bgMusic() {
         AudioManager amanager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
         int maxVolume = amanager.getStreamMaxVolume(AudioManager.STREAM_ALARM);

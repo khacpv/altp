@@ -122,8 +122,8 @@ public class GameOver extends AppCompatActivity {
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice("666F50DBC9F76F90D726062FAA38B130")
-                .addTestDevice("F62A1ABE4DDAA8A709CCEBA71211561A")
+                .addTestDevice(getString(R.string.test_device_1))
+                .addTestDevice(getString(R.string.test_device_2))
                 .build();
         mAdView.loadAd(adRequest);
 
@@ -246,21 +246,10 @@ public class GameOver extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mReport == 0) {
-                    String jsonString = new Gson().toJson(mRoom);
-                    ArrayList<Question> questionArr = new ArrayList<>();
-                    try {
-                        JSONObject data = new JSONObject(jsonString);
-                        JSONArray array = data.getJSONArray("questions");
-                        for (int i = 0; i < array.length(); i++) {
-                            mQuestion = new Gson().fromJson(array.get(i).toString(), Question.class);
-                            questionArr.add(mQuestion);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    String jsonString = new Gson().toJson(mRoom.questions.get(mRoom.questionIndex));
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference myRef = database.getReference(mUser.id + " || " + System.currentTimeMillis());
-                    myRef.setValue(questionArr);
+                    DatabaseReference myRef = database.getReference("report/"+System.currentTimeMillis()+mUser.id);
+                    myRef.setValue(jsonString);
                     Toast.makeText(GameOver.this, getResources().getString(R.string.noti_report),
                             Toast.LENGTH_SHORT).show();
                 }

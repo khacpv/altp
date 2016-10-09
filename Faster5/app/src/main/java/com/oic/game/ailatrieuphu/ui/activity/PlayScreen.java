@@ -785,8 +785,8 @@ public class PlayScreen extends AppCompatActivity {
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice("666F50DBC9F76F90D726062FAA38B130")
-                .addTestDevice("F62A1ABE4DDAA8A709CCEBA71211561A")
+                .addTestDevice(getString(R.string.test_device_1))
+                .addTestDevice(getString(R.string.test_device_2))
                 .build();
         mAdView.loadAd(adRequest);
 
@@ -796,8 +796,8 @@ public class PlayScreen extends AppCompatActivity {
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId(getResources().getString(R.string.interstitial_ad_unit_id));
         AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice("666F50DBC9F76F90D726062FAA38B130")
-                .addTestDevice("F62A1ABE4DDAA8A709CCEBA71211561A")
+                .addTestDevice(getString(R.string.test_device_1))
+                .addTestDevice(getString(R.string.test_device_2))
                 .build();
 
         mInterstitialAd.loadAd(adRequest);
