@@ -127,7 +127,8 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/layout_marginBottom_20">
 
             <Button
                 android:id="@+id/btn_guide4"
@@ -162,7 +163,6 @@
             android:layout_marginBottom="@dimen/layout_marginBottom_20"
             android:layout_marginLeft="@dimen/layout_marginLeft_20"
             android:layout_marginRight="@dimen/layout_marginRight_20"
-            android:layout_marginTop="@dimen/layout_marginTop_20"
             android:ellipsize="end"
             android:gravity="center"
             android:lines="1"

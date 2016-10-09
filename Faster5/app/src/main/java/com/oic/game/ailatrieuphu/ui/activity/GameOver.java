@@ -1,31 +1,45 @@
 package com.oic.game.ailatrieuphu.ui.activity;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.Gson;
 import com.oic.game.ailatrieuphu.R;
 import com.oic.game.ailatrieuphu.model.GameOverMessage;
+import com.oic.game.ailatrieuphu.model.Question;
+import com.oic.game.ailatrieuphu.model.Room;
 import com.oic.game.ailatrieuphu.model.User;
 import com.oic.game.ailatrieuphu.util.PrefUtils;
 import com.oic.game.ailatrieuphu.util.SoundPoolManager;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by Kien on 07/14/2016.
@@ -36,6 +50,7 @@ public class GameOver extends AppCompatActivity {
     private static final String EXTRA_ENEMY = "enemy";
     private static final String GAME_OVER_MESSAGE = "message";
     private static final String SERVER_ERR = "server_erro";
+    private static final String EXTRA_ROOM = "room";
     ImageView mImageViewMyAvatar;
     ImageView mImageViewEnemyAvatar;
     TextView mTextViewMyName;
@@ -46,12 +61,17 @@ public class GameOver extends AppCompatActivity {
     TextView mTextViewEnemyCity;
     TextView mTextViewResultText;
     Button mButtonBack;
+    Button mButtonReport;
+    Dialog reportDialog;
     private int mTotalScore;
     private MediaPlayer mediaPlayer;
     private boolean isMoveInfoScr = false;
     User mUser;
     User mEnemy;
+    Room mRoom;
+    Question mQuestion;
     GameOverMessage mMessage;
+    private int mReport = 0;
 
     @Override
 
@@ -68,10 +88,22 @@ public class GameOver extends AppCompatActivity {
         getBundle();
         setUserInfo();
         bgMusic();
+        setReportDialog();
+
+        mButtonReport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                reportDialog.show();
+            }
+        });
     }
 
+
     public void findViewById() {
+        reportDialog = new Dialog(this);
         mButtonBack = (Button) findViewById(R.id.button_backhome);
+        mButtonReport = (Button) findViewById(R.id.button_report);
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/roboto.ttf");
 
         mTextViewResultText = (TextView) findViewById(R.id.textview_result);
@@ -127,10 +159,12 @@ public class GameOver extends AppCompatActivity {
         }
     }
 
-    public static Intent createIntent(Context context, User mUser, User enemyUser, GameOverMessage mMessage, boolean serverErr) {
+    public static Intent createIntent(Context context, User mUser, User enemyUser, Room mRoom,
+                                      GameOverMessage mMessage, boolean serverErr) {
         Intent intent = new Intent(context, GameOver.class);
         intent.putExtra(EXTRA_USER, mUser);
         intent.putExtra(EXTRA_ENEMY, enemyUser);
+        intent.putExtra(EXTRA_ROOM, mRoom);
         intent.putExtra(GAME_OVER_MESSAGE, mMessage);
         intent.putExtra(SERVER_ERR, serverErr);
         return intent;
@@ -140,6 +174,7 @@ public class GameOver extends AppCompatActivity {
         mUser = (User) getIntent().getSerializableExtra(EXTRA_USER);
         mEnemy = (User) getIntent().getSerializableExtra(EXTRA_ENEMY);
         mMessage = (GameOverMessage) getIntent().getSerializableExtra(GAME_OVER_MESSAGE);
+        mRoom = (Room) getIntent().getSerializableExtra(EXTRA_ROOM);
         boolean isServerErr = getIntent().getBooleanExtra(SERVER_ERR, false);
 
         if (mUser.score == mEnemy.score) {
@@ -148,7 +183,7 @@ public class GameOver extends AppCompatActivity {
         } else if (mUser.score < mEnemy.score) {
             SoundPoolManager.getInstance().playSound(R.raw.lose);
             startMedia(3000);
-        } else if (mUser.score > mEnemy.score){
+        } else if (mUser.score > mEnemy.score) {
             SoundPoolManager.getInstance().playSound(R.raw.best_player);
             startMedia(12000);
         }
@@ -196,6 +231,56 @@ public class GameOver extends AppCompatActivity {
         }
     }
 
+    public void setReportDialog() {
+        reportDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        reportDialog.setContentView(R.layout.layout_report_popup);
+        reportDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        reportDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        reportDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        reportDialog.setCancelable(false);
+
+        Button report = (Button) reportDialog.findViewById(R.id.button_report);
+        final Button cancel = (Button) reportDialog.findViewById(R.id.button_cancel);
+
+        report.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mReport == 0) {
+                    String jsonString = new Gson().toJson(mRoom);
+                    ArrayList<Question> questionArr = new ArrayList<>();
+                    try {
+                        JSONObject data = new JSONObject(jsonString);
+                        JSONArray array = data.getJSONArray("questions");
+                        for (int i = 0; i < array.length(); i++) {
+                            mQuestion = new Gson().fromJson(array.get(i).toString(), Question.class);
+                            questionArr.add(mQuestion);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference myRef = database.getReference(mUser.id + " || " + System.currentTimeMillis());
+                    myRef.setValue(questionArr);
+                    Toast.makeText(GameOver.this, getResources().getString(R.string.noti_report),
+                            Toast.LENGTH_SHORT).show();
+                }
+                if (mReport == 1) {
+                    Toast.makeText(GameOver.this, getResources().getString(R.string.noti_report_2),
+                            Toast.LENGTH_SHORT).show();
+                }
+                cancel.performClick();
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                reportDialog.hide();
+                mReport = 1;
+            }
+        });
+    }
+
     public void onBackPressed() {
     }
 
@@ -216,7 +301,6 @@ public class GameOver extends AppCompatActivity {
         if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
             mediaPlayer.start();
         }
-
         super.onResume();
     }
 
@@ -226,6 +310,9 @@ public class GameOver extends AppCompatActivity {
             mediaPlayer.stop();
             mediaPlayer.release();
             mediaPlayer = null;
+        }
+        if (reportDialog != null) {
+            reportDialog.dismiss();
         }
         super.onDestroy();
         if (EventBus.getDefault().isRegistered(this)) {

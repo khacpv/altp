@@ -19,6 +19,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.firebase.crash.FirebaseCrash;
 import com.oic.game.ailatrieuphu.MainApplication;
 import com.oic.game.ailatrieuphu.BuildConfig;
 import com.oic.game.ailatrieuphu.R;
@@ -80,10 +81,10 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             if (maintainDialog.isShowing() && !isFinishing()) {
-                                maintainDialog.hide();
+                                maintainDialog.dismiss();
                                 if (isLoaded) {
                                     startActivity(myIntent);
-                                    overridePendingTransition(R.anim.xml_fade_in, R.anim.xml_fade_out);
+                                    overridePendingTransition(R.animator.right_in, R.animator.left_out);
                                     finish();
                                 }
                             }
@@ -424,7 +425,7 @@ public class MainActivity extends AppCompatActivity {
                             mSocketAltp.removeEvent();
                             if (mSocketAltp.isConnected()) {
                                 startActivity(myIntent);
-                                overridePendingTransition(R.anim.xml_fade_in, R.anim.xml_fade_out);
+                                overridePendingTransition(R.animator.right_in, R.animator.left_out);
                                 finish();
                             }
                         }

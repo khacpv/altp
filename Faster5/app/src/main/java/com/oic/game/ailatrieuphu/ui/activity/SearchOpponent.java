@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.firebase.crash.FirebaseCrash;
 import com.oic.game.ailatrieuphu.R;
 import com.bumptech.glide.Glide;
 import com.oic.game.ailatrieuphu.MainApplication;
@@ -134,9 +135,7 @@ public class SearchOpponent extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if (!isFinishing()) {
-                        waitDialog.show();
-                    }
+                    waitDialog.show();
                 }
             });
             Log.e("TAG", "waiting for other players ready.");
@@ -168,8 +167,8 @@ public class SearchOpponent extends AppCompatActivity {
         runMovePlayScr = new Runnable() {
             @Override
             public void run() {
+                playScrnIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(playScrnIntent);
-                overridePendingTransition(R.animator.right_in, R.animator.left_out);
                 finish();
             }
         };

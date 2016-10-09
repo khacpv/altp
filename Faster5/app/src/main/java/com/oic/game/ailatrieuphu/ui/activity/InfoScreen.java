@@ -28,6 +28,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.firebase.crash.FirebaseCrash;
 import com.oic.game.ailatrieuphu.MainApplication;
 import com.oic.game.ailatrieuphu.R;
 import com.oic.game.ailatrieuphu.model.Room;
@@ -73,6 +74,7 @@ public class InfoScreen extends AppCompatActivity {
     private int enemyNumberInList;
     private boolean isEnemy = false;
     private boolean isMoveSearOppo = false;
+    private boolean isBgMusic = true;
     private Dialog connectionDiaglog;
     MediaPlayer mediaPlayer;
     private Handler handler;
@@ -179,6 +181,7 @@ public class InfoScreen extends AppCompatActivity {
         if (isEnemy) {
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.stop();
+                isBgMusic = false;
             }
             SoundPoolManager.getInstance().playSound(R.raw.search_finish);
             timeSearch.cancel();
@@ -490,7 +493,7 @@ public class InfoScreen extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
+        if (mediaPlayer != null && !mediaPlayer.isPlaying() && isBgMusic) {
             mediaPlayer.start();
         }
         super.onResume();
