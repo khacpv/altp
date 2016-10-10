@@ -17,9 +17,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.oic.game.ailatrieuphu.BuildConfig;
+import com.game.oic.ailatrieuphu.BuildConfig;
+import com.game.oic.ailatrieuphu.R;
 import com.oic.game.ailatrieuphu.MainApplication;
-import com.oic.game.ailatrieuphu.R;
 import com.oic.game.ailatrieuphu.sock.SockAltp;
 import com.oic.game.ailatrieuphu.util.ISoundPoolLoaded;
 import com.oic.game.ailatrieuphu.util.NetworkUtils;

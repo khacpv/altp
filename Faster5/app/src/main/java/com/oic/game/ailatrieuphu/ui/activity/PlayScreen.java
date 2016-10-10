@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.game.oic.ailatrieuphu.R;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -35,7 +36,6 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.oic.game.ailatrieuphu.MainApplication;
-import com.oic.game.ailatrieuphu.R;
 import com.oic.game.ailatrieuphu.model.GameOverMessage;
 import com.oic.game.ailatrieuphu.model.Question;
 import com.oic.game.ailatrieuphu.model.Room;

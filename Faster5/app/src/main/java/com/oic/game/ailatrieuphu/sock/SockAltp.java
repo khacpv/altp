@@ -17,7 +17,7 @@ import io.socket.emitter.Emitter;
  */
 public class SockAltp {
 
-    public static final String SERVER_LOCAL = "http://192.168.1.103:9090";
+    public static final String SERVER_LOCAL = "http://192.168.1.110:9090";
 
     public static final String SERVER_PROD = "http://altp-oic.rhcloud.com";
 

@@ -24,10 +24,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.game.oic.ailatrieuphu.R;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.oic.game.ailatrieuphu.MainApplication;
-import com.oic.game.ailatrieuphu.R;
 import com.oic.game.ailatrieuphu.model.Room;
 import com.oic.game.ailatrieuphu.model.User;
 import com.oic.game.ailatrieuphu.sock.AltpHelper;

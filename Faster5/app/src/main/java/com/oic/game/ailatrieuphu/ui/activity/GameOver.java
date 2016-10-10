@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.game.oic.ailatrieuphu.R;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -26,7 +27,6 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
-import com.oic.game.ailatrieuphu.R;
 import com.oic.game.ailatrieuphu.model.GameOverMessage;
 import com.oic.game.ailatrieuphu.model.Question;
 import com.oic.game.ailatrieuphu.model.Room;
