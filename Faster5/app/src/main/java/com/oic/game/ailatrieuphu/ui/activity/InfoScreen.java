@@ -18,6 +18,8 @@ import android.util.Pair;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -82,7 +84,6 @@ public class InfoScreen extends AppCompatActivity {
     ImageView mImageviewIconSearch;
     TextView mTextViewTimeSearch;
     CountDownTimer timeSearch;
-
     /**
      * global events
      */
@@ -346,7 +347,6 @@ public class InfoScreen extends AppCompatActivity {
     }
 
     public void findViewById() {
-
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice("666F50DBC9F76F90D726062FAA38B130")
