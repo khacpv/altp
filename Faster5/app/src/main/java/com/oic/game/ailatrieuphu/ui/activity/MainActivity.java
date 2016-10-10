@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.crash.FirebaseCrash;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     TextView textviewLoading;
     TextView textviewDebug;
+    ImageView imvDebug;
 
     ParallaxView mParallaxView;
 
@@ -137,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
 
         textviewLoading = (TextView) findViewById(R.id.textview_loading);
         textviewDebug = (TextView) findViewById(R.id.debug);
+        imvDebug = (ImageView) findViewById(R.id.imv_debug);
 
         startTime = System.currentTimeMillis();
 
@@ -167,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (!BuildConfig.DEBUG) {
             textviewDebug.setVisibility(View.GONE);
+            imvDebug.setVisibility(View.GONE);
         }
     }
 
