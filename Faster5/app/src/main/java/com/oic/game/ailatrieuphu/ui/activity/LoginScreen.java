@@ -47,6 +47,8 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.crash.FirebaseCrash;
@@ -203,6 +205,15 @@ public class LoginScreen extends AppCompatActivity {
             mTextViewCity.setText(city);
         } else {
             mTextViewCity.setText(city);
+        }
+
+        //Check if google play services is up to date
+        final int playServicesStatus = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
+        if(playServicesStatus != ConnectionResult.SUCCESS){
+            //If google play services in not available show an error dialog and return
+            final Dialog errorDialog = GoogleApiAvailability.getInstance().getErrorDialog(this, playServicesStatus, 0, null);
+            errorDialog.show();
+            return;
         }
     }
 
