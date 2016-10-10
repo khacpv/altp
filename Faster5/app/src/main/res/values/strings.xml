@@ -61,7 +61,7 @@
     <string name="disconnect_server">MẤT KẾT NỐI SERVER</string>
     <string name="ready">Đã sẵn sàng</string>
     <string name="title_report">PHẢN HỒI</string>
-    <string name="text_report">Có câu hỏi bị sai\ntrong lượt chơi vừa rồi</string>
+    <string name="text_report">Có câu hỏi không chính xác\ntrong lượt chơi vừa rồi?</string>
     <string name="btn_report">Gửi cho chương trình</string>
     <string name="noti_report">Cảm ơn bạn đã gửi phản hồi!</string>
     <string name="noti_report_2">Bạn đã phản hồi ở lượt chơi này rồi!</string>
