@@ -2,6 +2,7 @@ package com.oic.game.ailatrieuphu.ui.activity;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -52,6 +53,7 @@ import io.socket.client.Socket;
  * Created by Kien on 07/05/2016.
  */
 public class InfoScreen extends AppCompatActivity {
+    private static final String EXTRA_REWARD = "reward";
     private TextView mTextViewNameUser;
     private TextView mTextViewTotalScore;
     private TextView mTextViewCity;
@@ -75,12 +77,14 @@ public class InfoScreen extends AppCompatActivity {
     private boolean isMoveSearOppo = false;
     private boolean isBgMusic = true;
     private Dialog connectionDiaglog;
+    private Dialog rewardDialog;
     MediaPlayer mediaPlayer;
     private Handler handler;
     Runnable resetSearch;
     ImageView mImageviewIconSearch;
     TextView mTextViewTimeSearch;
     CountDownTimer timeSearch;
+
     /**
      * global events
      */
@@ -287,8 +291,8 @@ public class InfoScreen extends AppCompatActivity {
         findViewById();
         setView();
         buttonPlayer();
-
         setConnectionDiaglog();
+        setRewardDialog();
         handler = new Handler();
 
         timeSearch = new CountDownTimer(30100, 1000) {
@@ -341,6 +345,11 @@ public class InfoScreen extends AppCompatActivity {
                                              }
                                          }
         );
+
+        boolean reward = getIntent().getBooleanExtra(EXTRA_REWARD, false);
+        if(reward && rewardDialog != null){
+            rewardDialog.show();
+        }
     }
 
     public void findViewById() {
@@ -365,6 +374,7 @@ public class InfoScreen extends AppCompatActivity {
         setTypeface(font, mTextViewCity, mTextViewNameUser, mTextViewTotalScore, mTextViewTimeSearch);
 
         connectionDiaglog = new Dialog(this);
+        rewardDialog = new Dialog(this);
     }
 
     public void setConnectionDiaglog() {
@@ -373,6 +383,7 @@ public class InfoScreen extends AppCompatActivity {
         connectionDiaglog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         connectionDiaglog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         connectionDiaglog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        connectionDiaglog.setCancelable(false);
 
         Button tryAgain = (Button) connectionDiaglog.findViewById(R.id.btn_tryagain);
 
@@ -380,6 +391,26 @@ public class InfoScreen extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 connectionDiaglog.hide();
+            }
+        });
+
+    }
+
+
+    public void setRewardDialog() {
+        rewardDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        rewardDialog.setContentView(R.layout.layout_popup_reward);
+        rewardDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        rewardDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        rewardDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        rewardDialog.setCancelable(false);
+
+        Button okBtn = (Button) rewardDialog.findViewById(R.id.button_okay);
+
+        okBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rewardDialog.hide();
             }
         });
 
@@ -473,6 +504,12 @@ public class InfoScreen extends AppCompatActivity {
         finish();
     }
 
+    public static Intent createIntent(Context context, boolean reward) {
+        Intent intent = new Intent(context, InfoScreen.class);
+        intent.putExtra(EXTRA_REWARD, reward);
+        return intent;
+    }
+
     public void onBackPressed() {
     }
 
@@ -504,6 +541,9 @@ public class InfoScreen extends AppCompatActivity {
 
         if (connectionDiaglog != null) {
             connectionDiaglog.dismiss();
+        }
+        if (rewardDialog != null) {
+            rewardDialog.dismiss();
         }
 
         if (mediaPlayer != null) {

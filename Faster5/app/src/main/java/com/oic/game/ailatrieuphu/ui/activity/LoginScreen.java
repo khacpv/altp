@@ -122,6 +122,7 @@ public class LoginScreen extends AppCompatActivity {
     private boolean isCheckPickImage = false;
     private boolean isCheckBtnLater = true;
     private boolean isMoveInfo = false;
+    private boolean reward = false;
     private UploadPhotoUtils uploadPhotoUtils = new UploadPhotoUtils();
     private int uploadFail = 0;
 
@@ -137,6 +138,8 @@ public class LoginScreen extends AppCompatActivity {
             }
             OnLoginCallbackEvent eventBus = new OnLoginCallbackEvent();
             User user = mAltpHelper.loginCallback(args);
+            reward = mAltpHelper.loginCallbackCheckReward(args);
+            Log.e("TAG", "reward: " + reward);
             eventBus.user = user;
             EventBus.getDefault().post(eventBus);
         }
@@ -709,8 +712,8 @@ public class LoginScreen extends AppCompatActivity {
     }
 
     public void loggedAndMoveInfoScreen() {
-        Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
-        startActivity(intent);
+        Intent loginScrnIntent = InfoScreen.createIntent(LoginScreen.this, reward);
+        startActivity(loginScrnIntent);
         overridePendingTransition(R.animator.right_in, R.animator.left_out);
         finish();
     }
