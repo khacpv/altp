@@ -206,15 +206,6 @@ public class LoginScreen extends AppCompatActivity {
         } else {
             mTextViewCity.setText(city);
         }
-
-        //Check if google play services is up to date
-        final int playServicesStatus = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
-        if(playServicesStatus != ConnectionResult.SUCCESS){
-            //If google play services in not available show an error dialog and return
-            final Dialog errorDialog = GoogleApiAvailability.getInstance().getErrorDialog(this, playServicesStatus, 0, null);
-            errorDialog.show();
-            return;
-        }
     }
 
     @Subscribe
@@ -420,7 +411,6 @@ public class LoginScreen extends AppCompatActivity {
                         } else {
                             isCheckBtnLater = true;
                             avatarDialog.show();
-
                         }
                     }
                 } else {
@@ -594,16 +584,22 @@ public class LoginScreen extends AppCompatActivity {
             return;
         }
         uploadAvatarToFireBase();
-        //encodeAndUploadImage();
-
-        prgDialog.setMessage("Uploading Avatar");
-        prgDialog.show();
     }
 
     /**
      * //Upload avatar to firebase server
      */
     public void uploadAvatarToFireBase() {
+        //Check if google play services is up to date
+        final int playServicesStatus = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
+        if (playServicesStatus != ConnectionResult.SUCCESS) {
+            //If google play services in not available show an error dialog and return
+            final Dialog errorDialog = GoogleApiAvailability.getInstance().getErrorDialog(this, playServicesStatus, 0, null);
+            errorDialog.show();
+            return;
+        }
+        prgDialog.setMessage("Uploading Avatar");
+        prgDialog.show();
         CameraUtils.autoRotateImage(imgPath);
         StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(FIRE_BASE);
         String androidID = NetworkUtils.getUniqueID(this).replaceAll("-", "");
