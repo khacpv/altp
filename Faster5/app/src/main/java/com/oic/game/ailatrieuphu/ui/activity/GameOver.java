@@ -10,6 +10,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -20,13 +21,12 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.game.oic.ailatrieuphu.R;
-import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
+import com.kobakei.ratethisapp.RateThisApp;
 import com.oic.game.ailatrieuphu.model.GameOverMessage;
 import com.oic.game.ailatrieuphu.model.Question;
 import com.oic.game.ailatrieuphu.model.Room;
@@ -35,11 +35,6 @@ import com.oic.game.ailatrieuphu.util.PrefUtils;
 import com.oic.game.ailatrieuphu.util.SoundPoolManager;
 
 import org.greenrobot.eventbus.EventBus;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 /**
  * Created by Kien on 07/14/2016.
@@ -66,10 +61,10 @@ public class GameOver extends AppCompatActivity {
     private int mTotalScore;
     private MediaPlayer mediaPlayer;
     private boolean isMoveInfoScr = false;
+    private boolean isWin = false;
     User mUser;
     User mEnemy;
     Room mRoom;
-    Question mQuestion;
     GameOverMessage mMessage;
     private int mReport = 0;
 
@@ -89,7 +84,7 @@ public class GameOver extends AppCompatActivity {
         setUserInfo();
         bgMusic();
         setReportDialog();
-
+        rateApp();
         mButtonReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -127,6 +122,38 @@ public class GameOver extends AppCompatActivity {
                 .build();
         mAdView.loadAd(adRequest);
 
+    }
+
+    public void rateApp() {
+        // Custom criteria: 3 days and 5 launches
+        RateThisApp.Config config = new RateThisApp.Config(3, 5);
+
+        config.setTitle(R.string.my_own_title);
+        config.setMessage(R.string.my_own_message);
+        config.setYesButtonText(R.string.my_own_rate);
+        config.setNoButtonText(R.string.my_own_thanks);
+        config.setCancelButtonText(R.string.my_own_cancel);
+
+        RateThisApp.init(config);
+        RateThisApp.setCallback(new RateThisApp.Callback() {
+            @Override
+            public void onYesClicked() {
+                RateThisApp.stopRateDialog(GameOver.this);
+                intentMoveInfo();
+            }
+
+            @Override
+            public void onNoClicked() {
+                RateThisApp.stopRateDialog(GameOver.this);
+                intentMoveInfo();
+            }
+
+            @Override
+            public void onCancelClicked() {
+                RateThisApp.stopRateDialog(GameOver.this);
+                intentMoveInfo();
+            }
+        });
     }
 
 
@@ -193,6 +220,7 @@ public class GameOver extends AppCompatActivity {
             } else if (mUser.score < mEnemy.score) {
                 mTextViewResultText.setText(mMessage.lose);
             } else if (mUser.score > mEnemy.score) {
+                isWin = true;
                 mTextViewResultText.setText(mMessage.win);
             }
         } else {
@@ -220,6 +248,14 @@ public class GameOver extends AppCompatActivity {
     }
 
     public void backInfo(View view) {
+        if (isWin) {
+            RateThisApp.showRateDialog(GameOver.this, R.style.RateDialog);
+            return;
+        }
+        intentMoveInfo();
+    }
+
+    public void intentMoveInfo() {
         if (!isFinishing() && !isMoveInfoScr) {
             isMoveInfoScr = true;
             SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
@@ -248,7 +284,7 @@ public class GameOver extends AppCompatActivity {
                 if (mReport == 0) {
                     String jsonString = new Gson().toJson(mRoom.questions.get(mRoom.questionIndex));
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference myRef = database.getReference("report/"+System.currentTimeMillis()+mUser.id);
+                    DatabaseReference myRef = database.getReference("report/" + System.currentTimeMillis() + mUser.id);
                     myRef.setValue(jsonString);
                     Toast.makeText(GameOver.this, getResources().getString(R.string.noti_report),
                             Toast.LENGTH_SHORT).show();
@@ -271,6 +307,15 @@ public class GameOver extends AppCompatActivity {
     }
 
     public void onBackPressed() {
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Monitor launch times and interval from installation
+        RateThisApp.onStart(this);
+        // Show a dialog if criteria is satisfied
+        RateThisApp.showRateDialogIfNeeded(this);
     }
 
 

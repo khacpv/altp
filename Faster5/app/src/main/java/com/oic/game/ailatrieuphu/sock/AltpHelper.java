@@ -75,6 +75,27 @@ public class AltpHelper {
         return result;
     }
 
+    /**
+     * login success
+     *
+     * @return true if first login
+     */
+    public boolean loginCallbackCheckReward(Object... args) {
+        boolean result = false;
+        if (args.length == 0) {
+            Log.e("TAG", "not reward");
+            return result;
+        }
+        JSONObject data = (JSONObject) args[0];
+        try {
+            return data.getBoolean("reward");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
     public void search(User user) {
         try {
             Gson gson = new Gson();

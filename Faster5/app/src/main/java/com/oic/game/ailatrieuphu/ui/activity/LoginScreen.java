@@ -122,6 +122,7 @@ public class LoginScreen extends AppCompatActivity {
     private boolean isCheckPickImage = false;
     private boolean isCheckBtnLater = true;
     private boolean isMoveInfo = false;
+    private boolean reward = false;
     private UploadPhotoUtils uploadPhotoUtils = new UploadPhotoUtils();
     private int uploadFail = 0;
 
@@ -137,6 +138,8 @@ public class LoginScreen extends AppCompatActivity {
             }
             OnLoginCallbackEvent eventBus = new OnLoginCallbackEvent();
             User user = mAltpHelper.loginCallback(args);
+            reward = mAltpHelper.loginCallbackCheckReward(args);
+            Log.e("TAG", "reward: " + reward);
             eventBus.user = user;
             EventBus.getDefault().post(eventBus);
         }
@@ -205,15 +208,6 @@ public class LoginScreen extends AppCompatActivity {
             mTextViewCity.setText(city);
         } else {
             mTextViewCity.setText(city);
-        }
-
-        //Check if google play services is up to date
-        final int playServicesStatus = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
-        if(playServicesStatus != ConnectionResult.SUCCESS){
-            //If google play services in not available show an error dialog and return
-            final Dialog errorDialog = GoogleApiAvailability.getInstance().getErrorDialog(this, playServicesStatus, 0, null);
-            errorDialog.show();
-            return;
         }
     }
 
@@ -420,7 +414,6 @@ public class LoginScreen extends AppCompatActivity {
                         } else {
                             isCheckBtnLater = true;
                             avatarDialog.show();
-
                         }
                     }
                 } else {
@@ -594,16 +587,22 @@ public class LoginScreen extends AppCompatActivity {
             return;
         }
         uploadAvatarToFireBase();
-        //encodeAndUploadImage();
-
-        prgDialog.setMessage("Uploading Avatar");
-        prgDialog.show();
     }
 
     /**
      * //Upload avatar to firebase server
      */
     public void uploadAvatarToFireBase() {
+        //Check if google play services is up to date
+        final int playServicesStatus = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
+        if (playServicesStatus != ConnectionResult.SUCCESS) {
+            //If google play services in not available show an error dialog and return
+            final Dialog errorDialog = GoogleApiAvailability.getInstance().getErrorDialog(this, playServicesStatus, 0, null);
+            errorDialog.show();
+            return;
+        }
+        prgDialog.setMessage("Uploading Avatar");
+        prgDialog.show();
         CameraUtils.autoRotateImage(imgPath);
         StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(FIRE_BASE);
         String androidID = NetworkUtils.getUniqueID(this).replaceAll("-", "");
@@ -713,8 +712,8 @@ public class LoginScreen extends AppCompatActivity {
     }
 
     public void loggedAndMoveInfoScreen() {
-        Intent intent = new Intent(LoginScreen.this, InfoScreen.class);
-        startActivity(intent);
+        Intent loginScrnIntent = InfoScreen.createIntent(LoginScreen.this, reward);
+        startActivity(loginScrnIntent);
         overridePendingTransition(R.animator.right_in, R.animator.left_out);
         finish();
     }

@@ -45,6 +45,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="com.oic.game.ailatrieuphu.ui.activity.LoginScreen"
             android:configChanges="orientation|screenSize"
@@ -66,6 +67,12 @@
             android:name="com.oic.game.ailatrieuphu.ui.activity.GameOver"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
+        <service
+            android:name="com.oic.game.ailatrieuphu.service.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
         <provider
             android:name="com.facebook.FacebookContentProvider"
             android:authorities="com.facebook.app.FacebookContentProvider1120563777999580"
