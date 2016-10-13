@@ -37,7 +37,7 @@ import io.socket.client.Socket;
 
 public class MainActivity extends AppCompatActivity {
 
-    String userId, username, linkAvatar, location;
+    String userId, username, linkAvatar, location, fcmToken;
 
     TextView textviewLoading;
     TextView textviewDebug;
@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
         username = PrefUtils.getInstance(this).get(PrefUtils.KEY_NAME, "");
         linkAvatar = PrefUtils.getInstance(this).get(PrefUtils.KEY_URL_AVATAR, "");
         location = PrefUtils.getInstance(this).get(PrefUtils.KEY_LOCATION, "");
+        fcmToken = PrefUtils.getInstance(this).get(PrefUtils.KEY_FCM, "");
 
         if (TextUtils.isEmpty(userId) || TextUtils.isEmpty(username) ||
                 TextUtils.isEmpty(linkAvatar)

@@ -133,27 +133,27 @@ public class GameOver extends AppCompatActivity {
         config.setYesButtonText(R.string.my_own_rate);
         config.setNoButtonText(R.string.my_own_thanks);
         config.setCancelButtonText(R.string.my_own_cancel);
-
         RateThisApp.init(config);
         RateThisApp.setCallback(new RateThisApp.Callback() {
             @Override
             public void onYesClicked() {
-                RateThisApp.stopRateDialog(GameOver.this);
                 intentMoveInfo();
+                RateThisApp.stopRateDialog(GameOver.this);
             }
 
             @Override
             public void onNoClicked() {
-                RateThisApp.stopRateDialog(GameOver.this);
                 intentMoveInfo();
+                RateThisApp.stopRateDialog(GameOver.this);
             }
 
             @Override
             public void onCancelClicked() {
-                RateThisApp.stopRateDialog(GameOver.this);
                 intentMoveInfo();
+                RateThisApp.stopRateDialog(GameOver.this);
             }
         });
+        RateThisApp.showRateDialog(GameOver.this, R.style.RateDialog);
     }
 
 
