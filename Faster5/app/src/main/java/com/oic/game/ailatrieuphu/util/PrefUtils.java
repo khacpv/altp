@@ -24,6 +24,7 @@ public class PrefUtils {
     public static final String KEY_ENEMY_MONEY = "enemy_money";
     public static final String KEY_ENEMY_LOCATION = "enemy_location";
     public static final String KEY_ROOM_ID = "room_id";
+    public static final String KEY_FCM = "fcm_token";
 
 
     private static PrefUtils _instance;
