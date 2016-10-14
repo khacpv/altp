@@ -43,4 +43,7 @@ public class User implements Serializable{
 
     @SerializedName("lang")
     public String lang = "vi";
+
+    @SerializedName("fcm")
+    public String fcmToken;
 }

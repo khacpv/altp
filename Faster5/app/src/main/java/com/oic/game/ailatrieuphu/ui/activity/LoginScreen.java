@@ -148,6 +148,8 @@ public class LoginScreen extends AppCompatActivity {
     public void sendLoginRequest(User user) {
         this.mUser = user;
         this.mUser.id = NetworkUtils.getUniqueID(this).replaceAll("-", "");
+        this.mUser.fcmToken = PrefUtils.getInstance(this).get(PrefUtils.KEY_FCM,"");
+
         mAltpHelper.login(mUser);
         Log.e("TAG", "loginRequest: " + mUser.fbId + " " + mUser.name + " " + mUser.address + "\n" + mUser.avatar);
     }

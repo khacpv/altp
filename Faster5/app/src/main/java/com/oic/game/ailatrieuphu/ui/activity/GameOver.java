@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -26,7 +27,6 @@ import com.google.android.gms.ads.AdView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
-import com.kobakei.ratethisapp.RateThisApp;
 import com.oic.game.ailatrieuphu.model.GameOverMessage;
 import com.oic.game.ailatrieuphu.model.Question;
 import com.oic.game.ailatrieuphu.model.Room;
@@ -35,6 +35,10 @@ import com.oic.game.ailatrieuphu.util.PrefUtils;
 import com.oic.game.ailatrieuphu.util.SoundPoolManager;
 
 import org.greenrobot.eventbus.EventBus;
+
+import hotchemi.android.rate.AppRate;
+import hotchemi.android.rate.OnClickButtonListener;
+import hotchemi.android.rate.StoreType;
 
 /**
  * Created by Kien on 07/14/2016.
@@ -122,38 +126,6 @@ public class GameOver extends AppCompatActivity {
                 .build();
         mAdView.loadAd(adRequest);
 
-    }
-
-    public void rateApp() {
-        // Custom criteria: 3 days and 5 launches
-        RateThisApp.Config config = new RateThisApp.Config(3, 5);
-
-        config.setTitle(R.string.my_own_title);
-        config.setMessage(R.string.my_own_message);
-        config.setYesButtonText(R.string.my_own_rate);
-        config.setNoButtonText(R.string.my_own_thanks);
-        config.setCancelButtonText(R.string.my_own_cancel);
-
-        RateThisApp.init(config);
-        RateThisApp.setCallback(new RateThisApp.Callback() {
-            @Override
-            public void onYesClicked() {
-                RateThisApp.stopRateDialog(GameOver.this);
-                intentMoveInfo();
-            }
-
-            @Override
-            public void onNoClicked() {
-                RateThisApp.stopRateDialog(GameOver.this);
-                intentMoveInfo();
-            }
-
-            @Override
-            public void onCancelClicked() {
-                RateThisApp.stopRateDialog(GameOver.this);
-                intentMoveInfo();
-            }
-        });
     }
 
 
@@ -247,12 +219,49 @@ public class GameOver extends AppCompatActivity {
                 .error(R.drawable.avatar_default).into(mImageViewEnemyAvatar);
     }
 
+    public void rateApp() {
+        /**
+         * https://github.com/hotchemi/Android-Rate
+         * */
+
+        //custom view ratedialog
+        LayoutInflater inflater = (LayoutInflater)this.getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_report_popup, null);
+        AppRate.with(this)
+                .setStoreType(StoreType.GOOGLEPLAY) //default is Google, other option is Amazon
+                .setInstallDays(0) // default 10, 0 means install day.
+                .setLaunchTimes(10) // default 10 times.
+                .setRemindInterval(0) // default 1 day.
+                .setShowLaterButton(true) // default true.
+                .setDebug(true) // default false.
+                .setCancelable(false) // default false.
+                .setShowNeverButton(false)
+                .setOnClickButtonListener(new OnClickButtonListener() { // callback listener.
+                    @Override
+                    public void onClickButton(int which) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                AppRate.with(GameOver.this).clearAgreeShowDialog();
+                            }
+                        });
+                        intentMoveInfo();
+                    }
+                })
+               // .setView(view)
+                .setTitle(R.string.my_own_title)
+                .setTextLater(R.string.my_own_cancel)
+                .setTextRateNow(R.string.my_own_rate)
+                .monitor();
+    }
+
     public void backInfo(View view) {
         if (isWin) {
-            RateThisApp.showRateDialog(GameOver.this, R.style.RateDialog);
+            AppRate.showRateDialogIfMeetsConditions(this);
             return;
         }
-        intentMoveInfo();
+        AppRate.showRateDialogIfMeetsConditions(this);
+       // intentMoveInfo();
     }
 
     public void intentMoveInfo() {
@@ -308,16 +317,6 @@ public class GameOver extends AppCompatActivity {
 
     public void onBackPressed() {
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // Monitor launch times and interval from installation
-        RateThisApp.onStart(this);
-        // Show a dialog if criteria is satisfied
-        RateThisApp.showRateDialogIfNeeded(this);
-    }
-
 
     @Override
     protected void onPause() {

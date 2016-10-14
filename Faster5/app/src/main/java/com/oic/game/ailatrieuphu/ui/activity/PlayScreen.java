@@ -887,7 +887,9 @@ public class PlayScreen extends AppCompatActivity {
 
         Button skipBtn = (Button) ruleDialog.findViewById(R.id.button_skip);
 
-        SoundPoolManager.getInstance().playSound(R.raw.luatchoi);
+        if (SoundPoolManager.getInstance() != null) {
+            SoundPoolManager.getInstance().playSound(R.raw.luatchoi);
+        }
 
         hideRuleDialog = new Runnable() {
             @Override
