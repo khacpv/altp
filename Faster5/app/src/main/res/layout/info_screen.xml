@@ -1,175 +1,183 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/xml_bg"
-    android:orientation="vertical"
-    android:weightSum="1"
-    tools:context="com.oic.game.ailatrieuphu.ui.activity.MainActivity">
+    android:background="@drawable/xml_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="1">
 
-        <RelativeLayout
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:orientation="horizontal">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/imageview_useravatar"
-                android:layout_width="@dimen/layout_width_70"
-                android:layout_height="@dimen/layout_height_70"
-                android:layout_marginLeft="@dimen/layout_marginLeft_20"
-                android:layout_marginStart="@dimen/layout_marginLeft_20"
-                android:layout_marginTop="@dimen/layout_marginTop_30"
-                android:src="@drawable/avatar"
-                app:civ_border_color="#fff"
-                app:civ_border_width="@dimen/civ_border_width" />
-
-            <TextView
-                android:id="@+id/textview_usernname"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/imageview_useravatar"
-                android:layout_marginLeft="@dimen/layout_marginLeft_20"
-                android:layout_marginStart="@dimen/layout_marginLeft_20"
-                android:layout_marginTop="@dimen/layout_marginTop_5"
-                android:layout_toEndOf="@+id/imageview_useravatar"
-                android:layout_toRightOf="@+id/imageview_useravatar"
-                android:ellipsize="end"
-                android:lines="1"
-                android:text="@string/player"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/text_size_xxlarge"
-                android:textStyle="bold" />
+                android:layout_weight="1">
 
-            <TextView
-                android:id="@+id/textview_city_info"
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/imageview_useravatar"
+                    android:layout_width="@dimen/layout_width_70"
+                    android:layout_height="@dimen/layout_height_70"
+                    android:layout_marginLeft="@dimen/layout_marginLeft_20"
+                    android:layout_marginStart="@dimen/layout_marginLeft_20"
+                    android:layout_marginTop="@dimen/layout_marginTop_30"
+                    android:src="@drawable/avatar"
+                    app:civ_border_color="#fff"
+                    app:civ_border_width="@dimen/civ_border_width" />
+
+                <TextView
+                    android:id="@+id/textview_usernname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/imageview_useravatar"
+                    android:layout_marginLeft="@dimen/layout_marginLeft_20"
+                    android:layout_marginStart="@dimen/layout_marginLeft_20"
+                    android:layout_marginTop="@dimen/layout_marginTop_5"
+                    android:layout_toEndOf="@+id/imageview_useravatar"
+                    android:layout_toRightOf="@+id/imageview_useravatar"
+                    android:ellipsize="end"
+                    android:lines="1"
+                    android:text="@string/player"
+                    android:textColor="#ffffff"
+                    android:textSize="@dimen/text_size_xxlarge"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textview_city_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/textview_usernname"
+                    android:layout_alignStart="@+id/textview_usernname"
+                    android:layout_below="@+id/textview_usernname"
+                    android:ellipsize="end"
+                    android:lines="1"
+                    android:text="@string/city"
+                    android:textColor="#ffffff"
+                    android:textSize="@dimen/text_size_large"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textview_total_score"
+                    android:layout_width="@dimen/layout_width_220"
+                    android:layout_height="@dimen/layout_height_45"
+                    android:layout_alignLeft="@+id/imageview_useravatar"
+                    android:layout_alignStart="@+id/imageview_useravatar"
+                    android:layout_below="@+id/imageview_useravatar"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/layout_marginTop_10"
+                    android:background="@drawable/button_money"
+                    android:gravity="center_horizontal"
+                    android:paddingTop="@dimen/paddingTop_7"
+                    android:text="@string/money_default"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/text_size_xlarge"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/button_search"
+                android:layout_width="@dimen/layout_width_100"
+                android:layout_height="@dimen/layout_height_100"
+                android:layout_marginEnd="@dimen/layout_marginRight_5"
+                android:layout_marginRight="@dimen/layout_marginRight_5"
+                android:layout_marginTop="@dimen/layout_marginTop_40">
+
+                <ImageView
+                    android:id="@+id/imageview_icon_search"
+                    android:layout_width="@dimen/layout_width_28"
+                    android:layout_height="@dimen/layout_height_25"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    android:background="@drawable/icon_search"
+                    android:scaleType="fitXY" />
+
+                <TextView
+                    android:id="@+id/textview_time_search"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/text_size_huge"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_button_dangnhap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/layout_height_2"
+                android:layout_centerVertical="true"
+                android:background="#FFF" />
+
+            <Button
+                android:id="@+id/button_opponent"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/textview_usernname"
-                android:layout_alignStart="@+id/textview_usernname"
-                android:layout_below="@+id/textview_usernname"
-                android:ellipsize="end"
-                android:lines="1"
-                android:text="@string/city"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/text_size_large"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textview_total_score"
-                android:layout_width="@dimen/layout_width_220"
-                android:layout_height="@dimen/layout_height_45"
-                android:layout_alignLeft="@+id/imageview_useravatar"
-                android:layout_alignStart="@+id/imageview_useravatar"
-                android:layout_below="@+id/imageview_useravatar"
+                android:layout_height="@dimen/layout_height_40"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/layout_marginTop_10"
-                android:background="@drawable/button_money"
-                android:gravity="center_horizontal"
-                android:paddingTop="@dimen/paddingTop_7"
-                android:text="@string/money_default"
-                android:textColor="#000000"
-                android:textSize="@dimen/text_size_xlarge"
+                android:layout_marginEnd="@dimen/layout_marginRight_110"
+                android:layout_marginLeft="@dimen/layout_marginLeft_110"
+                android:layout_marginRight="@dimen/layout_marginRight_110"
+                android:layout_marginStart="@dimen/layout_marginLeft_110"
+                android:layout_marginTop="@dimen/layout_marginTop_5"
+                android:background="@drawable/answer0"
+                android:paddingBottom="@dimen/paddingTop_7"
+                android:text="@string/imageview_doithu"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:textSize="@dimen/text_size_small"
                 android:textStyle="bold" />
-
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/button_search"
-            android:layout_width="@dimen/layout_width_100"
-            android:layout_height="@dimen/layout_height_100"
-            android:layout_marginEnd="@dimen/layout_marginRight_5"
-            android:layout_marginRight="@dimen/layout_marginRight_5"
-            android:layout_marginTop="@dimen/layout_marginTop_40">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/imageview_icon_search"
-                android:layout_width="@dimen/layout_width_28"
-                android:layout_height="@dimen/layout_height_25"
-                android:layout_centerInParent="true"
-                android:layout_gravity="center"
-                android:background="@drawable/icon_search"
-                android:scaleType="fitXY" />
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/adView"
+                android:clipToPadding="false"
+                android:overScrollMode="never"
+                android:paddingTop="@dimen/paddingTop_5"
+                android:scrollbars="none">
 
-            <TextView
-                android:id="@+id/textview_time_search"
+                <include
+                    layout="@layout/layout_list_player"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </ScrollView>
+
+            <com.google.android.gms.ads.AdView
+                android:id="@+id/adView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:textColor="#FFF"
-                android:textSize="@dimen/text_size_huge"
-                android:textStyle="bold" />
-        </RelativeLayout>
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                ads:adSize="BANNER"
+                ads:adUnitId="@string/banner_ad_unit_id">
 
+            </com.google.android.gms.ads.AdView>
+        </RelativeLayout>
     </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/layout_button_dangnhap"
+    <include
+        android:id="@+id/layout_tutorial"
+        layout="@layout/layout_tutorial_search"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/layout_height_2"
-            android:layout_centerVertical="true"
-            android:background="#FFF" />
-
-        <Button
-            android:id="@+id/button_opponent"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/layout_height_40"
-            android:layout_centerHorizontal="true"
-            android:layout_marginEnd="@dimen/layout_marginRight_110"
-            android:layout_marginLeft="@dimen/layout_marginLeft_110"
-            android:layout_marginRight="@dimen/layout_marginRight_110"
-            android:layout_marginStart="@dimen/layout_marginLeft_110"
-            android:layout_marginTop="@dimen/layout_marginTop_5"
-            android:background="@drawable/answer0"
-            android:paddingBottom="@dimen/paddingTop_7"
-            android:text="@string/imageview_doithu"
-            android:textAllCaps="false"
-            android:textColor="#ffffff"
-            android:textSize="@dimen/text_size_small"
-            android:textStyle="bold" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/adView"
-            android:clipToPadding="false"
-            android:overScrollMode="never"
-            android:paddingTop="@dimen/paddingTop_5"
-            android:scrollbars="none">
-
-            <include
-                layout="@layout/layout_list_player"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </ScrollView>
-
-        <com.google.android.gms.ads.AdView
-            android:id="@+id/adView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            ads:adSize="BANNER"
-            ads:adUnitId="@string/banner_ad_unit_id">
-        </com.google.android.gms.ads.AdView>
-    </RelativeLayout>
-
-
-</LinearLayout>
+        android:layout_height="match_parent" />
+</RelativeLayout>

@@ -84,6 +84,7 @@ public class InfoScreen extends AppCompatActivity {
     ImageView mImageviewIconSearch;
     TextView mTextViewTimeSearch;
     CountDownTimer timeSearch;
+    RelativeLayout tutorialLayout;
 
     /**
      * global events
@@ -321,7 +322,6 @@ public class InfoScreen extends AppCompatActivity {
 
         mButtonSearch = (RelativeLayout) findViewById(R.id.button_search);
 
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             mButtonSearch.setBackground(searchBg);
         } else {
@@ -333,6 +333,9 @@ public class InfoScreen extends AppCompatActivity {
                                              public void onClick(View v) {
                                                  SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
                                                  if (NetworkUtils.checkInternetConnection(InfoScreen.this) && mSocketAltp.isConnected()) {
+                                                     if (tutorialLayout.getVisibility() == View.VISIBLE) {
+                                                         tutorialLayout.setVisibility(View.GONE);
+                                                     }
                                                      setUserInfo();
                                                      sendSearchRequest(mUser);
                                                      setSearchTimes();
@@ -347,7 +350,7 @@ public class InfoScreen extends AppCompatActivity {
         );
 
         boolean reward = getIntent().getBooleanExtra(EXTRA_REWARD, false);
-        if(reward && rewardDialog != null){
+        if (reward && rewardDialog != null) {
             rewardDialog.show();
         }
     }
@@ -375,6 +378,9 @@ public class InfoScreen extends AppCompatActivity {
 
         connectionDiaglog = new Dialog(this);
         rewardDialog = new Dialog(this);
+
+        tutorialLayout = (RelativeLayout) findViewById(R.id.layout_tutorial);
+        tutorialLayout.setVisibility(View.INVISIBLE);
     }
 
     public void setConnectionDiaglog() {
@@ -411,6 +417,7 @@ public class InfoScreen extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 rewardDialog.hide();
+                tutorialLayout.setVisibility(View.VISIBLE);
             }
         });
 

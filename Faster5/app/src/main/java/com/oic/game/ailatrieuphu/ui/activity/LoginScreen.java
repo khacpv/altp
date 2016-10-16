@@ -87,6 +87,7 @@ public class LoginScreen extends AppCompatActivity {
     private static final String TAG_CITY = "city";
     private static final String photoFileName = "cameraphoto.jpg";
     private static final int PERMISSION_REQUEST_CODE = 1;
+    private static final int REQUEST_READ_PHONE_STATE = 2;
     public static final int IMAGE_FROM_CAMERA = 0;
     public static final int IMAGE_FROM_GALLERY = 1;
     public static final String FIRE_BASE = "gs://ai-la-trieu-phu-online.appspot.com/avatar";
@@ -147,8 +148,16 @@ public class LoginScreen extends AppCompatActivity {
 
     public void sendLoginRequest(User user) {
         this.mUser = user;
-        this.mUser.id = NetworkUtils.getUniqueID(this).replaceAll("-", "");
-        this.mUser.fcmToken = PrefUtils.getInstance(this).get(PrefUtils.KEY_FCM,"");
+
+        this.mUser.fcmToken = PrefUtils.getInstance(this).get(PrefUtils.KEY_FCM, "");
+
+        //check Permission when get Id
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_READ_PHONE_STATE);
+        } else {
+            this.mUser.id = NetworkUtils.getUniqueID(this).replaceAll("-", "");
+        }
 
         mAltpHelper.login(mUser);
         Log.e("TAG", "loginRequest: " + mUser.fbId + " " + mUser.name + " " + mUser.address + "\n" + mUser.avatar);
@@ -763,6 +772,14 @@ public class LoginScreen extends AppCompatActivity {
                         .PERMISSION_GRANTED) {
                     captureImage();
                 }
+                break;
+            case REQUEST_READ_PHONE_STATE:
+                if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    mUser.id = NetworkUtils.getUniqueID(this).replaceAll("-", "");
+                }
+                break;
+
+            default:
                 break;
 
         }
