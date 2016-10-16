@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#B3000000">
+
+    <ImageView
+        android:id="@+id/tutorial_search"
+        android:layout_width="@dimen/layout_width_100"
+        android:layout_height="@dimen/layout_height_100"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="center"
+        android:layout_marginEnd="@dimen/layout_marginRight_5"
+        android:layout_marginRight="@dimen/layout_marginRight_5"
+        android:layout_marginTop="@dimen/layout_marginTop_40"
+        android:background="@drawable/tutorial_search"
+        android:scaleType="fitXY" />
+
+    <ImageView
+        android:id="@+id/tutorial_arrow"
+        android:layout_width="@dimen/layout_width_120"
+        android:layout_height="@dimen/layout_height_120"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/tutorial_search"
+        android:layout_marginEnd="@dimen/layout_marginRight_40"
+        android:layout_marginRight="@dimen/layout_marginRight_40"
+        android:layout_marginTop="@dimen/layout_marginTop_10"
+        android:background="@drawable/tutorial_arrow" />
+
+    <ImageView
+        android:layout_width="@dimen/layout_width_150"
+        android:layout_height="@dimen/layout_height_50"
+        android:layout_alignEnd="@+id/tutorial_arrow"
+        android:layout_alignRight="@+id/tutorial_arrow"
+        android:layout_marginEnd="@dimen/layout_marginRight_100"
+        android:layout_marginRight="@dimen/layout_marginRight_100"
+        android:layout_marginTop="@dimen/layout_width_250"
+        android:background="@drawable/tutorial_text" />
+</RelativeLayout>

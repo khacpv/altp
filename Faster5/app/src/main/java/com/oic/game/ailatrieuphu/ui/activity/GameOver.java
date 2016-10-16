@@ -28,7 +28,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.oic.game.ailatrieuphu.model.GameOverMessage;
-import com.oic.game.ailatrieuphu.model.Question;
 import com.oic.game.ailatrieuphu.model.Room;
 import com.oic.game.ailatrieuphu.model.User;
 import com.oic.game.ailatrieuphu.util.PrefUtils;
@@ -225,30 +224,34 @@ public class GameOver extends AppCompatActivity {
          * */
 
         //custom view ratedialog
-        LayoutInflater inflater = (LayoutInflater)this.getSystemService(LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.layout_report_popup, null);
+        // LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+        // View view = inflater.inflate(R.layout.layout_check_quit, (ViewGroup)findViewById(R.id.layout_rate_dialog));
         AppRate.with(this)
                 .setStoreType(StoreType.GOOGLEPLAY) //default is Google, other option is Amazon
                 .setInstallDays(0) // default 10, 0 means install day.
                 .setLaunchTimes(10) // default 10 times.
-                .setRemindInterval(0) // default 1 day.
+                .setRemindInterval(3) // default 1 day.
                 .setShowLaterButton(true) // default true.
                 .setDebug(true) // default false.
                 .setCancelable(false) // default false.
                 .setShowNeverButton(false)
                 .setOnClickButtonListener(new OnClickButtonListener() { // callback listener.
                     @Override
-                    public void onClickButton(int which) {
+                    public void onClickButton(final int which) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 AppRate.with(GameOver.this).clearAgreeShowDialog();
+                                Log.e("TAG", "rate APP which: " + which);
+                                if (which == -1) {
+                                    PrefUtils.getInstance(GameOver.this).set(PrefUtils.KEY_RATE_APP, true);
+                                }
                             }
                         });
                         intentMoveInfo();
                     }
                 })
-               // .setView(view)
+                // .setView(view)
                 .setTitle(R.string.my_own_title)
                 .setTextLater(R.string.my_own_cancel)
                 .setTextRateNow(R.string.my_own_rate)
@@ -256,12 +259,13 @@ public class GameOver extends AppCompatActivity {
     }
 
     public void backInfo(View view) {
-        if (isWin) {
+        boolean isRate = PrefUtils.getInstance(GameOver.this).get(PrefUtils.KEY_RATE_APP, false);
+        Log.e("TAG", "rate App isRate: " + isRate);
+        if (isWin && !isRate) {
             AppRate.showRateDialogIfMeetsConditions(this);
             return;
         }
-        AppRate.showRateDialogIfMeetsConditions(this);
-       // intentMoveInfo();
+        intentMoveInfo();
     }
 
     public void intentMoveInfo() {
