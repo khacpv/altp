@@ -56,23 +56,22 @@ public class SearchOpponent extends AppCompatActivity {
     private TextView mTextViewUserName2;
     private TextView mTextViewScore1;
     private TextView mTextViewScore2;
-    private TextView mTextViewReady;
     private TextView mTextViewWaitText;
     private ImageView mImageViewUserAvatar1;
     private ImageView mImageViewUserAvatar2;
     Button mButtonPlay;
     Button mButtonSeach;
-    Button btnCancel;
+    //Button btnCancel;
     Handler handler = new Handler();
     Runnable runMovePlayScr;
-    private boolean isCancel = false;
+    //private boolean isCancel = false;
     private boolean isMovePlayScr = false;
     private boolean notReady;
 
     private SockAltp.OnSocketEvent playCallback = new SockAltp.OnSocketEvent() {
         @Override
         public void onEvent(String event, Object... args) {
-            if (isCancel || isMovePlayScr) {
+            if (isMovePlayScr) {
                 return;
             }
             OnPlayCallbackEvent eventBus = new OnPlayCallbackEvent();
@@ -140,22 +139,22 @@ public class SearchOpponent extends AppCompatActivity {
             Log.e("TAG", "waiting for other players ready.");
             return;
         }
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                btnCancel.setVisibility(View.GONE);
-                mTextViewWaitText.setVisibility(View.GONE);
-            }
-        });
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                btnCancel.setVisibility(View.GONE);
+//                mTextViewWaitText.setVisibility(View.GONE);
+//            }
+//        });
 
-        mTextViewReady.getHandler().post(new Runnable() {
+        mTextViewWaitText.getHandler().post(new Runnable() {
             @Override
             public void run() {
-                mTextViewReady.setText(getResources().getString(R.string.ready));
+                mTextViewWaitText.setText(getResources().getString(R.string.ready));
                 if (Build.VERSION.SDK_INT < 23) {
-                    mTextViewReady.setTextColor(getResources().getColor(R.color.RED));
+                    mTextViewWaitText.setTextColor(getResources().getColor(R.color.RED));
                 } else {
-                    mTextViewReady.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.RED));
+                    mTextViewWaitText.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.RED));
                 }
 
             }
@@ -253,20 +252,20 @@ public class SearchOpponent extends AppCompatActivity {
         waitDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         waitDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         waitDialog.setCancelable(false);
-        mTextViewReady = (TextView) waitDialog.findViewById(R.id.textview_ready);
+
         mTextViewWaitText = (TextView) waitDialog.findViewById(R.id.textview_wait_text);
 
-        btnCancel = (Button) waitDialog.findViewById(R.id.button_cancel);
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-                mAltpHelper.quit(mUser, mRoom, false);
-                waitDialog.hide();
-                isCancel = true;
-                btnSearch(getCurrentFocus());
-            }
-        });
+//        btnCancel = (Button) waitDialog.findViewById(R.id.button_cancel);
+//        btnCancel.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+//                mAltpHelper.quit(mUser, mRoom, false);
+//                waitDialog.hide();
+//                isCancel = true;
+//                btnSearch(getCurrentFocus());
+//            }
+//        });
 
     }
 

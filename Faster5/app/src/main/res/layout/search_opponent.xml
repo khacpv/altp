@@ -165,9 +165,41 @@
         </RelativeLayout>
 
         <FrameLayout
+            android:id="@+id/relative_layout_play"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/layout_marginTop_30">
+
+            <View
+                android:id="@+id/viewline"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/layout_height_2"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="@dimen/layout_marginTop_2"
+                android:background="#FFF" />
+
+            <Button
+                android:id="@+id/button_play"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/layout_height_50"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/layout_marginLeft_100"
+                android:layout_marginRight="@dimen/layout_marginRight_100"
+                android:layout_marginTop="@dimen/layout_marginTop_5"
+                android:background="@drawable/answer0"
+                android:onClick="btnPlay"
+                android:paddingBottom="@dimen/paddingBottom_10"
+                android:text="@string/btn_play"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:textSize="@dimen/text_size_xlarge"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/layout_marginTop_10">
 
             <View
                 android:layout_width="match_parent"
@@ -187,52 +219,21 @@
                 android:background="@drawable/answer0"
                 android:onClick="btnSearch"
                 android:paddingBottom="@dimen/paddingBottom_10"
-                android:text="@string/btn_timkiem"
+                android:text="@string/btn_back"
                 android:textAllCaps="false"
                 android:textColor="#ffffff"
                 android:textSize="@dimen/text_size_xlarge" />
         </FrameLayout>
 
-        <FrameLayout
-            android:id="@+id/relative_layout_play"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/layout_marginTop_10">
-
-            <View
-                android:id="@+id/viewline"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/layout_height_2"
-                android:layout_gravity="center_vertical"
-                android:layout_marginTop="@dimen/layout_marginTop_2"
-                android:background="#FFF" />
-
-            <Button
-                android:id="@+id/button_play"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/layout_height_40"
-                android:layout_gravity="center"
-                android:layout_marginLeft="@dimen/layout_marginLeft_100"
-                android:layout_marginRight="@dimen/layout_marginRight_100"
-                android:layout_marginTop="@dimen/layout_marginTop_5"
-                android:background="@drawable/answer0"
-                android:onClick="btnPlay"
-                android:paddingBottom="@dimen/paddingBottom_10"
-                android:text="@string/btn_play"
-                android:textAllCaps="false"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/text_size_xlarge"
-                android:textStyle="bold" />
-        </FrameLayout>
     </LinearLayout>
+
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         ads:adSize="BANNER"
-        ads:adUnitId="@string/banner_ad_unit_id">
-    </com.google.android.gms.ads.AdView>
+        ads:adUnitId="@string/banner_ad_unit_id"></com.google.android.gms.ads.AdView>
 
 </RelativeLayout>

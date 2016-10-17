@@ -78,6 +78,7 @@ public class InfoScreen extends AppCompatActivity {
     private boolean isBgMusic = true;
     private Dialog connectionDiaglog;
     private Dialog rewardDialog;
+    private Dialog quitDialog;
     MediaPlayer mediaPlayer;
     private Handler handler;
     Runnable resetSearch;
@@ -294,6 +295,7 @@ public class InfoScreen extends AppCompatActivity {
         buttonPlayer();
         setConnectionDiaglog();
         setRewardDialog();
+        setQuitDialog();
         handler = new Handler();
 
         timeSearch = new CountDownTimer(30100, 1000) {
@@ -353,6 +355,12 @@ public class InfoScreen extends AppCompatActivity {
         if (reward && rewardDialog != null) {
             rewardDialog.show();
         }
+
+        boolean firstUse = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_FIRST_USE, false);
+        if (firstUse && !reward) {
+            tutorialLayout.setVisibility(View.VISIBLE);
+            PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_FIRST_USE, false);
+        }
     }
 
     public void findViewById() {
@@ -378,6 +386,7 @@ public class InfoScreen extends AppCompatActivity {
 
         connectionDiaglog = new Dialog(this);
         rewardDialog = new Dialog(this);
+        quitDialog = new Dialog(this);
 
         tutorialLayout = (RelativeLayout) findViewById(R.id.layout_tutorial);
         tutorialLayout.setVisibility(View.INVISIBLE);
@@ -418,9 +427,42 @@ public class InfoScreen extends AppCompatActivity {
             public void onClick(View view) {
                 rewardDialog.hide();
                 tutorialLayout.setVisibility(View.VISIBLE);
+                PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_FIRST_USE, false);
             }
         });
 
+    }
+
+    public void setQuitDialog() {
+        quitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        quitDialog.setContentView(R.layout.layout_check_quit);
+        quitDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        quitDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        quitDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        quitDialog.setCancelable(false);
+
+        TextView title = (TextView) quitDialog.findViewById(R.id.title_check_quit);
+        TextView noti = (TextView) quitDialog.findViewById(R.id.noti);
+        Button quit = (Button) quitDialog.findViewById(R.id.button_quit);
+        Button cancel = (Button) quitDialog.findViewById(R.id.button_continue);
+        ImageView loading = (ImageView) quitDialog.findViewById(R.id.imgView_loading);
+        loading.setVisibility(View.GONE);
+        title.setText(getResources().getString(R.string.title_baotri));
+        noti.setText(getResources().getString(R.string.exit_text));
+        quit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                quitDialog.hide();
+                finish();
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                quitDialog.hide();
+            }
+        });
     }
 
     public void setSearchTimes() {
@@ -518,6 +560,7 @@ public class InfoScreen extends AppCompatActivity {
     }
 
     public void onBackPressed() {
+        quitDialog.show();
     }
 
     @Override
@@ -551,6 +594,9 @@ public class InfoScreen extends AppCompatActivity {
         }
         if (rewardDialog != null) {
             rewardDialog.dismiss();
+        }
+        if (quitDialog != null) {
+            quitDialog.dismiss();
         }
 
         if (mediaPlayer != null) {
