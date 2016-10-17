@@ -171,8 +171,6 @@ public class LoginScreen extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
-        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_FIRST_USE, false);
-
         FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
             @Override
             public void onInitialized() {
@@ -213,6 +211,8 @@ public class LoginScreen extends AppCompatActivity {
         setPickAvatarDialog();
         setEdittexDialog();
         setConnectDialog();
+
+        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_FIRST_USE, true);
 
         if (TextUtils.isEmpty(city)) {
             city = "VIETNAM";
