@@ -257,7 +257,7 @@ public class PlayScreen extends AppCompatActivity implements View.OnClickListene
                     public void run() {
                         stopSound();
                         mSocketAltp.removeEvent();
-                        if (mInterstitialAd.isLoaded() && !isMoveGameOver) {
+                        if (mInterstitialAd.isLoaded()) {
                             mInterstitialAd.show();
                             eventAdClose();
                         } else {

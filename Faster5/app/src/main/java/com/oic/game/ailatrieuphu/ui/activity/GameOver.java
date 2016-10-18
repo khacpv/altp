@@ -91,7 +91,7 @@ public class GameOver extends AppCompatActivity {
         mButtonReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                playSound(R.raw.touch_sound);
                 reportDialog.show();
             }
         });
@@ -271,7 +271,7 @@ public class GameOver extends AppCompatActivity {
     public void intentMoveInfo() {
         if (!isFinishing() && !isMoveInfoScr) {
             isMoveInfoScr = true;
-            SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+            playSound(R.raw.touch_sound);
             mediaPlayer.stop();
             Intent intent = new Intent(getApplicationContext(), InfoScreen.class);
             startActivity(intent);
