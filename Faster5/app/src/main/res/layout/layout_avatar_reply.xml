@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="@dimen/layout_marginBottom_25"
+        android:orientation="horizontal">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imageview_useravatar1"
+            android:layout_width="@dimen/layout_marginBottom_25"
+            android:layout_height="@dimen/layout_marginBottom_25"
+            app:civ_border_color="#fff"
+            app:civ_border_width="@dimen/civ_border_width_1" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imageview_useravatar2"
+            android:layout_width="@dimen/layout_marginBottom_25"
+            android:layout_height="@dimen/layout_marginBottom_25"
+            android:layout_toEndOf="@+id/imageview_useravatar1"
+            android:layout_toRightOf="@+id/imageview_useravatar1"
+            app:civ_border_color="#fff"
+            app:civ_border_width="@dimen/civ_border_width_1" />
+    </LinearLayout>
+</RelativeLayout>

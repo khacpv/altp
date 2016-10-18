@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#B3000000">
+
+    <ImageView
+        android:id="@+id/tutorial_play"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/layout_width_220"
+        android:layout_gravity="center"
+        android:layout_marginLeft="@dimen/layout_marginLeft_10"
+        android:layout_marginRight="@dimen/layout_marginRight_10"
+        android:layout_marginTop="@dimen/layout_width_150"
+        android:background="@drawable/tutorial_play"
+        android:scaleType="fitXY" />
+
+</RelativeLayout>

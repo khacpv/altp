@@ -13,7 +13,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -52,11 +51,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.oic.game.ailatrieuphu.MainApplication;
 import com.oic.game.ailatrieuphu.model.User;
 import com.oic.game.ailatrieuphu.sock.AltpHelper;
@@ -74,15 +71,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-
-import cz.msebera.android.httpclient.Header;
-import io.socket.client.Socket;
 
 /**
  * Created by Kien on 07/05/2016.
  */
-public class LoginScreen extends AppCompatActivity {
+public class LoginScreen extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG_CITY = "city";
     private static final String photoFileName = "cameraphoto.jpg";
@@ -94,7 +87,6 @@ public class LoginScreen extends AppCompatActivity {
     public static final String DEFAULT_AVATAR = "https://firebasestorage.googleapis.com/v0/b/ai-la-trieu-phu-online.appspot.com/o/avatar%2Favatar.png?alt=media&token=24133aa8-e81e-4019-bdb9-c6c5e49c6ff3";
     private static String city;
     private static String url = "http://209.58.180.196/json/"; //URL to get CITY from JSON Array
-    AccessToken mAccessToken;
     private AccessTokenTracker mAccessTokenTracker;
     private RelativeLayout mRelativeLayoutBg;
     private EditText mEditText;
@@ -115,9 +107,9 @@ public class LoginScreen extends AppCompatActivity {
     private Dialog connectionDialog;
     private String mStringUserName;
     private String imgPath;
-    //private String fileName;
     private String imgUrl;
     private Uri uriPhoto;
+    AccessToken mAccessToken;
     MediaPlayer mediaPlayer;
     private boolean uploadResult;
     private boolean isCheckPickImage = false;
@@ -163,6 +155,36 @@ public class LoginScreen extends AppCompatActivity {
         Log.e("TAG", "loginRequest: " + mUser.fbId + " " + mUser.name + " " + mUser.address + "\n" + mUser.avatar);
     }
 
+
+    @Subscribe
+    public void onEventMainThread(OnLoginCallbackEvent event) {
+        User user = event.user;
+
+        if (user == null) {
+            Log.e("Login", "Failed");
+            return;
+        }
+        // login success
+        mUser = user;
+        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_USER_ID, mUser.id);
+        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_NAME, mUser.name);
+        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_LOCATION, mUser.address);
+        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_URL_AVATAR, mUser.avatar);
+        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_TOTAL_SCORE, mUser.totalScore);
+        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_LOGGED_IN, true);
+        Log.e("TAG", "LoginCallback: " + user.totalScore + user.fbId + " " + user.id + " " + user.name + " " + user.address + " " + "\n" + user.avatar);
+        if (!isFinishing() && !isMoveInfo) {
+            isMoveInfo = true;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    loggedAndMoveInfoScreen();
+                }
+
+            });
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -202,12 +224,9 @@ public class LoginScreen extends AppCompatActivity {
         strictMode();
         findViewbyId();
         editTexConfig();
-        setAvatar();
         getLocation();
         setLoginDialog();
         loginFB();
-        fakeBtnFb();
-        loginManualClicked();
         setPickAvatarDialog();
         setEdittexDialog();
         setConnectDialog();
@@ -219,35 +238,6 @@ public class LoginScreen extends AppCompatActivity {
             mTextViewCity.setText(city);
         } else {
             mTextViewCity.setText(city);
-        }
-    }
-
-    @Subscribe
-    public void onEventMainThread(OnLoginCallbackEvent event) {
-        User user = event.user;
-
-        if (user == null) {
-            Log.e("Login", "Failed");
-            return;
-        }
-        // login success
-        mUser = user;
-        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_USER_ID, mUser.id);
-        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_NAME, mUser.name);
-        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_LOCATION, mUser.address);
-        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_URL_AVATAR, mUser.avatar);
-        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_TOTAL_SCORE, mUser.totalScore);
-        PrefUtils.getInstance(LoginScreen.this).set(PrefUtils.KEY_LOGGED_IN, true);
-        Log.e("TAG", "LoginCallback: " + user.totalScore + user.fbId + " " + user.id + " " + user.name + " " + user.address + " " + "\n" + user.avatar);
-        if (!isFinishing() && !isMoveInfo) {
-            isMoveInfo = true;
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    loggedAndMoveInfoScreen();
-                }
-
-            });
         }
     }
 
@@ -268,13 +258,17 @@ public class LoginScreen extends AppCompatActivity {
         mLoginButtonFb = (LoginButton) findViewById(R.id.button_fb);
         mImageButtonPlay = (Button) findViewById(R.id.button_login);
         mButtonFakeFb = (Button) findViewById(R.id.btn_fakefb);
+
+        mButtonFakeFb.setOnClickListener(this);
+        mImageViewAvatar.setOnClickListener(this);
+        mImageButtonPlay.setOnClickListener(this);
     }
 
     public void editTexConfig() {
         mEditText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                playSound(R.raw.touch_sound);
                 mEditText.setHint("");
                 mEditText.requestFocusFromTouch();
                 mEditText.setFocusableInTouchMode(true);
@@ -321,18 +315,12 @@ public class LoginScreen extends AppCompatActivity {
     }
 
     public void fakeBtnFb() {
-        mButtonFakeFb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-                if (NetworkUtils.checkInternetConnection(LoginScreen.this) && mSocketAltp.isConnected()) {
-                    mLoginButtonFb.performClick();
-                } else {
-                    connectionDialog.show();
-
-                }
-            }
-        });
+        playSound(R.raw.touch_sound);
+        if (NetworkUtils.checkInternetConnection(LoginScreen.this) && mSocketAltp.isConnected()) {
+            mLoginButtonFb.performClick();
+        } else {
+            connectionDialog.show();
+        }
     }
 
     public void loginFB() {
@@ -410,28 +398,23 @@ public class LoginScreen extends AppCompatActivity {
         request.executeAsync();
     }
 
-    public void loginManualClicked() {
-        mImageButtonPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-                if (NetworkUtils.checkInternetConnection(LoginScreen.this) && mSocketAltp.isConnected()) {
-                    mStringUserName = mEditText.getText().toString();
-                    if (mStringUserName.length() <= 3) {
-                        edittexDialog.show();
-                    } else {
-                        if (!isCheckPickImage) {
-                            uploadImage();
-                        } else {
-                            isCheckBtnLater = true;
-                            avatarDialog.show();
-                        }
-                    }
+    public void loginManual() {
+        playSound(R.raw.touch_sound);
+        if (NetworkUtils.checkInternetConnection(LoginScreen.this) && mSocketAltp.isConnected()) {
+            mStringUserName = mEditText.getText().toString();
+            if (mStringUserName.length() <= 3) {
+                edittexDialog.show();
+            } else {
+                if (!isCheckPickImage) {
+                    uploadImage();
                 } else {
-                    connectionDialog.show();
+                    isCheckBtnLater = true;
+                    avatarDialog.show();
                 }
             }
-        });
+        } else {
+            connectionDialog.show();
+        }
     }
 
     public void setPickAvatarDialog() {
@@ -449,7 +432,7 @@ public class LoginScreen extends AppCompatActivity {
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                playSound(R.raw.touch_sound);
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
                     if (checkPermission()) {
                         captureImage();
@@ -465,7 +448,7 @@ public class LoginScreen extends AppCompatActivity {
         btnGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                playSound(R.raw.touch_sound);
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
                     if (checkPermission()) {
                         loadImagefromGallery();
@@ -483,7 +466,7 @@ public class LoginScreen extends AppCompatActivity {
         btnLater.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                playSound(R.raw.touch_sound);
                 pickAvatarLater();
             }
         });
@@ -503,7 +486,7 @@ public class LoginScreen extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                playSound(R.raw.touch_sound);
                 edittexDialog.hide();
 
             }
@@ -538,7 +521,7 @@ public class LoginScreen extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                playSound(R.raw.touch_sound);
                 connectionDialog.hide();
 
             }
@@ -572,14 +555,9 @@ public class LoginScreen extends AppCompatActivity {
     }
 
     public void setAvatar() {
-        mImageViewAvatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-                isCheckBtnLater = false;
-                avatarDialog.show();
-            }
-        });
+        playSound(R.raw.touch_sound);
+        isCheckBtnLater = false;
+        avatarDialog.show();
     }
 
     public void defaultAvatarToLogin() {
@@ -667,6 +645,24 @@ public class LoginScreen extends AppCompatActivity {
         mediaPlayer.start();
     }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btn_fakefb:
+                fakeBtnFb();
+                break;
+            case R.id.imageview_avatar:
+                setAvatar();
+                break;
+            case R.id.button_login:
+                loginManual();
+                break;
+            default:
+                break;
+        }
+
+    }
+
     public static class OnLoginCallbackEvent {
         User user;
     }
@@ -727,6 +723,12 @@ public class LoginScreen extends AppCompatActivity {
         startActivity(loginScrnIntent);
         overridePendingTransition(R.animator.right_in, R.animator.left_out);
         finish();
+    }
+
+    public void playSound(int SoundId) {
+        if (SoundPoolManager.getInstance() != null) {
+            SoundPoolManager.getInstance().playSound(SoundId);
+        }
     }
 
     private boolean checkPermission() {
@@ -790,8 +792,10 @@ public class LoginScreen extends AppCompatActivity {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
         }
-        if (SoundPoolManager.getInstance().isPlaySound()) {
-            SoundPoolManager.getInstance().stop();
+        if (SoundPoolManager.getInstance() != null) {
+            if (SoundPoolManager.getInstance().isPlaySound()) {
+                SoundPoolManager.getInstance().stop();
+            }
         }
         super.onPause();
     }
