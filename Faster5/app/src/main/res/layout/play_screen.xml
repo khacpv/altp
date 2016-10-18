@@ -184,16 +184,14 @@
                 android:layout_marginRight="@dimen/layout_marginRight_20"
                 android:layout_toLeftOf="@+id/button_save2"
                 android:layout_toStartOf="@+id/button_save2"
-                android:background="@drawable/save1"
-                android:onClick="fiftyHelp" />
+                android:background="@drawable/save1" />
 
             <Button
                 android:id="@+id/button_save2"
                 android:layout_width="@dimen/layout_width_50"
                 android:layout_height="@dimen/layout_height_50"
                 android:layout_centerInParent="true"
-                android:background="@drawable/save2"
-                android:onClick="audienceHelp" />
+                android:background="@drawable/save2" />
 
             <Button
                 android:id="@+id/button_save3"
@@ -203,8 +201,7 @@
                 android:layout_marginStart="@dimen/layout_marginLeft_20"
                 android:layout_toEndOf="@+id/button_save2"
                 android:layout_toRightOf="@+id/button_save2"
-                android:background="@drawable/save3"
-                android:onClick="showAnsRightHelp" />
+                android:background="@drawable/save3" />
 
         </RelativeLayout>
 
@@ -223,6 +220,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginTop="@dimen/layout_marginTop_3"
                     android:background="#FFF" />
+
 
                 <TextView
                     android:id="@+id/textview_tablequestion"
@@ -245,8 +243,19 @@
                     android:textColor="#FFF"
                     android:textSize="@dimen/text_size_xlarge"
                     android:textStyle="bold" />
+
             </FrameLayout>
 
+            <Button
+                android:id="@+id/button_tutorial_play"
+                android:layout_width="@dimen/layout_height_25"
+                android:layout_height="@dimen/layout_height_25"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="@dimen/layout_marginTop_25"
+                android:layout_marginRight="@dimen/layout_marginRight_40"
+                android:layout_marginEnd="@dimen/layout_marginRight_40"
+                android:background="@drawable/report" />
 
             <TextView
                 android:id="@+id/textview_moneyquestion"
@@ -295,5 +304,11 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         ads:adSize="BANNER"
-        ads:adUnitId="@string/banner_ad_unit_id"/>
+        ads:adUnitId="@string/banner_ad_unit_id" />
+
+    <include
+        android:id="@+id/layout_tutorial_play"
+        layout="@layout/layout_tutorial_play"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </RelativeLayout>
