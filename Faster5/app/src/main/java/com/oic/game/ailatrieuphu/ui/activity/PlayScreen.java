@@ -857,6 +857,10 @@ public class PlayScreen extends AppCompatActivity implements View.OnClickListene
     }
 
     public void setMoveGameOver() {
+        boolean isFirstUse = PrefUtils.getInstance(PlayScreen.this).get(PrefUtils.KEY_FIRST_USE, false);
+        if(isFirstUse){
+            PrefUtils.getInstance(PlayScreen.this).set(PrefUtils.KEY_FIRST_USE, false);
+        }
         isMoveGameOver = true;
         Intent intent = GameOver.createIntent(PlayScreen.this, mUser, mEnemy, mRoom, mMessage, isServerErr);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -1617,7 +1621,6 @@ public class PlayScreen extends AppCompatActivity implements View.OnClickListene
 
             case R.id.layout_tutorial_play:
                 tutorialLayout.setVisibility(View.INVISIBLE);
-                PrefUtils.getInstance(PlayScreen.this).set(PrefUtils.KEY_FIRST_USE, false);
                 break;
             default:
                 break;
