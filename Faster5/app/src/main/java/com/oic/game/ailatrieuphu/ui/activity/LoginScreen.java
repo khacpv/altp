@@ -268,7 +268,7 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
         mEditText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                playSound(R.raw.touch_sound);
                 mEditText.setHint("");
                 mEditText.requestFocusFromTouch();
                 mEditText.setFocusableInTouchMode(true);
@@ -315,7 +315,7 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
     }
 
     public void fakeBtnFb() {
-        SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+        playSound(R.raw.touch_sound);
         if (NetworkUtils.checkInternetConnection(LoginScreen.this) && mSocketAltp.isConnected()) {
             mLoginButtonFb.performClick();
         } else {
@@ -399,7 +399,7 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
     }
 
     public void loginManual() {
-        SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+        playSound(R.raw.touch_sound);
         if (NetworkUtils.checkInternetConnection(LoginScreen.this) && mSocketAltp.isConnected()) {
             mStringUserName = mEditText.getText().toString();
             if (mStringUserName.length() <= 3) {
@@ -432,7 +432,7 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                playSound(R.raw.touch_sound);
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
                     if (checkPermission()) {
                         captureImage();
@@ -448,7 +448,7 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
         btnGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                playSound(R.raw.touch_sound);
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
                     if (checkPermission()) {
                         loadImagefromGallery();
@@ -466,7 +466,7 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
         btnLater.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                playSound(R.raw.touch_sound);
                 pickAvatarLater();
             }
         });
@@ -486,7 +486,7 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
             @Override
             public void onClick(View view) {
 
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                playSound(R.raw.touch_sound);
                 edittexDialog.hide();
 
             }
@@ -521,7 +521,7 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
             @Override
             public void onClick(View view) {
 
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                playSound(R.raw.touch_sound);
                 connectionDialog.hide();
 
             }
@@ -555,7 +555,7 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
     }
 
     public void setAvatar() {
-        SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+        playSound(R.raw.touch_sound);
         isCheckBtnLater = false;
         avatarDialog.show();
     }
@@ -725,6 +725,12 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
         finish();
     }
 
+    public void playSound(int SoundId) {
+        if (SoundPoolManager.getInstance() != null) {
+            SoundPoolManager.getInstance().playSound(SoundId);
+        }
+    }
+
     private boolean checkPermission() {
         int resultWrite = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
         int resultRead = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -786,8 +792,10 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
         }
-        if (SoundPoolManager.getInstance().isPlaySound()) {
-            SoundPoolManager.getInstance().stop();
+        if (SoundPoolManager.getInstance() != null) {
+            if (SoundPoolManager.getInstance().isPlaySound()) {
+                SoundPoolManager.getInstance().stop();
+            }
         }
         super.onPause();
     }

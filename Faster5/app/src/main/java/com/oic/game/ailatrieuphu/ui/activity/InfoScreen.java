@@ -185,7 +185,7 @@ public class InfoScreen extends AppCompatActivity {
                 mediaPlayer.stop();
                 isBgMusic = false;
             }
-            SoundPoolManager.getInstance().playSound(R.raw.search_finish);
+            playSound(R.raw.search_finish);
             timeSearch.cancel();
             searchBg.stop();
 
@@ -202,7 +202,7 @@ public class InfoScreen extends AppCompatActivity {
                                     getResources().getDrawable(R.drawable.xml_btn_anim);
                             mButtonPlayer[enemyNumberInList].setBackgroundDrawable(btnAnswerDrawable);
                             btnAnswerDrawable.start();
-                            SoundPoolManager.getInstance().playSound(R.raw.enemy_selected);
+                            playSound(R.raw.enemy_selected);
 
                         }
                     }, 2000);
@@ -331,7 +331,7 @@ public class InfoScreen extends AppCompatActivity {
         mButtonSearch.setOnClickListener(new View.OnClickListener() {
                                              @Override
                                              public void onClick(View v) {
-                                                 SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                                                 playSound(R.raw.touch_sound);
                                                  if (NetworkUtils.checkInternetConnection(InfoScreen.this) && mSocketAltp.isConnected()) {
                                                      if (tutorialLayout.getVisibility() == View.VISIBLE) {
                                                          tutorialLayout.setVisibility(View.GONE);
@@ -553,6 +553,12 @@ public class InfoScreen extends AppCompatActivity {
         return intent;
     }
 
+    public void playSound(int SoundId) {
+        if (SoundPoolManager.getInstance() != null) {
+            SoundPoolManager.getInstance().playSound(SoundId);
+        }
+    }
+
     public void onBackPressed() {
         quitDialog.show();
     }
@@ -562,8 +568,10 @@ public class InfoScreen extends AppCompatActivity {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
         }
-        if (SoundPoolManager.getInstance().isPlaySound()) {
-            SoundPoolManager.getInstance().stop();
+        if (SoundPoolManager.getInstance() != null) {
+            if (SoundPoolManager.getInstance().isPlaySound()) {
+                SoundPoolManager.getInstance().stop();
+            }
         }
         super.onPause();
     }

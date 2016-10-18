@@ -176,13 +176,13 @@ public class GameOver extends AppCompatActivity {
         boolean isServerErr = getIntent().getBooleanExtra(SERVER_ERR, false);
 
         if (mUser.score == mEnemy.score) {
-            SoundPoolManager.getInstance().playSound(R.raw.pass_good);
+            playSound(R.raw.pass_good);
             startMedia(6000);
         } else if (mUser.score < mEnemy.score) {
-            SoundPoolManager.getInstance().playSound(R.raw.lose);
+            playSound(R.raw.lose);
             startMedia(3000);
         } else if (mUser.score > mEnemy.score) {
-            SoundPoolManager.getInstance().playSound(R.raw.best_player);
+            playSound(R.raw.best_player);
             startMedia(12000);
         }
         if (!isServerErr) {
@@ -315,7 +315,7 @@ public class GameOver extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("market://details?id="+getApplicationContext().getPackageName()));
+                intent.setData(Uri.parse("market://details?id=" + getApplicationContext().getPackageName()));
                 startActivity(intent);
                 reportDialog.hide();
             }
@@ -330,6 +330,13 @@ public class GameOver extends AppCompatActivity {
         });
     }
 
+    public void playSound(int SoundId) {
+        if (SoundPoolManager.getInstance() != null) {
+            SoundPoolManager.getInstance().playSound(SoundId);
+        }
+    }
+
+
     public void onBackPressed() {
     }
 
@@ -338,8 +345,11 @@ public class GameOver extends AppCompatActivity {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
         }
-        if (SoundPoolManager.getInstance().isPlaySound()) {
-            SoundPoolManager.getInstance().stop();
+        if (SoundPoolManager.getInstance() != null) {
+
+            if (SoundPoolManager.getInstance().isPlaySound()) {
+                SoundPoolManager.getInstance().stop();
+            }
         }
         super.onPause();
     }

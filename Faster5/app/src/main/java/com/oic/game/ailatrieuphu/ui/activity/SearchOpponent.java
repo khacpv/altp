@@ -101,7 +101,7 @@ public class SearchOpponent extends AppCompatActivity {
         }
         setContentView(R.layout.search_opponent);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        SoundPoolManager.getInstance().playSound(R.raw.search_opponent);
+        playSound(R.raw.search_opponent);
         getBundle();
         EventBus.getDefault().register(this);
         mSocketAltp = MainApplication.sockAltp();
@@ -163,7 +163,7 @@ public class SearchOpponent extends AppCompatActivity {
         };
 
         if (!isFinishing() && !isMovePlayScr) {
-            SoundPoolManager.getInstance().playSound(R.raw.ready);
+            playSound(R.raw.ready);
             isMovePlayScr = true;
             handler.postDelayed(runMovePlayScr, 5000);
         }
@@ -245,6 +245,11 @@ public class SearchOpponent extends AppCompatActivity {
         Question mQuestion;
     }
 
+    public void playSound(int SoundId) {
+        if (SoundPoolManager.getInstance() != null) {
+            SoundPoolManager.getInstance().playSound(SoundId);
+        }
+    }
 
     @Override
     public void onBackPressed() {
@@ -253,8 +258,10 @@ public class SearchOpponent extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        if (SoundPoolManager.getInstance().isPlaySound()) {
-            SoundPoolManager.getInstance().stop();
+        if (SoundPoolManager.getInstance() != null) {
+            if (SoundPoolManager.getInstance().isPlaySound()) {
+                SoundPoolManager.getInstance().stop();
+            }
         }
         super.onPause();
     }
