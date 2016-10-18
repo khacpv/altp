@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -61,7 +62,6 @@ public class GameOver extends AppCompatActivity {
     Button mButtonBack;
     Button mButtonReport;
     Dialog reportDialog;
-    private int mTotalScore;
     private MediaPlayer mediaPlayer;
     private boolean isMoveInfoScr = false;
     private boolean isWin = false;
@@ -230,7 +230,7 @@ public class GameOver extends AppCompatActivity {
                 .setStoreType(StoreType.GOOGLEPLAY) //default is Google, other option is Amazon
                 .setInstallDays(0) // default 10, 0 means install day.
                 .setLaunchTimes(10) // default 10 times.
-                .setRemindInterval(3) // default 1 day.
+                .setRemindInterval(1) // default 1 day.
                 .setShowLaterButton(true) // default true.
                 .setDebug(true) // default false.
                 .setCancelable(false) // default false.
@@ -252,7 +252,7 @@ public class GameOver extends AppCompatActivity {
                     }
                 })
                 // .setView(view)
-                .setTitle(R.string.my_own_title)
+                .setTitle(R.string.my_own_rate)
                 .setTextLater(R.string.my_own_cancel)
                 .setTextRateNow(R.string.my_own_rate)
                 .monitor();
@@ -289,6 +289,7 @@ public class GameOver extends AppCompatActivity {
         reportDialog.setCancelable(false);
 
         Button report = (Button) reportDialog.findViewById(R.id.button_report);
+        Button rate = (Button) reportDialog.findViewById(R.id.button_rate);
         final Button cancel = (Button) reportDialog.findViewById(R.id.button_cancel);
 
         report.setOnClickListener(new View.OnClickListener() {
@@ -307,6 +308,16 @@ public class GameOver extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 }
                 cancel.performClick();
+            }
+        });
+
+        rate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("market://details?id="+getApplicationContext().getPackageName()));
+                startActivity(intent);
+                reportDialog.hide();
             }
         });
 

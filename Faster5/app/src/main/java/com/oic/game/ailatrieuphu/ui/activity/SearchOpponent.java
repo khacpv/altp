@@ -12,24 +12,22 @@ import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.game.oic.ailatrieuphu.R;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.oic.game.ailatrieuphu.MainApplication;
 import com.oic.game.ailatrieuphu.model.Question;
 import com.oic.game.ailatrieuphu.model.Room;
 import com.oic.game.ailatrieuphu.model.User;
 import com.oic.game.ailatrieuphu.sock.AltpHelper;
 import com.oic.game.ailatrieuphu.sock.SockAltp;
-import com.oic.game.ailatrieuphu.util.NetworkUtils;
 import com.oic.game.ailatrieuphu.util.SoundPoolManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -49,7 +47,6 @@ public class SearchOpponent extends AppCompatActivity {
     private User enemyUser = new User();
     private Room mRoom = new Room();
     private Dialog waitDialog;
-    Intent intent;
     private TextView mTextViewCityUser1;
     private TextView mTextViewCityUser2;
     private TextView mTextViewUserName1;
@@ -59,12 +56,10 @@ public class SearchOpponent extends AppCompatActivity {
     private TextView mTextViewWaitText;
     private ImageView mImageViewUserAvatar1;
     private ImageView mImageViewUserAvatar2;
-    Button mButtonPlay;
-    Button mButtonSeach;
-    //Button btnCancel;
+    RelativeLayout layoutMy, layoutEnemy;
     Handler handler = new Handler();
     Runnable runMovePlayScr;
-    //private boolean isCancel = false;
+    Intent intent;
     private boolean isMovePlayScr = false;
     private boolean notReady;
 
@@ -86,11 +81,6 @@ public class SearchOpponent extends AppCompatActivity {
 
         }
     };
-
-    public static class OnPlayCallbackEvent {
-        boolean notReady;
-        Question mQuestion;
-    }
 
     public static Intent createIntent(Context context, User user, User enemy, Room room) {
         Intent intent = new Intent(context, SearchOpponent.class);
@@ -123,6 +113,20 @@ public class SearchOpponent extends AppCompatActivity {
         findViewById();
         setWaitDialog();
         setInfoUser();
+
+        Animation aniLeft = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.in_left);
+        Animation aniRight = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.in_right);
+
+        layoutMy.startAnimation(aniRight);
+        layoutEnemy.startAnimation(aniLeft);
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mAltpHelper.play(mUser, mRoom);
+                waitDialog.show();
+            }
+        }, 2000);
     }
 
     @Subscribe
@@ -130,22 +134,9 @@ public class SearchOpponent extends AppCompatActivity {
         notReady = event.notReady;
 
         if (notReady) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    waitDialog.show();
-                }
-            });
             Log.e("TAG", "waiting for other players ready.");
             return;
         }
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                btnCancel.setVisibility(View.GONE);
-//                mTextViewWaitText.setVisibility(View.GONE);
-//            }
-//        });
 
         mTextViewWaitText.getHandler().post(new Runnable() {
             @Override
@@ -209,7 +200,7 @@ public class SearchOpponent extends AppCompatActivity {
 
     public void findViewById() {
         intent = new Intent(SearchOpponent.this, PlayScreen.class);
-        waitDialog = new Dialog(this);
+        waitDialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
 
         Typeface font = Typeface.createFromAsset(getAssets(),
                 "fonts/roboto.ttf");
@@ -227,16 +218,8 @@ public class SearchOpponent extends AppCompatActivity {
 
         setTypeface(font, mTextViewUserName1, mTextViewCityUser1, mTextViewScore1, mTextViewUserName2, mTextViewCityUser2, mTextViewScore2);
 
-        mButtonSeach = (Button) findViewById(R.id.button_search_again);
-        mButtonPlay = (Button) findViewById(R.id.button_play);
-
-        AdView mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(getString(R.string.test_device_1))
-                .addTestDevice(getString(R.string.test_device_2))
-                .build();
-        mAdView.loadAd(adRequest);
-
+        layoutMy = (RelativeLayout) findViewById(R.id.layout_my);
+        layoutEnemy = (RelativeLayout) findViewById(R.id.layout_enemy);
     }
 
     public static void setTypeface(Typeface font, TextView... textviews) {
@@ -254,40 +237,17 @@ public class SearchOpponent extends AppCompatActivity {
         waitDialog.setCancelable(false);
 
         mTextViewWaitText = (TextView) waitDialog.findViewById(R.id.textview_wait_text);
-
-//        btnCancel = (Button) waitDialog.findViewById(R.id.button_cancel);
-//        btnCancel.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-//                mAltpHelper.quit(mUser, mRoom, false);
-//                waitDialog.hide();
-//                isCancel = true;
-//                btnSearch(getCurrentFocus());
-//            }
-//        });
-
     }
 
-    public void btnSearch(View view) {
-        mAltpHelper.quit(mUser, mRoom, false);
-        SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-        SoundPoolManager.getInstance().stop();
-        Intent intent = new Intent(SearchOpponent.this, InfoScreen.class);
-        startActivity(intent);
-        overridePendingTransition(R.animator.in_from_left, R.animator.out_to_right);
-        finish();
+
+    public static class OnPlayCallbackEvent {
+        boolean notReady;
+        Question mQuestion;
     }
+
 
     @Override
     public void onBackPressed() {
-
-    }
-
-    public void btnPlay(View view) {
-        SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-        waitDialog.show();
-        mAltpHelper.play(mUser, mRoom);
 
     }
 
@@ -315,9 +275,6 @@ public class SearchOpponent extends AppCompatActivity {
 
     @Override
     public void onResume() {
-        if (!NetworkUtils.checkInternetConnection(this)) {
-            NetworkUtils.movePopupConnection(this);
-        }
         super.onResume();
     }
 }

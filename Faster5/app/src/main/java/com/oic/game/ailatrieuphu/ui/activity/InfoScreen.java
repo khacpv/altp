@@ -18,8 +18,6 @@ import android.util.Pair;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -359,7 +357,6 @@ public class InfoScreen extends AppCompatActivity {
         boolean firstUse = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_FIRST_USE, false);
         if (firstUse && !reward) {
             tutorialLayout.setVisibility(View.VISIBLE);
-            PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_FIRST_USE, false);
         }
     }
 
@@ -388,7 +385,7 @@ public class InfoScreen extends AppCompatActivity {
         rewardDialog = new Dialog(this);
         quitDialog = new Dialog(this);
 
-        tutorialLayout = (RelativeLayout) findViewById(R.id.layout_tutorial);
+        tutorialLayout = (RelativeLayout) findViewById(R.id.layout_tutorial_search);
         tutorialLayout.setVisibility(View.INVISIBLE);
     }
 
@@ -411,7 +408,6 @@ public class InfoScreen extends AppCompatActivity {
 
     }
 
-
     public void setRewardDialog() {
         rewardDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         rewardDialog.setContentView(R.layout.layout_popup_reward);
@@ -427,7 +423,6 @@ public class InfoScreen extends AppCompatActivity {
             public void onClick(View view) {
                 rewardDialog.hide();
                 tutorialLayout.setVisibility(View.VISIBLE);
-                PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_FIRST_USE, false);
             }
         });
 
@@ -470,7 +465,6 @@ public class InfoScreen extends AppCompatActivity {
         mTextViewTimeSearch.setVisibility(View.VISIBLE);
         timeSearch.start();
     }
-
 
     public void getUserInfo() {
         username = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_NAME, "");
