@@ -4,29 +4,31 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="@dimen/layout_marginBottom_25"
-        android:orientation="horizontal">
+        android:layout_marginRight="@dimen/layout_marginRight_10"
+        android:layout_marginEnd="@dimen/layout_marginRight_10"
+        android:layout_marginTop="@dimen/layout_marginBottom_25">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageview_useravatar1"
             android:layout_width="@dimen/layout_marginBottom_25"
             android:layout_height="@dimen/layout_marginBottom_25"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             app:civ_border_color="#fff"
             app:civ_border_width="@dimen/civ_border_width_1" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageview_useravatar2"
             android:layout_width="@dimen/layout_marginBottom_25"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="@dimen/layout_marginBottom_20"
+            android:layout_marginEnd="@dimen/layout_marginBottom_20"
             android:layout_height="@dimen/layout_marginBottom_25"
-            android:layout_toEndOf="@+id/imageview_useravatar1"
-            android:layout_toRightOf="@+id/imageview_useravatar1"
             app:civ_border_color="#fff"
             app:civ_border_width="@dimen/civ_border_width_1" />
-    </LinearLayout>
+    </RelativeLayout>
 </RelativeLayout>

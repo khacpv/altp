@@ -334,7 +334,7 @@ public class PlayScreen extends AppCompatActivity implements View.OnClickListene
                     }
                 });
                 setEnemeAvatarReply(mEnemy.answerIndex,
-                        checkEnemyAns(mEnemy.answerIndex) ? (mEnemy.answerIndex * 2) : (mEnemy.answerIndex * 2) + 1);
+                        checkEnemyAns(mEnemy.answerIndex) ? ((mEnemy.answerIndex * 2) + 1) : (mEnemy.answerIndex * 2));
             }
         }
         if (mQuestion.questionIndex == 5 || mQuestion.questionIndex == 10 || mQuestion.questionIndex == 15) {
@@ -533,7 +533,7 @@ public class PlayScreen extends AppCompatActivity implements View.OnClickListene
                         mButtonAns[mEnemy.answerIndex].setBackgroundResource(R.drawable.answer4);
                     }
                 });
-                setEnemeAvatarReply(mEnemy.answerIndex, mEnemy.answerIndex * 2);
+                setEnemeAvatarReply(mEnemy.answerIndex, mEnemy.answerIndex * 2 + 1);
             }
         }
         if (mQuestion.questionIndex == 5 || mQuestion.questionIndex == 10 || mQuestion.questionIndex == 15) {
@@ -1314,7 +1314,7 @@ public class PlayScreen extends AppCompatActivity implements View.OnClickListene
                             break;
 
                     }
-                    Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter().into(mImageViewUserAvatarReply[1]);
+                    Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter().into(mImageViewUserAvatarReply[0]);
                     mUser.answerIndex = 0;
                     break;
                 case R.id.button_ans2:
@@ -1326,7 +1326,7 @@ public class PlayScreen extends AppCompatActivity implements View.OnClickListene
                             playSound(R.raw.ans_b2);
                             break;
                     }
-                    Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter().into(mImageViewUserAvatarReply[3]);
+                    Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter().into(mImageViewUserAvatarReply[2]);
                     mUser.answerIndex = 1;
                     break;
                 case R.id.button_ans3:
@@ -1338,7 +1338,7 @@ public class PlayScreen extends AppCompatActivity implements View.OnClickListene
                             playSound(R.raw.ans_c2);
                             break;
                     }
-                    Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter().into(mImageViewUserAvatarReply[5]);
+                    Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter().into(mImageViewUserAvatarReply[4]);
                     mUser.answerIndex = 2;
                     break;
                 case R.id.button_ans4:
@@ -1350,7 +1350,7 @@ public class PlayScreen extends AppCompatActivity implements View.OnClickListene
                             playSound(R.raw.ans_d2);
                             break;
                     }
-                    Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter().into(mImageViewUserAvatarReply[7]);
+                    Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter().into(mImageViewUserAvatarReply[6]);
                     mUser.answerIndex = 3;
                     break;
             }
