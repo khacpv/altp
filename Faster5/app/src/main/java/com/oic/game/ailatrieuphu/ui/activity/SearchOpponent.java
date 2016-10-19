@@ -46,14 +46,14 @@ public class SearchOpponent extends AppCompatActivity {
     private User mUser = new User();
     private User enemyUser = new User();
     private Room mRoom = new Room();
-    private Dialog waitDialog;
+    //private Dialog waitDialog;
     private TextView mTextViewCityUser1;
     private TextView mTextViewCityUser2;
     private TextView mTextViewUserName1;
     private TextView mTextViewUserName2;
     private TextView mTextViewScore1;
     private TextView mTextViewScore2;
-    private TextView mTextViewWaitText;
+    //private TextView mTextViewWaitText;
     private ImageView mImageViewUserAvatar1;
     private ImageView mImageViewUserAvatar2;
     RelativeLayout layoutMy, layoutEnemy;
@@ -111,7 +111,7 @@ public class SearchOpponent extends AppCompatActivity {
         }
         mSocketAltp.addEvent("play", playCallback);
         findViewById();
-        setWaitDialog();
+        //setWaitDialog();
         setInfoUser();
 
         Animation aniLeft = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.in_left);
@@ -120,13 +120,8 @@ public class SearchOpponent extends AppCompatActivity {
         layoutMy.startAnimation(aniRight);
         layoutEnemy.startAnimation(aniLeft);
 
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mAltpHelper.play(mUser, mRoom);
-                waitDialog.show();
-            }
-        }, 2000);
+        mAltpHelper.play(mUser, mRoom);
+
     }
 
     @Subscribe
@@ -138,18 +133,18 @@ public class SearchOpponent extends AppCompatActivity {
             return;
         }
 
-        mTextViewWaitText.getHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                mTextViewWaitText.setText(getResources().getString(R.string.ready));
-                if (Build.VERSION.SDK_INT < 23) {
-                    mTextViewWaitText.setTextColor(getResources().getColor(R.color.RED));
-                } else {
-                    mTextViewWaitText.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.RED));
-                }
-
-            }
-        });
+//        mTextViewWaitText.getHandler().post(new Runnable() {
+//            @Override
+//            public void run() {
+//                mTextViewWaitText.setText(getResources().getString(R.string.ready));
+//                if (Build.VERSION.SDK_INT < 23) {
+//                    mTextViewWaitText.setTextColor(getResources().getColor(R.color.RED));
+//                } else {
+//                    mTextViewWaitText.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.RED));
+//                }
+//
+//            }
+//        });
 
         Question mQuestion = event.mQuestion;
         final Intent playScrnIntent = PlayScreen.createIntent(SearchOpponent.this, mUser, enemyUser, mRoom, mQuestion);
@@ -200,7 +195,7 @@ public class SearchOpponent extends AppCompatActivity {
 
     public void findViewById() {
         intent = new Intent(SearchOpponent.this, PlayScreen.class);
-        waitDialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        //waitDialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
 
         Typeface font = Typeface.createFromAsset(getAssets(),
                 "fonts/roboto.ttf");
@@ -227,17 +222,17 @@ public class SearchOpponent extends AppCompatActivity {
             textView.setTypeface(font);
         }
     }
-
-    public void setWaitDialog() {
-        waitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        waitDialog.setContentView(R.layout.layout_wait_popup);
-        waitDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        waitDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
-        waitDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        waitDialog.setCancelable(false);
-
-        mTextViewWaitText = (TextView) waitDialog.findViewById(R.id.textview_wait_text);
-    }
+//
+//    public void setWaitDialog() {
+//        waitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        waitDialog.setContentView(R.layout.layout_wait_popup);
+//        waitDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+//        waitDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+//        waitDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+//        waitDialog.setCancelable(false);
+//
+//        mTextViewWaitText = (TextView) waitDialog.findViewById(R.id.textview_wait_text);
+//    }
 
 
     public static class OnPlayCallbackEvent {
@@ -268,9 +263,9 @@ public class SearchOpponent extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if (waitDialog != null) {
-            waitDialog.dismiss();
-        }
+//        if (waitDialog != null) {
+//            waitDialog.dismiss();
+//        }
         if (!notReady && runMovePlayScr != null) {
             handler.removeCallbacks(runMovePlayScr);
         }
