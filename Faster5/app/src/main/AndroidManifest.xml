@@ -14,7 +14,7 @@
 
     <uses-feature
         android:name="android.hardware.sensor.gyroscope"
-        android:required="true" />
+        android:required="false" />
 
     <application
         android:name="com.oic.game.ailatrieuphu.MainApplication"
