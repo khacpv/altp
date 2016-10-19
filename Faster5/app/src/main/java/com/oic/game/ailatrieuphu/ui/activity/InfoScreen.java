@@ -18,8 +18,6 @@ import android.util.Pair;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -187,7 +185,7 @@ public class InfoScreen extends AppCompatActivity {
                 mediaPlayer.stop();
                 isBgMusic = false;
             }
-            SoundPoolManager.getInstance().playSound(R.raw.search_finish);
+            playSound(R.raw.search_finish);
             timeSearch.cancel();
             searchBg.stop();
 
@@ -204,7 +202,7 @@ public class InfoScreen extends AppCompatActivity {
                                     getResources().getDrawable(R.drawable.xml_btn_anim);
                             mButtonPlayer[enemyNumberInList].setBackgroundDrawable(btnAnswerDrawable);
                             btnAnswerDrawable.start();
-                            SoundPoolManager.getInstance().playSound(R.raw.enemy_selected);
+                            playSound(R.raw.enemy_selected);
 
                         }
                     }, 2000);
@@ -333,7 +331,7 @@ public class InfoScreen extends AppCompatActivity {
         mButtonSearch.setOnClickListener(new View.OnClickListener() {
                                              @Override
                                              public void onClick(View v) {
-                                                 SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                                                 playSound(R.raw.touch_sound);
                                                  if (NetworkUtils.checkInternetConnection(InfoScreen.this) && mSocketAltp.isConnected()) {
                                                      if (tutorialLayout.getVisibility() == View.VISIBLE) {
                                                          tutorialLayout.setVisibility(View.GONE);
@@ -359,7 +357,6 @@ public class InfoScreen extends AppCompatActivity {
         boolean firstUse = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_FIRST_USE, false);
         if (firstUse && !reward) {
             tutorialLayout.setVisibility(View.VISIBLE);
-            PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_FIRST_USE, false);
         }
     }
 
@@ -388,7 +385,7 @@ public class InfoScreen extends AppCompatActivity {
         rewardDialog = new Dialog(this);
         quitDialog = new Dialog(this);
 
-        tutorialLayout = (RelativeLayout) findViewById(R.id.layout_tutorial);
+        tutorialLayout = (RelativeLayout) findViewById(R.id.layout_tutorial_search);
         tutorialLayout.setVisibility(View.INVISIBLE);
     }
 
@@ -411,7 +408,6 @@ public class InfoScreen extends AppCompatActivity {
 
     }
 
-
     public void setRewardDialog() {
         rewardDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         rewardDialog.setContentView(R.layout.layout_popup_reward);
@@ -427,7 +423,6 @@ public class InfoScreen extends AppCompatActivity {
             public void onClick(View view) {
                 rewardDialog.hide();
                 tutorialLayout.setVisibility(View.VISIBLE);
-                PrefUtils.getInstance(InfoScreen.this).set(PrefUtils.KEY_FIRST_USE, false);
             }
         });
 
@@ -470,7 +465,6 @@ public class InfoScreen extends AppCompatActivity {
         mTextViewTimeSearch.setVisibility(View.VISIBLE);
         timeSearch.start();
     }
-
 
     public void getUserInfo() {
         username = PrefUtils.getInstance(InfoScreen.this).get(PrefUtils.KEY_NAME, "");
@@ -559,6 +553,12 @@ public class InfoScreen extends AppCompatActivity {
         return intent;
     }
 
+    public void playSound(int SoundId) {
+        if (SoundPoolManager.getInstance() != null) {
+            SoundPoolManager.getInstance().playSound(SoundId);
+        }
+    }
+
     public void onBackPressed() {
         quitDialog.show();
     }
@@ -568,8 +568,10 @@ public class InfoScreen extends AppCompatActivity {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
         }
-        if (SoundPoolManager.getInstance().isPlaySound()) {
-            SoundPoolManager.getInstance().stop();
+        if (SoundPoolManager.getInstance() != null) {
+            if (SoundPoolManager.getInstance().isPlaySound()) {
+                SoundPoolManager.getInstance().stop();
+            }
         }
         super.onPause();
     }

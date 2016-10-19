@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -21,44 +22,72 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <Button
-                android:id="@+id/button_ans1"
+            <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_height="@dimen/layout_height_50"
-                android:layout_marginLeft="@dimen/layout_marginLeft_10"
-                android:layout_marginStart="@dimen/layout_marginLeft_10"
-                android:layout_weight="1"
-                android:background="@drawable/answer0"
-                android:gravity="start|center_vertical"
-                android:onClick="btnAnswerClick"
-                android:paddingBottom="@dimen/paddingBottom_10"
-                android:paddingLeft="@dimen/paddingLeft_20"
-                android:paddingRight="@dimen/paddingRight_20"
-                android:singleLine="true"
-                android:text="@string/answ_A"
-                android:textAllCaps="false"
-                android:textColor="#FFF"
-                android:textSize="@dimen/text_size_large" />
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
 
-            <Button
-                android:id="@+id/button_ans2"
+                <Button
+                    android:id="@+id/button_ans1"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/layout_height_50"
+                    android:layout_marginLeft="@dimen/layout_marginLeft_10"
+                    android:layout_marginStart="@dimen/layout_marginLeft_10"
+                    android:background="@drawable/answer0"
+                    android:gravity="start|center_vertical"
+                    android:onClick="btnAnswerClick"
+                    android:paddingBottom="@dimen/paddingBottom_10"
+                    android:paddingLeft="@dimen/paddingLeft_20"
+                    android:paddingRight="@dimen/paddingRight_20"
+                    android:singleLine="true"
+                    android:text="@string/answ_A"
+                    android:textAllCaps="false"
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/text_size_large" />
+
+                <include
+                    android:id="@+id/layout_avatar_reply1"
+                    layout="@layout/layout_avatar_reply"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_height="@dimen/layout_height_50"
-                android:layout_marginRight="@dimen/layout_marginRight_10"
-                android:layout_marginEnd="@dimen/layout_marginRight_10"
-                android:layout_weight="1"
-                android:background="@drawable/answer0"
-                android:gravity="start|center_vertical"
-                android:onClick="btnAnswerClick"
-                android:paddingBottom="@dimen/paddingBottom_10"
-                android:paddingLeft="@dimen/paddingLeft_20"
-                android:paddingRight="@dimen/paddingRight_20"
-                android:singleLine="true"
-                android:text="@string/answ_B"
-                android:textAllCaps="false"
-                android:textColor="#FFF"
-                android:textSize="@dimen/text_size_large" />
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <Button
+                    android:id="@+id/button_ans2"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/layout_height_50"
+                    android:layout_marginEnd="@dimen/layout_marginRight_10"
+                    android:layout_marginRight="@dimen/layout_marginRight_10"
+                    android:background="@drawable/answer0"
+                    android:gravity="start|center_vertical"
+                    android:onClick="btnAnswerClick"
+                    android:paddingBottom="@dimen/paddingBottom_10"
+                    android:paddingLeft="@dimen/paddingLeft_20"
+                    android:paddingRight="@dimen/paddingRight_20"
+                    android:singleLine="true"
+                    android:text="@string/answ_B"
+                    android:textAllCaps="false"
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/text_size_large" />
+
+                <include
+                    android:id="@+id/layout_avatar_reply2"
+                    layout="@layout/layout_avatar_reply"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/layout_marginRight_10"
+                    android:layout_marginEnd="@dimen/layout_marginRight_10" />
+
+
+            </RelativeLayout>
         </LinearLayout>
+
 
     </FrameLayout>
 
@@ -79,43 +108,68 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <Button
-                android:id="@+id/button_ans3"
+            <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_height="@dimen/layout_height_50"
-                android:layout_marginLeft="@dimen/layout_marginLeft_10"
-                android:layout_marginStart="@dimen/layout_marginLeft_10"
-                android:layout_weight="1"
-                android:background="@drawable/answer0"
-                android:gravity="start|center_vertical"
-                android:onClick="btnAnswerClick"
-                android:paddingBottom="@dimen/paddingBottom_10"
-                android:paddingLeft="@dimen/paddingLeft_20"
-                android:paddingRight="@dimen/paddingRight_20"
-                android:singleLine="true"
-                android:text="@string/answ_C"
-                android:textAllCaps="false"
-                android:textColor="#FFF"
-                android:textSize="@dimen/text_size_large" />
+                android:layout_height="match_parent"
+                android:layout_weight="1">
 
-            <Button
-                android:id="@+id/button_ans4"
+                <Button
+                    android:id="@+id/button_ans3"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/layout_height_50"
+                    android:layout_marginLeft="@dimen/layout_marginLeft_10"
+                    android:layout_marginStart="@dimen/layout_marginLeft_10"
+                    android:background="@drawable/answer0"
+                    android:gravity="start|center_vertical"
+                    android:onClick="btnAnswerClick"
+                    android:paddingBottom="@dimen/paddingBottom_10"
+                    android:paddingLeft="@dimen/paddingLeft_20"
+                    android:paddingRight="@dimen/paddingRight_20"
+                    android:singleLine="true"
+                    android:text="@string/answ_C"
+                    android:textAllCaps="false"
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/text_size_large" />
+
+                <include
+                    android:id="@+id/layout_avatar_reply3"
+                    layout="@layout/layout_avatar_reply"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_height="@dimen/layout_height_50"
-                android:layout_marginRight="@dimen/layout_marginRight_10"
-                android:layout_marginEnd="@dimen/layout_marginRight_10"
-                android:layout_weight="1"
-                android:background="@drawable/answer0"
-                android:gravity="start|center_vertical"
-                android:onClick="btnAnswerClick"
-                android:paddingBottom="@dimen/paddingBottom_10"
-                android:paddingLeft="@dimen/paddingLeft_20"
-                android:paddingRight="@dimen/paddingRight_20"
-                android:singleLine="true"
-                android:text="@string/answ_D"
-                android:textAllCaps="false"
-                android:textColor="#FFF"
-                android:textSize="@dimen/text_size_large" />
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <Button
+                    android:id="@+id/button_ans4"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/layout_height_50"
+                    android:layout_marginEnd="@dimen/layout_marginRight_10"
+                    android:layout_marginRight="@dimen/layout_marginRight_10"
+                    android:background="@drawable/answer0"
+                    android:gravity="start|center_vertical"
+                    android:onClick="btnAnswerClick"
+                    android:paddingBottom="@dimen/paddingBottom_10"
+                    android:paddingLeft="@dimen/paddingLeft_20"
+                    android:paddingRight="@dimen/paddingRight_20"
+                    android:singleLine="true"
+                    android:text="@string/answ_D"
+                    android:textAllCaps="false"
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/text_size_large" />
+
+                <include
+                    android:id="@+id/layout_avatar_reply4"
+                    layout="@layout/layout_avatar_reply"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/layout_marginRight_10"
+                    android:layout_marginRight="@dimen/layout_marginRight_10" />
+            </RelativeLayout>
+
         </LinearLayout>
 
     </FrameLayout>

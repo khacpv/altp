@@ -21,6 +21,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -42,6 +43,7 @@ import com.oic.game.ailatrieuphu.model.Room;
 import com.oic.game.ailatrieuphu.model.User;
 import com.oic.game.ailatrieuphu.sock.AltpHelper;
 import com.oic.game.ailatrieuphu.sock.SockAltp;
+import com.oic.game.ailatrieuphu.util.PrefUtils;
 import com.oic.game.ailatrieuphu.util.SoundPoolManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -59,7 +61,7 @@ import me.grantland.widget.AutofitHelper;
  * Created by Kien on 07/05/2016.
  * test
  */
-public class PlayScreen extends AppCompatActivity {
+public class PlayScreen extends AppCompatActivity implements View.OnClickListener {
 
     private static final String EXTRA_USER = "user";
     private static final String EXTRA_ENEMY = "enemy";
@@ -67,6 +69,7 @@ public class PlayScreen extends AppCompatActivity {
     private static final String EXTRA_QUESTION = "question";
     ImageView mImageViewUserAvatar1;
     ImageView mImageViewUserAvatar2;
+    ImageView[] mImageViewUserAvatarReply = new ImageView[8];
     TextView mTextViewMyScore;
     TextView mTextViewEnemyScore;
     TextView mTextViewRound;
@@ -82,6 +85,10 @@ public class PlayScreen extends AppCompatActivity {
     TextView mTextViewCityUser2;
     TextView mTextViewMoneyQuestion;
     Button[] mButtonAns;
+    Button mButtonFifty;
+    Button mButtonAudience;
+    Button mButtonShowAns;
+    Button mButtonTut;
     private SockAltp mSocketAltp;
     private AltpHelper mAltpHelper;
     private User mUser;
@@ -103,6 +110,7 @@ public class PlayScreen extends AppCompatActivity {
     BarChart barChart;
     Typeface font;
     CountDownTimer timer, timerResume;
+    RelativeLayout tutorialLayout;
     private int timeRemaining = 0;
     boolean isPauseClock = false;
     private boolean clickable = true;
@@ -243,12 +251,13 @@ public class PlayScreen extends AppCompatActivity {
                 timeQuit = 3000;
             }
             if (!isFinishing() && !isMoveGameOver) {
+                mSocketAltp.removeEvent();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        SoundPoolManager.getInstance().stop();
+                        stopSound();
                         mSocketAltp.removeEvent();
-                        if (mInterstitialAd.isLoaded() && !isMoveGameOver) {
+                        if (mInterstitialAd.isLoaded()) {
                             mInterstitialAd.show();
                             eventAdClose();
                         } else {
@@ -292,7 +301,7 @@ public class PlayScreen extends AppCompatActivity {
                 @Override
                 public void run() {
                     mSocketAltp.removeEvent();
-                    SoundPoolManager.getInstance().stop();
+                    stopSound();
                     if (mInterstitialAd.isLoaded()) {
                         mInterstitialAd.show();
                         eventAdClose();
@@ -324,22 +333,23 @@ public class PlayScreen extends AppCompatActivity {
                                 checkEnemyAns(mEnemy.answerIndex) ? R.drawable.answer4 : R.drawable.answer2);
                     }
                 });
+                setEnemeAvatarReply(mEnemy.answerIndex,
+                        checkEnemyAns(mEnemy.answerIndex) ? (mEnemy.answerIndex * 2) : (mEnemy.answerIndex * 2) + 1);
             }
         }
-
         if (mQuestion.questionIndex == 5 || mQuestion.questionIndex == 10 || mQuestion.questionIndex == 15) {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     switch (mQuestion.questionIndex) {
                         case 5:
-                            SoundPoolManager.getInstance().playSound(R.raw.ans_now1);
+                            playSound(R.raw.ans_now1);
                             break;
                         case 10:
-                            SoundPoolManager.getInstance().playSound(R.raw.ans_now2);
+                            playSound(R.raw.ans_now2);
                             break;
                         case 15:
-                            SoundPoolManager.getInstance().playSound(R.raw.ans_now3);
+                            playSound(R.raw.ans_now3);
                             break;
                     }
                 }
@@ -385,45 +395,7 @@ public class PlayScreen extends AppCompatActivity {
                         }
                     });
                     int n = new Random().nextInt(3) + 1;
-                    switch (mUser.answerIndex) {
-                        case 0:
-                            if (n == 1) {
-                                SoundPoolManager.getInstance().playSound(R.raw.true_a);
-                            } else if (n == 2) {
-                                SoundPoolManager.getInstance().playSound(R.raw.true_a2);
-                            } else if (n == 3) {
-                                SoundPoolManager.getInstance().playSound(R.raw.true_a3);
-                            }
-
-                            break;
-                        case 1:
-                            if (n == 1 || n == 3) {
-                                SoundPoolManager.getInstance().playSound(R.raw.true_b);
-                            } else if (n == 2) {
-                                SoundPoolManager.getInstance().playSound(R.raw.true_b2);
-                            }
-
-                            break;
-                        case 2:
-                            if (n == 1) {
-                                SoundPoolManager.getInstance().playSound(R.raw.true_c);
-                            } else if (n == 2) {
-                                SoundPoolManager.getInstance().playSound(R.raw.true_c2);
-                            } else if (n == 3) {
-                                SoundPoolManager.getInstance().playSound(R.raw.true_c3);
-                            }
-
-                            break;
-                        case 3:
-
-                            if (n == 1 || n == 3) {
-                                SoundPoolManager.getInstance().playSound(R.raw.true_d3);
-                            } else if (n == 2) {
-                                SoundPoolManager.getInstance().playSound(R.raw.true_d2);
-                            }
-                            break;
-                    }
-
+                    soundCorrectAns(n);
 
                     mButtonAns[mUser.answerIndex].setBackgroundDrawable(btnAnswerDrawable);
                     btnAnswerDrawable.start();
@@ -432,23 +404,23 @@ public class PlayScreen extends AppCompatActivity {
                     int n = new Random().nextInt(2) + 1;
                     switch (mQuestion.mCorrectAnsId) {
                         case 0:
-                            SoundPoolManager.getInstance().playSound(R.raw.lose_a);
+                            playSound(R.raw.lose_a);
                             break;
                         case 1:
-                            SoundPoolManager.getInstance().playSound(R.raw.lose_b);
+                            playSound(R.raw.lose_b);
                             break;
                         case 2:
                             if (n == 1) {
-                                SoundPoolManager.getInstance().playSound(R.raw.lose_c);
+                                playSound(R.raw.lose_c);
                             } else if (n == 2) {
-                                SoundPoolManager.getInstance().playSound(R.raw.lose_c2);
+                                playSound(R.raw.lose_c2);
                             }
                             break;
                         case 3:
                             if (n == 1) {
-                                SoundPoolManager.getInstance().playSound(R.raw.lose_d);
+                                playSound(R.raw.lose_d);
                             } else if (n == 2) {
-                                SoundPoolManager.getInstance().playSound(R.raw.lose_d2);
+                                playSound(R.raw.lose_d2);
                             }
                             break;
                     }
@@ -484,11 +456,14 @@ public class PlayScreen extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            for (int i = 0; i < 4; i++) {
+                            for (int i = 0; i < mButtonAns.length; i++) {
                                 mButtonAns[i].clearAnimation();
                                 mButtonAns[i].setBackgroundResource(R.drawable.answer0);
                                 mButtonAns[i].setTextSize(getResources().getDimensionPixelSize(R.dimen.text_size_large));
                                 mButtonAns[i].setEnabled(true);
+                            }
+                            for (int i = 0; i < mImageViewUserAvatarReply.length; i++) {
+                                mImageViewUserAvatarReply[i].setImageDrawable(null);
                             }
                             isCheckFiftyHelp = true;
                             isCheckAudienceHelp = true;
@@ -499,10 +474,10 @@ public class PlayScreen extends AppCompatActivity {
                                 ruleDialog.show();
                                 switch (mQuestion.questionIndex) {
                                     case 6:
-                                        SoundPoolManager.getInstance().playSound(R.raw.vuot_moc_1);
+                                        playSound(R.raw.vuot_moc_1);
                                         break;
                                     case 11:
-                                        SoundPoolManager.getInstance().playSound(R.raw.vuot_moc_2);
+                                        playSound(R.raw.vuot_moc_2);
                                         break;
                                 }
                                 handler.postDelayed(hideRuleDialog, 8000);
@@ -526,7 +501,7 @@ public class PlayScreen extends AppCompatActivity {
                         musicImpor = new Runnable() {
                             @Override
                             public void run() {
-                                SoundPoolManager.getInstance().playSound(R.raw.important);
+                                playSound(R.raw.important);
                             }
                         };
                         handler.postDelayed(musicImpor, 1500 + timeQuestion15);
@@ -558,6 +533,7 @@ public class PlayScreen extends AppCompatActivity {
                         mButtonAns[mEnemy.answerIndex].setBackgroundResource(R.drawable.answer4);
                     }
                 });
+                setEnemeAvatarReply(mEnemy.answerIndex, mEnemy.answerIndex * 2);
             }
         }
         if (mQuestion.questionIndex == 5 || mQuestion.questionIndex == 10 || mQuestion.questionIndex == 15) {
@@ -567,13 +543,13 @@ public class PlayScreen extends AppCompatActivity {
                 public void run() {
                     switch (index) {
                         case 5:
-                            SoundPoolManager.getInstance().playSound(R.raw.ans_now1);
+                            playSound(R.raw.ans_now1);
                             break;
                         case 10:
-                            SoundPoolManager.getInstance().playSound(R.raw.ans_now2);
+                            playSound(R.raw.ans_now2);
                             break;
                         case 15:
-                            SoundPoolManager.getInstance().playSound(R.raw.ans_now3);
+                            playSound(R.raw.ans_now3);
                             break;
                     }
                 }
@@ -604,44 +580,7 @@ public class PlayScreen extends AppCompatActivity {
                 });
 
                 int n = new Random().nextInt(3) + 1;
-                switch (mUser.answerIndex) {
-                    case 0:
-                        if (n == 1) {
-                            SoundPoolManager.getInstance().playSound(R.raw.true_a);
-                        } else if (n == 2) {
-                            SoundPoolManager.getInstance().playSound(R.raw.true_a2);
-                        } else if (n == 3) {
-                            SoundPoolManager.getInstance().playSound(R.raw.true_a3);
-                        }
-
-                        break;
-                    case 1:
-                        if (n == 1 || n == 3) {
-                            SoundPoolManager.getInstance().playSound(R.raw.true_b);
-                        } else if (n == 2) {
-                            SoundPoolManager.getInstance().playSound(R.raw.true_b2);
-                        }
-
-                        break;
-                    case 2:
-                        if (n == 1) {
-                            SoundPoolManager.getInstance().playSound(R.raw.true_c);
-                        } else if (n == 2) {
-                            SoundPoolManager.getInstance().playSound(R.raw.true_c2);
-                        } else if (n == 3) {
-                            SoundPoolManager.getInstance().playSound(R.raw.true_c3);
-                        }
-
-                        break;
-                    case 3:
-
-                        if (n == 1 || n == 3) {
-                            SoundPoolManager.getInstance().playSound(R.raw.true_d3);
-                        } else if (n == 2) {
-                            SoundPoolManager.getInstance().playSound(R.raw.true_d2);
-                        }
-                        break;
-                }
+                soundCorrectAns(n);
 
                 AnimationDrawable btnAnswerDrawable = (AnimationDrawable)
                         getResources().getDrawable(R.drawable.xml_btn_anim);
@@ -652,6 +591,47 @@ public class PlayScreen extends AppCompatActivity {
             }
         }, 3000 + timeQuestionImpor);
 
+    }
+
+    public void soundCorrectAns(int n) {
+        switch (mUser.answerIndex) {
+            case 0:
+                if (n == 1) {
+                    playSound(R.raw.true_a);
+                } else if (n == 2) {
+                    playSound(R.raw.true_a2);
+                } else if (n == 3) {
+                    playSound(R.raw.true_a3);
+                }
+
+                break;
+            case 1:
+                if (n == 1 || n == 3) {
+                    playSound(R.raw.true_b);
+                } else if (n == 2) {
+                    playSound(R.raw.true_b2);
+                }
+
+                break;
+            case 2:
+                if (n == 1) {
+                    playSound(R.raw.true_c);
+                } else if (n == 2) {
+                    playSound(R.raw.true_c2);
+                } else if (n == 3) {
+                    playSound(R.raw.true_c3);
+                }
+
+                break;
+            case 3:
+
+                if (n == 1 || n == 3) {
+                    playSound(R.raw.true_d3);
+                } else if (n == 2) {
+                    playSound(R.raw.true_d2);
+                }
+                break;
+        }
     }
 
     public static Intent createIntent(Context context, User user, User enemy, Room room, Question question) {
@@ -763,6 +743,23 @@ public class PlayScreen extends AppCompatActivity {
 
         mTextViewMoneyQuestion = (TextView) findViewById(R.id.textview_moneyquestion);
 
+        tutorialLayout = (RelativeLayout) findViewById(R.id.layout_tutorial_play);
+        tutorialLayout.setOnClickListener(this);
+        boolean firstUse = PrefUtils.getInstance(PlayScreen.this).get(PrefUtils.KEY_FIRST_USE, false);
+        if (!firstUse) {
+            tutorialLayout.setVisibility(View.INVISIBLE);
+        }
+
+        mButtonFifty = (Button) findViewById(R.id.button_save1);
+        mButtonAudience = (Button) findViewById(R.id.button_save2);
+        mButtonShowAns = (Button) findViewById(R.id.button_save3);
+        mButtonTut = (Button) findViewById(R.id.button_tutorial_play);
+
+        mButtonFifty.setOnClickListener(this);
+        mButtonAudience.setOnClickListener(this);
+        mButtonShowAns.setOnClickListener(this);
+        mButtonTut.setOnClickListener(this);
+
         setTypeface(font, mTextViewTimer, mTextViewRound, mTextViewMyScore, mTextViewEnemyScore,
                 mTextViewQuestion, mTextViewAns1, mTextViewAns2, mTextViewAns3, mTextViewAns4,
                 mTextViewUserName1, mTextViewUserName2, mTextViewCityUser1, mTextViewCityUser2);
@@ -783,6 +780,8 @@ public class PlayScreen extends AppCompatActivity {
             mButtonAns[i].setBackgroundResource(R.drawable.answer0);
         }
 
+        findViewUserAvatarReply();
+
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(getString(R.string.test_device_1))
@@ -790,6 +789,49 @@ public class PlayScreen extends AppCompatActivity {
                 .build();
         mAdView.loadAd(adRequest);
 
+    }
+
+    public void findViewUserAvatarReply() {
+        int i = 0;
+        mImageViewUserAvatarReply[i++] = (ImageView) findViewById(R.id.layout_avatar_reply1).findViewById(R.id.imageview_useravatar1);
+
+        mImageViewUserAvatarReply[i++] = (ImageView) findViewById(R.id.layout_avatar_reply1).findViewById(R.id.imageview_useravatar2);
+
+        mImageViewUserAvatarReply[i++] = (ImageView) findViewById(R.id.layout_avatar_reply2).findViewById(R.id.imageview_useravatar1);
+
+        mImageViewUserAvatarReply[i++] = (ImageView) findViewById(R.id.layout_avatar_reply2).findViewById(R.id.imageview_useravatar2);
+
+        mImageViewUserAvatarReply[i++] = (ImageView) findViewById(R.id.layout_avatar_reply3).findViewById(R.id.imageview_useravatar1);
+
+        mImageViewUserAvatarReply[i++] = (ImageView) findViewById(R.id.layout_avatar_reply3).findViewById(R.id.imageview_useravatar2);
+
+        mImageViewUserAvatarReply[i++] = (ImageView) findViewById(R.id.layout_avatar_reply4).findViewById(R.id.imageview_useravatar1);
+
+        mImageViewUserAvatarReply[i] = (ImageView) findViewById(R.id.layout_avatar_reply4).findViewById(R.id.imageview_useravatar2);
+    }
+
+    public void setEnemeAvatarReply(final int ansId, final int layoutId) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                switch (ansId) {
+                    case 0:
+                        Glide.with(getApplicationContext()).load(mEnemy.avatar).fitCenter().into(mImageViewUserAvatarReply[layoutId]);
+                        break;
+                    case 1:
+                        Glide.with(getApplicationContext()).load(mEnemy.avatar).fitCenter().into(mImageViewUserAvatarReply[layoutId]);
+                        break;
+                    case 2:
+                        Glide.with(getApplicationContext()).load(mEnemy.avatar).fitCenter().into(mImageViewUserAvatarReply[layoutId]);
+                        break;
+                    case 3:
+                        Glide.with(getApplicationContext()).load(mEnemy.avatar).fitCenter().into(mImageViewUserAvatarReply[layoutId]);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
     }
 
     public void setInterstitialAd() {
@@ -815,6 +857,10 @@ public class PlayScreen extends AppCompatActivity {
     }
 
     public void setMoveGameOver() {
+        boolean isFirstUse = PrefUtils.getInstance(PlayScreen.this).get(PrefUtils.KEY_FIRST_USE, false);
+        if(isFirstUse){
+            PrefUtils.getInstance(PlayScreen.this).set(PrefUtils.KEY_FIRST_USE, false);
+        }
         isMoveGameOver = true;
         Intent intent = GameOver.createIntent(PlayScreen.this, mUser, mEnemy, mRoom, mMessage, isServerErr);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -887,10 +933,7 @@ public class PlayScreen extends AppCompatActivity {
 
         Button skipBtn = (Button) ruleDialog.findViewById(R.id.button_skip);
 
-        if (SoundPoolManager.getInstance() != null) {
-            SoundPoolManager.getInstance().playSound(R.raw.luatchoi);
-        }
-
+        playSound(R.raw.luatchoi);
         hideRuleDialog = new Runnable() {
             @Override
             public void run() {
@@ -899,10 +942,10 @@ public class PlayScreen extends AppCompatActivity {
                     changBgMusic(1);
                     switch (n) {
                         case 1:
-                            SoundPoolManager.getInstance().playSound(R.raw.ques1);
+                            playSound(R.raw.ques1);
                             break;
                         case 2:
-                            SoundPoolManager.getInstance().playSound(R.raw.ques1_b);
+                            playSound(R.raw.ques1_b);
                             break;
                     }
                 }
@@ -919,14 +962,14 @@ public class PlayScreen extends AppCompatActivity {
             public void onClick(View view) {
                 if (!checkVuotMoc) {
                     int n = new Random().nextInt(2) + 1;
-                    SoundPoolManager.getInstance().stop();
+                    stopSound();
                     changBgMusic(1);
                     switch (n) {
                         case 1:
-                            SoundPoolManager.getInstance().playSound(R.raw.ques1);
+                            playSound(R.raw.ques1);
                             break;
                         case 2:
-                            SoundPoolManager.getInstance().playSound(R.raw.ques1_b);
+                            playSound(R.raw.ques1_b);
                             break;
                     }
                 } else {
@@ -962,7 +1005,7 @@ public class PlayScreen extends AppCompatActivity {
         continueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                playSound(R.raw.touch_sound);
                 quitDialog.hide();
             }
         });
@@ -971,8 +1014,8 @@ public class PlayScreen extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 handler.removeCallbacks(runServerErr);
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
-                noti.setText("Vui lòng đợi!");
+                playSound(R.raw.touch_sound);
+                noti.setText(getResources().getString(R.string.wait_text_quit));
                 quitBtn.setVisibility(View.GONE);
                 continueBtn.setVisibility(View.GONE);
                 loading.setVisibility(View.VISIBLE);
@@ -994,7 +1037,7 @@ public class PlayScreen extends AppCompatActivity {
         hideBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+                playSound(R.raw.touch_sound);
                 barChartDialog.hide();
                 barChart.destroyDrawingCache();
 
@@ -1011,7 +1054,7 @@ public class PlayScreen extends AppCompatActivity {
         quitNoticeDialog.setCancelable(false);
     }
 
-    public void barChart() {
+    public void configBarChart() {
         List<Integer> percent = audienceSuggest(mQuestion.questionIndex, mQuestion.mCorrectAnsId, isCheckFiftyHelp);
 
         barChart = (BarChart) barChartDialog.findViewById(R.id.barchart);
@@ -1058,7 +1101,7 @@ public class PlayScreen extends AppCompatActivity {
     }
 
     //tro giup 50/50
-    public void fiftyHelp(View view) {
+    public void fiftyHelp() {
         if (isCheckFiftyHelp && mFiftyHelp == 0) {
             mFiftyHelp = 1;
             isCheckFiftyHelp = false;
@@ -1070,7 +1113,7 @@ public class PlayScreen extends AppCompatActivity {
             handler.removeCallbacks(musicImpor);
             Button button = (Button) findViewById(R.id.button_save1);
             button.setBackgroundResource(R.drawable.save1_dis);
-            SoundPoolManager.getInstance().playSound(R.raw.sound5050);
+            playSound(R.raw.sound5050);
             mButtonAns[0].postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -1092,12 +1135,12 @@ public class PlayScreen extends AppCompatActivity {
     }
 
     //tro giup khan gia
-    public void audienceHelp(View view) {
+    public void audienceHelp() {
         if (isCheckAudienceHelp && mAudienceHelp == 0) {
             pauseTimer();
             handler.removeCallbacks(musicImpor);
             mAudienceHelp = 1;
-            SoundPoolManager.getInstance().playSound(R.raw.khan_gia);
+            playSound(R.raw.khan_gia);
             Button button = (Button) findViewById(R.id.button_save2);
             button.setBackgroundResource(R.drawable.save2_dis);
             final LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
@@ -1107,16 +1150,16 @@ public class PlayScreen extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    SoundPoolManager.getInstance().playSound(R.raw.khangia_bg);
+                    playSound(R.raw.khangia_bg);
                     linearLayout.setVisibility(View.VISIBLE);
-                    barChart();
+                    configBarChart();
                 }
             }, 6000);
         }
     }
 
     //tro giup xem dap an
-    public void showAnsRightHelp(View view) {
+    public void showAnsRightHelp() {
         if (isCheckShowAnsRightHelp && mShowAnsRightHelp == 0) {
             handler.removeCallbacks(musicImpor);
             mShowAnsRightHelp = 1;
@@ -1127,13 +1170,13 @@ public class PlayScreen extends AppCompatActivity {
             int n = new Random().nextInt(3) + 1;
             switch (n) {
                 case 1:
-                    SoundPoolManager.getInstance().playSound(R.raw.ans_now1);
+                    playSound(R.raw.ans_now1);
                     break;
                 case 2:
-                    SoundPoolManager.getInstance().playSound(R.raw.ans_now2);
+                    playSound(R.raw.ans_now2);
                     break;
                 case 3:
-                    SoundPoolManager.getInstance().playSound(R.raw.ans_now3);
+                    playSound(R.raw.ans_now3);
                     break;
             }
             Button showAnsRightBtn = (Button) findViewById(R.id.button_save3);
@@ -1195,49 +1238,48 @@ public class PlayScreen extends AppCompatActivity {
     public void setSoundQuestion(int stt) {
         switch (stt) {
             case 2:
-                SoundPoolManager.getInstance().playSound(R.raw.ques2);
+                playSound(R.raw.ques2);
                 break;
             case 3:
-                SoundPoolManager.getInstance().playSound(R.raw.ques3);
+                playSound(R.raw.ques3);
                 break;
             case 4:
-                SoundPoolManager.getInstance().playSound(R.raw.ques4);
+                playSound(R.raw.ques4);
                 break;
             case 5:
-                SoundPoolManager.getInstance().playSound(R.raw.ques5);
+                playSound(R.raw.ques5);
                 break;
             case 6:
-                SoundPoolManager.getInstance().playSound(R.raw.ques6);
+                playSound(R.raw.ques6);
                 break;
             case 7:
-                SoundPoolManager.getInstance().playSound(R.raw.ques7);
+                playSound(R.raw.ques7);
                 break;
             case 8:
-                SoundPoolManager.getInstance().playSound(R.raw.ques8);
+                playSound(R.raw.ques8);
                 break;
             case 9:
-                SoundPoolManager.getInstance().playSound(R.raw.ques9);
+                playSound(R.raw.ques9);
                 break;
             case 10:
-                SoundPoolManager.getInstance().playSound(R.raw.ques10);
+                playSound(R.raw.ques10);
                 break;
             case 11:
-                SoundPoolManager.getInstance().playSound(R.raw.ques11);
+                playSound(R.raw.ques11);
                 break;
             case 12:
-                SoundPoolManager.getInstance().playSound(R.raw.ques12);
+                playSound(R.raw.ques12);
                 break;
             case 13:
-                SoundPoolManager.getInstance().playSound(R.raw.ques13);
+                playSound(R.raw.ques13);
                 break;
             case 14:
-                SoundPoolManager.getInstance().playSound(R.raw.ques14);
+                playSound(R.raw.ques14);
                 break;
             case 15:
-                SoundPoolManager.getInstance().playSound(R.raw.ques15);
+                playSound(R.raw.ques15);
                 break;
         }
-
 
     }
 
@@ -1265,45 +1307,50 @@ public class PlayScreen extends AppCompatActivity {
                 case R.id.button_ans1:
                     switch (n) {
                         case 1:
-                            SoundPoolManager.getInstance().playSound(R.raw.ans_a);
+                            playSound(R.raw.ans_a);
                             break;
                         case 2:
-                            SoundPoolManager.getInstance().playSound(R.raw.ans_a2);
+                            playSound(R.raw.ans_a2);
                             break;
+
                     }
+                    Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter().into(mImageViewUserAvatarReply[1]);
                     mUser.answerIndex = 0;
                     break;
                 case R.id.button_ans2:
                     switch (n) {
                         case 1:
-                            SoundPoolManager.getInstance().playSound(R.raw.ans_b);
+                            playSound(R.raw.ans_b);
                             break;
                         case 2:
-                            SoundPoolManager.getInstance().playSound(R.raw.ans_b2);
+                            playSound(R.raw.ans_b2);
                             break;
                     }
+                    Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter().into(mImageViewUserAvatarReply[3]);
                     mUser.answerIndex = 1;
                     break;
                 case R.id.button_ans3:
                     switch (n) {
                         case 1:
-                            SoundPoolManager.getInstance().playSound(R.raw.ans_c);
+                            playSound(R.raw.ans_c);
                             break;
                         case 2:
-                            SoundPoolManager.getInstance().playSound(R.raw.ans_c2);
+                            playSound(R.raw.ans_c2);
                             break;
                     }
+                    Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter().into(mImageViewUserAvatarReply[5]);
                     mUser.answerIndex = 2;
                     break;
                 case R.id.button_ans4:
                     switch (n) {
                         case 1:
-                            SoundPoolManager.getInstance().playSound(R.raw.ans_d);
+                            playSound(R.raw.ans_d);
                             break;
                         case 2:
-                            SoundPoolManager.getInstance().playSound(R.raw.ans_d2);
+                            playSound(R.raw.ans_d2);
                             break;
                     }
+                    Glide.with(getApplicationContext()).load(mUser.avatar).fitCenter().into(mImageViewUserAvatarReply[7]);
                     mUser.answerIndex = 3;
                     break;
             }
@@ -1511,7 +1558,7 @@ public class PlayScreen extends AppCompatActivity {
     }
 
     public void timeOutandQuit() {
-        SoundPoolManager.getInstance().playSound(R.raw.timesup);
+        playSound(R.raw.timesup);
         mAltpHelper.quit(mUser, mRoom, true);
         LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
         linearLayout.setVisibility(View.GONE);
@@ -1539,6 +1586,47 @@ public class PlayScreen extends AppCompatActivity {
         }
     }
 
+    public void playSound(int SoundId) {
+        if (SoundPoolManager.getInstance() != null) {
+            SoundPoolManager.getInstance().playSound(SoundId);
+        }
+    }
+
+    public void stopSound() {
+        if (SoundPoolManager.getInstance() != null) {
+            SoundPoolManager.getInstance().stop();
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.button_save1:
+                fiftyHelp();
+                break;
+
+            case R.id.button_save2:
+                audienceHelp();
+                break;
+
+            case R.id.button_save3:
+                showAnsRightHelp();
+                break;
+
+            case R.id.button_tutorial_play:
+                if (clickable) {
+                    tutorialLayout.setVisibility(View.VISIBLE);
+                }
+                break;
+
+            case R.id.layout_tutorial_play:
+                tutorialLayout.setVisibility(View.INVISIBLE);
+                break;
+            default:
+                break;
+        }
+    }
+
     public static class OnGameOverCallbackEvent {
         ArrayList<User> result;
     }
@@ -1551,7 +1639,7 @@ public class PlayScreen extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        SoundPoolManager.getInstance().playSound(R.raw.touch_sound);
+        playSound(R.raw.touch_sound);
         if (!isMoveGameOver && quitDialog != null) {
             quitDialog.show();
         }
@@ -1563,8 +1651,10 @@ public class PlayScreen extends AppCompatActivity {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
         }
-        if (SoundPoolManager.getInstance().isPlaySound()) {
-            SoundPoolManager.getInstance().stop();
+        if (SoundPoolManager.getInstance() != null) {
+            if (SoundPoolManager.getInstance().isPlaySound()) {
+                stopSound();
+            }
         }
         super.onPause();
     }
