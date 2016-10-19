@@ -25,7 +25,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1">
 
-                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                <de.hdodenhof.circleimageview.CircleImageView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/imageview_useravatar1"
                     android:layout_width="@dimen/layout_width_50"
                     android:layout_height="@dimen/layout_height_50"
@@ -105,7 +106,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1">
 
-                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                <de.hdodenhof.circleimageview.CircleImageView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/imageview_useravatar2"
                     android:layout_width="@dimen/layout_width_50"
                     android:layout_height="@dimen/layout_height_50"
@@ -165,7 +167,6 @@
                     android:textColor="#000000"
                     android:textSize="@dimen/text_size_xsmall"
                     android:textStyle="bold" />
-                />
             </RelativeLayout>
 
         </LinearLayout>
