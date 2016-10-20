@@ -69,7 +69,6 @@ public class InfoScreen extends AppCompatActivity {
     private String totalScore;
     private String userId;
     private HexagonDrawable searchBg;
-    private int searchTimes = 0;
     private int enemyNumberInList;
     private boolean isEnemy = false;
     private boolean isMoveSearOppo = false;
@@ -162,7 +161,6 @@ public class InfoScreen extends AppCompatActivity {
         final Room room = result.first;
         final List<User> dummyUsers = result.second;
 
-        searchTimes = 1;
         isEnemy = false;
 
         for (User user : room.users) {
@@ -241,12 +239,6 @@ public class InfoScreen extends AppCompatActivity {
             }
         });
 
-        if (searchTimes > 0) {
-            for (int i = 0; i < 7; i++) {
-                mButtonPlayer[i].setText("NGƯỜI CHƠI");
-                mButtonPlayer[i].setBackgroundResource(R.drawable.answer0);
-            }
-        }
         this.mUser = user;
         mAltpHelper.search(mUser);
         Log.e("TAG", "searchRequest: " + mUser.id + " " + mUser.name + " " + mUser.address + "\n" + mUser.avatar);
