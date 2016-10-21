@@ -294,7 +294,7 @@ public class GameOver extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mReport == 0) {
-                    String jsonString = new Gson().toJson(mRoom.questions.get(mRoom.questionIndex));
+                    String jsonString = new Gson().toJson(mRoom.questions);
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference myRef = database.getReference("report/" + System.currentTimeMillis() + mUser.id);
                     myRef.setValue(jsonString);
