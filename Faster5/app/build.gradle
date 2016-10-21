@@ -9,8 +9,8 @@ android {
         applicationId "com.game.oic.ailatrieuphu"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 4
-        versionName "0.3"
+        versionCode 5
+        versionName "1.0"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
     }
