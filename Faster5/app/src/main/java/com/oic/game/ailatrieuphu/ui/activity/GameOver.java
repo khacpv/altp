@@ -175,27 +175,25 @@ public class GameOver extends AppCompatActivity {
         mRoom = (Room) getIntent().getSerializableExtra(EXTRA_ROOM);
         boolean isServerErr = getIntent().getBooleanExtra(SERVER_ERR, false);
 
-        if (mUser.score == mEnemy.score) {
-            playSound(R.raw.pass_good);
-            startMedia(6000);
-        } else if (mUser.score < mEnemy.score) {
-            playSound(R.raw.lose);
-            startMedia(3000);
-        } else if (mUser.score > mEnemy.score) {
-            playSound(R.raw.best_player);
-            startMedia(12000);
-        }
         if (!isServerErr) {
             if (mUser.score == mEnemy.score) {
                 mTextViewResultText.setText(mMessage.draw);
+                playSound(R.raw.pass_good);
+                startMedia(6000);
             } else if (mUser.score < mEnemy.score) {
                 mTextViewResultText.setText(mMessage.lose);
+                playSound(R.raw.lose);
+                startMedia(3000);
             } else if (mUser.score > mEnemy.score) {
                 isWin = true;
                 mTextViewResultText.setText(mMessage.win);
+                playSound(R.raw.best_player);
+                startMedia(12000);
             }
         } else {
             mTextViewResultText.setText(getResources().getString(R.string.disconnect_server));
+            playSound(R.raw.lose);
+            startMedia(3000);
         }
 
         PrefUtils.getInstance(GameOver.this).set(PrefUtils.KEY_TOTAL_SCORE, mUser.totalScore);
