@@ -690,13 +690,13 @@ public class PlayScreen extends AppCompatActivity implements View.OnClickListene
 
         findViewById();
         setInterstitialAd();
-        setRuleDialog();
         setUserInfo();
         setQA(1);
         setCheckQuitDialog();
         setBarChartDialog();
         setQuitNoticeDialog();
         setDisconnectDialog();
+        setRuleDialog();
 
         runServerErr = new Runnable() {
             @Override
@@ -858,7 +858,7 @@ public class PlayScreen extends AppCompatActivity implements View.OnClickListene
 
     public void setMoveGameOver() {
         boolean isFirstUse = PrefUtils.getInstance(PlayScreen.this).get(PrefUtils.KEY_FIRST_USE, false);
-        if(isFirstUse){
+        if (isFirstUse) {
             PrefUtils.getInstance(PlayScreen.this).set(PrefUtils.KEY_FIRST_USE, false);
         }
         isMoveGameOver = true;

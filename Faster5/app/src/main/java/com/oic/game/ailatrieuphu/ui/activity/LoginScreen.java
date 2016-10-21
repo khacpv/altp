@@ -116,6 +116,7 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
     private boolean isCheckBtnLater = true;
     private boolean isMoveInfo = false;
     private boolean reward = false;
+    private boolean isCamera = false;
     private UploadPhotoUtils uploadPhotoUtils = new UploadPhotoUtils();
     private int uploadFail = 0;
 
@@ -143,13 +144,7 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
 
         this.mUser.fcmToken = PrefUtils.getInstance(this).get(PrefUtils.KEY_FCM, "");
 
-        //check Permission when get Id
-        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_READ_PHONE_STATE);
-        } else {
-            this.mUser.id = NetworkUtils.getUniqueID(this).replaceAll("-", "");
-        }
+        this.mUser.id = NetworkUtils.getUniqueID(this).replaceAll("-", "");
 
         mAltpHelper.login(mUser);
         Log.e("TAG", "loginRequest: " + mUser.fbId + " " + mUser.name + " " + mUser.address + "\n" + mUser.avatar);
@@ -317,7 +312,14 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
     public void fakeBtnFb() {
         playSound(R.raw.touch_sound);
         if (NetworkUtils.checkInternetConnection(LoginScreen.this) && mSocketAltp.isConnected()) {
-            mLoginButtonFb.performClick();
+            int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
+            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                Log.e("TAG", "fakeBtnFb: get Permission");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_READ_PHONE_STATE);
+            } else {
+                mLoginButtonFb.performClick();
+            }
+
         } else {
             connectionDialog.show();
         }
@@ -437,6 +439,7 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
                     if (checkPermission()) {
                         captureImage();
                     } else {
+                        isCamera = true;
                         requestPermission();
                     }
                 } else {
@@ -452,8 +455,8 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
                     if (checkPermission()) {
                         loadImagefromGallery();
-
                     } else {
+                        isCamera = false;
                         requestPermission();
                     }
                 } else {
@@ -772,12 +775,16 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
                 if (grantResults.length > 0 && grantResults[0] == PackageManager
                         .PERMISSION_GRANTED && grantResults[3] == PackageManager
                         .PERMISSION_GRANTED) {
-                    captureImage();
+                    if (isCamera) {
+                        captureImage();
+                    } else {
+                        loadImagefromGallery();
+                    }
                 }
                 break;
             case REQUEST_READ_PHONE_STATE:
                 if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    mUser.id = NetworkUtils.getUniqueID(this).replaceAll("-", "");
+                    mLoginButtonFb.performClick();
                 }
                 break;
 
