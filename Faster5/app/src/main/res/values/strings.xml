@@ -71,7 +71,11 @@
     <string name="noti_report_2">Bạn đã phản hồi ở lượt chơi này rồi!</string>
     <string name="text_reward">Bạn nhận được phần thưởng 6000 điểm!</string>
     <string name="exit_text">Bạn thực sự muốn thoát?</string>
-    <string name="wait_text_quit">"Vui lòng đợi!"</string>
+    <string name="wait_text_quit">Vui lòng đợi!</string>
+    <string name="deny_permission">Bạn đã từ chối cấp quyền truy cập.\nVui lòng thử lại!</string>
+    <string name="request_permission">Vui lòng cấp quyền truy cập cho ứng dụng?</string>
+    <string name="title_permission">CẤP QUYỀN TRUY CẬP</string>
+
 
     <string name="text_rate">Đánh giá</string>
     <string name="my_own_rate">ĐÁNH GIÁ</string>

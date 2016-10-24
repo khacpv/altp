@@ -29,12 +29,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.oic.game.ailatrieuphu.model.GameOverMessage;
+import com.oic.game.ailatrieuphu.model.Question;
 import com.oic.game.ailatrieuphu.model.Room;
 import com.oic.game.ailatrieuphu.model.User;
 import com.oic.game.ailatrieuphu.util.PrefUtils;
 import com.oic.game.ailatrieuphu.util.SoundPoolManager;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import hotchemi.android.rate.AppRate;
 import hotchemi.android.rate.OnClickButtonListener;
@@ -294,10 +300,21 @@ public class GameOver extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mReport == 0) {
-                    String jsonString = new Gson().toJson(mRoom.questions.get(mRoom.questionIndex));
+                    ArrayList<Question> questionArrayList = new ArrayList<>();
+                    String jsonString = new Gson().toJson(mRoom);
+                    try {
+                        JSONObject data = new JSONObject(jsonString);
+                        JSONArray questions = data.getJSONArray("questions");
+                        for (int i = 0; i < questions.length(); i++) {
+                            Question question = new Gson().fromJson(questions.get(i).toString(), Question.class);
+                            questionArrayList.add(question);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference myRef = database.getReference("report/" + System.currentTimeMillis() + mUser.id);
-                    myRef.setValue(jsonString);
+                    myRef.setValue(questionArrayList);
                     Toast.makeText(GameOver.this, getResources().getString(R.string.noti_report),
                             Toast.LENGTH_SHORT).show();
                 }

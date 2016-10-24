@@ -49,10 +49,11 @@
 
     </style>
 
-    <style name="RateDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">#FF1493</item>
+    <style name="PermissionDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:background">#00366D</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColorPrimary">#00366D</item>
-        <item name="android:background">#ffffff</item>
+        <item name="android:textColorPrimary">#fff</item>
+        <item name="colorAccent">#EEA542</item>
     </style>
+
 </resources>

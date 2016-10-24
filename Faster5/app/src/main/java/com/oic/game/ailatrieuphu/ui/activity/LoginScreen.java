@@ -5,6 +5,7 @@ import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -17,9 +18,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -33,6 +36,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -105,6 +109,7 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
     private Dialog edittexDialog;
     private Dialog loginDialog;
     private Dialog connectionDialog;
+    AlertDialog permissionDialog;
     private String mStringUserName;
     private String imgPath;
     private String imgUrl;
@@ -314,7 +319,6 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
         if (NetworkUtils.checkInternetConnection(LoginScreen.this) && mSocketAltp.isConnected()) {
             int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
             if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                Log.e("TAG", "fakeBtnFb: get Permission");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_READ_PHONE_STATE);
             } else {
                 mLoginButtonFb.performClick();
@@ -440,6 +444,23 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
                         captureImage();
                     } else {
                         isCamera = true;
+                        boolean readPermiss = shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE);
+                        boolean writePermiss = shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                        boolean cameraPermiss = shouldShowRequestPermissionRationale(Manifest.permission.CAMERA);
+                        boolean idPermiss = shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE);
+                        if (readPermiss && writePermiss && cameraPermiss && idPermiss) {
+                            showPermissionDialog(getResources().getString(R.string.request_permission),
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                                    Uri.fromParts("package", getPackageName(), null));
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                            startActivity(intent);
+                                        }
+                                    });
+                            return;
+                        }
                         requestPermission();
                     }
                 } else {
@@ -457,6 +478,23 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
                         loadImagefromGallery();
                     } else {
                         isCamera = false;
+                        boolean readPermiss = shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE);
+                        boolean writePermiss = shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                        boolean cameraPermiss = shouldShowRequestPermissionRationale(Manifest.permission.CAMERA);
+                        boolean idPermiss = shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE);
+                        if (readPermiss && writePermiss && cameraPermiss && idPermiss) {
+                            showPermissionDialog(getResources().getString(R.string.request_permission),
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                                    Uri.fromParts("package", getPackageName(), null));
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                            startActivity(intent);
+                                        }
+                                    });
+                            return;
+                        }
                         requestPermission();
                     }
                 } else {
@@ -530,6 +568,17 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
             }
         });
 
+    }
+
+    private void showPermissionDialog(String message, DialogInterface.OnClickListener listener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(LoginScreen.this, R.style.PermissionDialog)
+                .setTitle(getResources().getString(R.string.title_permission))
+                .setMessage(message)
+                .setPositiveButton(getResources().getString(R.string.btnYes_quit_popup), listener)
+                .setNegativeButton(getResources().getString(R.string.btnNo_quit_popup), null);
+        permissionDialog = builder.create();
+        permissionDialog.show();
+        permissionDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.white));
     }
 
     public void captureImage() {
@@ -780,15 +829,57 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
                     } else {
                         loadImagefromGallery();
                     }
+                } else {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                        boolean readPermiss = shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE);
+                        boolean writePermiss = shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                        boolean cameraPermiss = shouldShowRequestPermissionRationale(Manifest.permission.CAMERA);
+                        boolean idPermiss = shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE);
+                        if (!readPermiss && !writePermiss && !cameraPermiss && !idPermiss) {
+                            showPermissionDialog(getResources().getString(R.string.request_permission),
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                                    Uri.fromParts("package", getPackageName(), null));
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                            startActivity(intent);
+                                        }
+                                    });
+                            return;
+                        } else {
+                            Toast.makeText(this, getResources().getString(R.string.deny_permission), Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 }
                 break;
             case REQUEST_READ_PHONE_STATE:
                 if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     mLoginButtonFb.performClick();
+                } else {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                        boolean idPermiss = shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE);
+                        if (!idPermiss) {
+                            showPermissionDialog(getResources().getString(R.string.request_permission),
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                                    Uri.fromParts("package", getPackageName(), null));
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                            startActivity(intent);
+                                        }
+                                    });
+                            return;
+                        } else {
+                            Toast.makeText(this, getResources().getString(R.string.deny_permission), Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 }
                 break;
 
             default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
                 break;
 
         }
@@ -831,6 +922,9 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
         }
         if (connectionDialog != null) {
             connectionDialog.dismiss();
+        }
+        if (permissionDialog != null) {
+            permissionDialog.dismiss();
         }
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);

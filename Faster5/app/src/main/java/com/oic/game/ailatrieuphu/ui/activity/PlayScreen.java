@@ -127,6 +127,7 @@ public class PlayScreen extends AppCompatActivity implements View.OnClickListene
     private boolean checkVuotMoc = false;
     private boolean isMoveGameOver = false;
     private boolean isServerErr = false;
+    private boolean isQuitNow = false;
     InterstitialAd mInterstitialAd;
 
     private SockAltp.OnSocketEvent globalCallback = new SockAltp.OnSocketEvent() {
@@ -524,8 +525,12 @@ public class PlayScreen extends AppCompatActivity implements View.OnClickListene
             if (!String.valueOf(user.id).equalsIgnoreCase(mUser.id)) {
                 Log.e("TAG", "mEnemyanswer: " + mEnemy.answerIndex);
                 mEnemy.answerIndex = user.answerIndex;
-                if (mQuestion.questionIndex < 15) {
-                    mAltpHelper.getNextQuestion(mUser, mRoom);
+                if (!isQuitNow) {
+                    if (mQuestion.questionIndex < 15) {
+                        mAltpHelper.getNextQuestion(mUser, mRoom);
+                    }
+                } else {
+                    mAltpHelper.quit(mUser, mRoom, true);
                 }
                 mButtonAns[mEnemy.answerIndex].post(new Runnable() {
                     @Override
@@ -1011,18 +1016,25 @@ public class PlayScreen extends AppCompatActivity implements View.OnClickListene
         });
 
         quitBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                handler.removeCallbacks(runServerErr);
-                playSound(R.raw.touch_sound);
-                noti.setText(getResources().getString(R.string.wait_text_quit));
-                quitBtn.setVisibility(View.GONE);
-                continueBtn.setVisibility(View.GONE);
-                loading.setVisibility(View.VISIBLE);
-                mAltpHelper.quit(mUser, mRoom, true);
-                handler.postDelayed(runServerErr, 10000);
-            }
-        });
+                                       @Override
+                                       public void onClick(View view) {
+                                           handler.removeCallbacks(runServerErr);
+                                           playSound(R.raw.touch_sound);
+                                           noti.setText(getResources().getString(R.string.wait_text_quit));
+                                           quitBtn.setVisibility(View.GONE);
+                                           continueBtn.setVisibility(View.GONE);
+                                           loading.setVisibility(View.VISIBLE);
+                                           if (clickable) {
+                                               mAltpHelper.quit(mUser, mRoom, true);
+                                               handler.postDelayed(runServerErr, 10000);
+                                           } else {
+                                               isQuitNow = true;
+                                           }
+
+                                       }
+                                   }
+
+        );
     }
 
     public void setBarChartDialog() {
@@ -1161,6 +1173,7 @@ public class PlayScreen extends AppCompatActivity implements View.OnClickListene
     //tro giup xem dap an
     public void showAnsRightHelp() {
         if (isCheckShowAnsRightHelp && mShowAnsRightHelp == 0) {
+            pauseTimer();
             handler.removeCallbacks(musicImpor);
             mShowAnsRightHelp = 1;
             LinearLayout linearLayout = (LinearLayout) barChartDialog.findViewById(R.id.trogiup_khangia);
